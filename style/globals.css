@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #f9fafb;
+  --foreground: #1f2937;
+
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+
+  --primary: #2563eb;
+  --primary-sub: #dbeafe;
+
+  --text-title: #111827;
+  --text-body: #374151;
+  --text-muted: #6b7280;
+
+  --keyword-bg: #f3f4f6;
+  --keyword-active: #dbeafe;
+
+  --hover-surface: #e5e7eb55;
+  --hover-strong: #d1d5db;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1115;
+    --foreground: #f3f4f6;
+
+    --card-bg: #1a1c20;
+    --border: #2d2f36;
+
+    --primary: #2563eb;
+    --primary-sub: #1e40af44;
+
+    --text-title: #f3f4f6;
+    --text-body: #d1d5db;
+    --text-muted: #9ca3af;
+
+    --keyword-bg: #2a2d33;
+    --keyword-active: #2342a755;
+
+    --hover-surface: #ffffff11;
+    --hover-strong: #ffffff22;
+  }
+}
+@layer base {
+  html,
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+      sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.6;
+  }
+
+  button {
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+  }
+
+  p {
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  em {
+    font-style: normal;
+    word-break: keep-all;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    word-break: keep-all;
+  }
+
+  /* 모바일 스크롤 개선 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* 페이지 기본 패딩 */
+.page-wrapper {
+  @apply max-w-3xl mx-auto;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+.fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
