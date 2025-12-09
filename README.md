@@ -1,36 +1,165 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📰 AI 기반 경제 뉴스 요약 & 리포트 생성 서비스
 
-## Getting Started
+> Gemini 기반 실시간 경제 뉴스 분석 · 개인화 키워드 추천 · 데일리 리포트 자동 생성
 
-First, run the development server:
+이 프로젝트는 **실시간 글로벌 경제 뉴스 데이터를 기반으로 Gemini AI가 핵심 경제 흐름을 요약하고**,  
+한국 증시(KOSPI/KOSDAQ) 관점에서 영향도를 분석하여 자동으로 리포트를 생성하는 서비스입니다.
+
+또한 사용자의 관심 키워드를 반영한 **맞춤형 키워드 분석 리포트**,  
+**검색 기반 요약 기능**,  
+**반응형 + 다크모드 UI**,  
+**온보딩 개인화** 등을 제공하는  
+프론트엔드 중심의 **AI 경제 뉴스 분석 플랫폼**입니다.
+
+---
+
+## ✨ 주요 기능
+
+### 1. **데일리 경제 리포트 자동 생성 (매일 9시)**
+
+- 글로벌 경제 뉴스를 20~40개 수집 후 Gemini에게 전달
+- Gemini가 **3~5개의 핵심 이슈로 요약 + 한국 시장 영향 분석**
+- Route Handler 기반 자동 업데이트
+- 캐싱을 통해 데이터 중복 요청 방지
+
+---
+
+### 2. **관심 키워드 기반 맞춤형 리포트**
+
+- 사용자 온보딩에서 선택한 키워드를 기반으로 AI 분석 제공
+- 키워드 예시: `금리`, `AI`, `반도체`, `유가`, `환율`, `엔비디아` 등
+- 해당 키워드 관련 뉴스 자동 수집 → 핵심 인사이트 요약
+- 한국/글로벌 산업 영향 분석 포함
+
+---
+
+### 3. **검색 기반 뉴스 요약 기능**
+
+- 검색창에 관심 키워드를 직접 입력
+- 해당 키워드 관련 최신 뉴스 수집
+- Gemini가 3~5개의 인사이트로 분석
+- 시장 영향 분석 포함 (금리, 환율, 원자재, 반도체 등)
+
+---
+
+### 4. **온보딩 + 개인화 추천**
+
+- 로그인 없이 사용 가능
+- 첫 방문 시 관심 키워드 선택
+- localStorage 기반으로 저장
+- 이후 메인 홈에서 개인화된 뉴스 & 분석 제공
+
+---
+
+### 5. **TTS 음성 읽기 기능 (옵션)**
+
+- 생성된 요약 내용을 음성으로 재생
+- 이동 중에도 리포트 확인 가능
+
+---
+
+### 6. **반응형 UI & 다크모드 지원**
+
+- Tailwind CSS v4 (canonical syntax)
+- CSS 변수 기반의 Theming
+- 모바일 / 데스크탑 모두 최적화
+- Notion 스타일의 심플하고 직관적인 UI
+
+---
+
+## 🛠 기술 스택
+
+### **Frontend**
+
+- Next.js 14 (App Router)
+- React 19
+- Tailwind CSS v4
+- clsx 기반 UI 컴포넌트 시스템
+- TanStack Query v5
+
+### **AI & Data**
+
+- Google Gemini 1.5 Flash
+- NewsAPI / 글로벌 뉴스 데이터
+- 맞춤형 프롬프트 엔진
+- 데일리 리포트 & 검색 리포트 생성
+
+### **Storage & State**
+
+- Zustand (온보딩/키워드 상태)
+- localStorage (사용자 개인화)
+- Edge Runtime 캐싱 (데일리 리포트 저장)
+
+---
+
+## 📁 폴더 구조
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+src/
+ ├─ app/
+ │   ├─ onboarding/
+ │   ├─ api/
+ │   │   ├─ daily/
+ │   │   │   ├─ generate/
+ │   │   │   └─ get/
+ │   │   ├─ summary/
+ │   │   └─ search-news/
+ │   ├─ page.tsx
+ │   └─ layout.tsx
+ │
+ ├─ components/
+ │   ├─ common/
+ │   ├─ onboarding/
+ │   └─ report/
+ │
+ ├─ lib/
+ │   ├─ news/
+ │   ├─ prompt/
+ │   └─ types/
+ │
+ ├─ stores/
+ │   └─ useOnboardingStore.ts
+ │
+ └─ styles/
+     └─ globals.css
+
+## 🧠 AI 프롬프트 설계
+
+### **데일리 리포트 프롬프트**
+- 뉴스 헤드라인 + 요약 기반 핵심 이슈 도출
+- 한국 시장 관점에서 영향 분석 포함
+- JSON 구조로 일관된 응답 생성
+
+### **검색 기반 리포트 프롬프트**
+- 사용자 입력 키워드를 중심으로 분석
+- 글로벌 이슈 흐름, 산업군 영향 요약
+- 핵심 인사이트 기반 포맷으로 생성
+
+---
+
+## 📱 UI/UX 특징
+- Notion 스타일의 심플한 정보 중심 UI
+- 온보딩 페이지의 페이드/슬라이드 애니메이션
+- 키워드 칩의 자연스러운 active scale 효과
+- 모바일 최적화된 반응형 구조
+- 시스템 테마 기반 자동 다크모드 지원
+
+---
+
+## 📌 향후 개선 예정
+아래 기능들은 프로젝트의 확장성과 사용자 경험 향상을 위해 계획 중입니다.
+
+### **1. TTS 기능 고도화**
+- AI 리포트를 자연스러운 음성으로 변환
+- 출근길, 이동 중에도 들을 수 있는 “오디오 리포트 모드” 제공 예정
+
+### **2. 사용자 행동 기반 개인화 강화**
+- 검색 기록, 키워드 선택, 리포트 열람 행동을 기반으로
+  더욱 정교한 개인화 추천 기능 강화
+- 개인별 관심 분야를 자동 탐지하는 lightweight 모델 도입 검토
+
+### **3. 추가적인 데이터 소스 확장**
+- 환율(FX), 유가(WTI/Brent), 금리(국채/Yield), 원자재(Copper/Lithium) 등
+  시장 영향도가 높은 다양한 외부 지표 연동 예정
+- 리포트의 깊이와 정확도를 높이기 위한 멀티 데이터 소스 통합 계획
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
