@@ -13,6 +13,8 @@
   --text-title: #111827;
   --text-body: #374151;
   --text-muted: #6b7280;
+  --text-muted-light: #9ca3af;
+  --text-white: #ffffff;
 
   --keyword-bg: #f3f4f6;
   --keyword-active: #dbeafe;
@@ -35,7 +37,7 @@
     --text-title: #f3f4f6;
     --text-body: #d1d5db;
     --text-muted: #9ca3af;
-
+    --text-white: #ffffff;
     --keyword-bg: #2a2d33;
     --keyword-active: #2342a755;
 
@@ -44,6 +46,10 @@
   }
 }
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   html,
   body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
@@ -90,29 +96,4 @@
 /* 페이지 기본 패딩 */
 .page-wrapper {
   @apply max-w-3xl mx-auto;
-}
-
-.fade-in {
-  animation: fadeIn 0.6s ease forwards;
-}
-.fade-up {
-  animation: fadeUp 0.6s ease forwards;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

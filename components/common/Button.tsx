@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -25,7 +25,9 @@ export default function Button({
     variant === 'secondary' &&
       'bg-(--keyword-bg) text-(--foreground) border border-(--border) hover:bg-(--hover-strong)',
     variant === 'ghost' &&
-      'bg-transparent text-(--foreground) hover:bg-(--hover-surface)'
+      'bg-transparent text-(--foreground) hover:bg-(--hover-surface)',
+    variant === 'onBoarding' &&
+      'w-full max-w-sm py-3 rounded-xl bg-(--primary) text-(--text-white)  font-semibold'
   );
 
   return (

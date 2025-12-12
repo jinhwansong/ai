@@ -16,8 +16,10 @@ export interface NewsArticle {
 
 export interface SearchNewsResponse {
   keyword: string;
+  effectiveKeyword?: string;
   total: number;
   articles: NewsArticle[];
+  message?: string;
 }
 
 interface SummaryInsight {

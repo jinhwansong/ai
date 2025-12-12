@@ -9,14 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.33.0",
     "@google/generative-ai": "^0.24.1",
     "@tanstack/react-query": "^5.90.12",
-    "@vercel/kv": "^3.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "ioredis": "^5.4.1",
     "next": "16.0.8",
+    "openai": "^6.10.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "swiper": "^12.0.3",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

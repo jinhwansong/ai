@@ -1,7 +1,7 @@
 // Gemini 요약 + 분석 API
 import { NextResponse } from 'next/server';
-import { runGeminiJSON } from '@/lib/gemini';
 import { buildSearchSummaryPrompt } from '@/lib/prompt/buildSearchSummaryPrompt';
+import { runGPTJSON } from '@/lib/openai';
 import type { NewsArticle } from '@/types/news';
 
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const prompt = buildSearchSummaryPrompt(keyword, news);
 
-    const summary = await runGeminiJSON(prompt);
+    const summary = await runGPTJSON(prompt);
 
     return NextResponse.json(summary);
   } catch (err) {

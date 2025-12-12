@@ -9,6 +9,8 @@ interface OnboardingState {
   setKeywords: (list: string[]) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
+  hasHydrated: boolean;
+  _hydrate: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingState>()(
@@ -16,6 +18,8 @@ export const useOnboardingStore = create<OnboardingState>()(
     (set) => ({
       completed: false,
       keywords: [],
+      hasHydrated: false,
+      _hydrate: () => set({ hasHydrated: true }),
       addKeyword: (k) =>
         set((state) => ({
           keywords: Array.from(new Set([...state.keywords, k])),
