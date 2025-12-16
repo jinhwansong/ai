@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ReportDetailClient from './ReportDetailClient';
+import ReportDetailClient from '../../../components/report/ReportDetailClient';
 
 export default function ReportDetailPage() {
   return (

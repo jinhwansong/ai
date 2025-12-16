@@ -1,25 +1,11 @@
 import { DailyIssue } from '@/types/report';
-import Link from 'next/link';
 
-export default function DailyCard({
-  issue,
-  index,
-  date,
-}: {
-  issue: DailyIssue;
-  index: number;
-  date?: string;
-}) {
-  const href = date
-    ? `/report/${index}?date=${encodeURIComponent(date)}`
-    : `/report/${index}`;
-
+export default function DailyCard({ issue }: { issue: DailyIssue }) {
   return (
-    <Link
-      href={href}
+    <div
       className="
       p-5 rounded-xl border border-(--border) bg-(--card-bg)
-      shadow-sm hover:shadow transition-all block
+      shadow-sm hover:shadow transition-all
     "
     >
       <h3 className="text-lg font-semibold text-(--text-title)">
@@ -31,6 +17,6 @@ export default function DailyCard({
       <p className="text-(--primary) font-medium mt-3 text-sm">
         한국 시장 영향 → {issue.koreaImpact}
       </p>
-    </Link>
+    </div>
   );
 }

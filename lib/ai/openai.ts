@@ -4,22 +4,17 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-/**
- * GPT 모델 가져오기
- */
+// GPT 모델 가져오기
 export function getGPTModel(model: string = 'gpt-4.1-mini') {
   return model;
 }
 
-/**
- * 프롬프트 입력 → JSON 객체 출력
- */
+// 프롬프트 입력 → JSON 객체 출력
 export async function runGPTJSON(prompt: string) {
   try {
-    const model = getGPTModel();
 
     const completion = await client.responses.create({
-      model,
+      model: getGPTModel(),
       input: prompt,
     });
 

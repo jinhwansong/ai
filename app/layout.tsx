@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import '@/style/globals.css';
 import Providers from './providers';
-import Header from '@/components/common/Header';
 
 export const metadata: Metadata = {
   title: 'AI 경제 리포트',
@@ -13,11 +12,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
       <body className="bg-(--background) text-(--foreground)">
         <Providers>
-          <Header />
           <main className="page-wrapper">{children}</main>
         </Providers>
       </body>

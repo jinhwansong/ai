@@ -1,42 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 import { withQueryDefaults } from './withQueryDefaults';
-import {
-  fetchDailyReport,
-  fetchSearchNews,
-  fetchSummary,
-} from '@/lib/fetchReport';
-import type {
-  NewsArticle,
-  SearchNewsResponse,
-  SummaryResult,
-} from '@/types/news';
-import type { DailyReport } from '@/types/report';
+import { getDailyReport, searchReport } from '@/lib/getReport';
+
 
 export const useDailyReport = () => {
-  return useQuery<DailyReport>(
+  return useQuery(
     withQueryDefaults({
       queryKey: ['daily-report'],
-      queryFn: fetchDailyReport,
+      queryFn: getDailyReport,
     })
   );
 };
 
 export const useSearchNews = (keyword: string) => {
-  return useQuery<SearchNewsResponse>(
+  return useQuery(
     withQueryDefaults({
       queryKey: ['search-news', keyword],
-      queryFn: () => fetchSearchNews(keyword),
+      queryFn: () => searchReport(keyword),
       enabled: !!keyword,
-    })
-  );
-};
-
-export const useSummary = (keyword: string, news: NewsArticle[]) => {
-  return useQuery<SummaryResult>(
-    withQueryDefaults({
-      queryKey: ['summary', keyword, news],
-      queryFn: () => fetchSummary(keyword, news),
-      enabled: !!keyword && news.length > 0,
     })
   );
 };
