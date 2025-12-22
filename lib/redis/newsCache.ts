@@ -1,6 +1,5 @@
-import { DailyReport } from "@/types/report";
-import { redis } from "./redis";
-
+import { DailyReport } from '@/types/report';
+import { redis } from './redis';
 
 // 날짜별 리포트를 저장할 Redis 키 패턴
 function buildDailyReportKey(date: string): string {
@@ -19,7 +18,7 @@ function getTTLUntilNext9AM(): number {
 }
 
 export async function saveDailyReport(report: DailyReport) {
-  const key = buildDailyReportKey(report.date)
+  const key = buildDailyReportKey(report.date);
 
   if (
     !report.briefing ||
@@ -35,8 +34,7 @@ export async function saveDailyReport(report: DailyReport) {
 
   const ttl = getTTLUntilNext9AM();
 
-  await redis.set(key, JSON.stringify(report), 'EX', ttl)
-
+  await redis.set(key, JSON.stringify(report), 'EX', ttl);
 }
 
 export async function getDailyReport(

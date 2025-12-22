@@ -1,4 +1,4 @@
-import type { FetchNewsParams, NewsArticle } from '@/types/news';
+import { FetchNewsParams, NewsArticle } from '@/types/news';
 
 const API_KEY = process.env.NEWS_API_KEY;
 const BASE_URL = 'https://newsapi.org/v2';
@@ -23,7 +23,7 @@ export async function fetchNewsCore(
 
   if (!res.ok) {
     const body = await res.text().catch(() => '');
-    console.error('[fetchNewsCore] error', res.status, body);
+    console.error('[fetchNewsCore]', res.status, body);
     throw new Error('NewsAPI request failed');
   }
 

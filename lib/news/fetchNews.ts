@@ -1,5 +1,5 @@
-import { NewsArticle } from "@/types/news";
-import { fetchNewsCore } from "./fetchNewsCore";
+import { NewsArticle } from '@/types/news';
+import { fetchNewsCore } from './fetchNewsCore';
 
 // 글로벌 경제 뉴스 (데일리 리포트용)
 export function fetchDailyNews(): Promise<NewsArticle[]> {

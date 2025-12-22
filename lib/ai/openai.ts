@@ -4,28 +4,43 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-// GPT 모델 가져오기
-export function getGPTModel(model: string = 'gpt-4.1-mini') {
-  return model;
-}
-
 // 프롬프트 입력 → JSON 객체 출력
 export async function runGPTJSON(prompt: string) {
   try {
+    const completion = await client.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are a helpful assistant that outputs only in JSON format.',
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
 
-    const completion = await client.responses.create({
-      model: getGPTModel(),
-      input: prompt,
+      response_format: { type: 'json_object' },
+      temperature: 0,
+      max_tokens: 800,
     });
 
-    const text = typeof completion.output_text === 'string' ? completion.output_text : '';
-    if (!text) {
-      throw new Error('OpenAI 응답에서 텍스트를 찾을 수 없습니다.');
+    const choice = completion.choices[0];
+
+    if (!choice || !choice.message || !choice.message.content) {
+      console.error('[GPT EMPTY RESPONSE]', completion);
+      throw new Error('GPT returned empty JSON response');
     }
 
-    return JSON.parse(text);
+    if (choice.finish_reason !== 'stop') {
+      console.error('[GPT NOT FINISHED]', choice.finish_reason);
+      throw new Error('GPT response was interrupted');
+    }
+
+    return JSON.parse(choice.message.content);
   } catch (error) {
     console.error('❌ GPT JSON Error:', error);
-    throw new Error('GPT JSON parsing failed');
+    throw error;
   }
 }

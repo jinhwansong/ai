@@ -1,37 +1,51 @@
 import React from 'react';
 import clsx from 'clsx';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  size?: ButtonSize;
   full?: boolean;
 }
 
 export default function Button({
   variant = 'primary',
+  size = 'md',
   full,
   className,
   children,
   ...props
 }: ButtonProps) {
-  const ButtonColor = clsx(
-    full && 'w-full',
-    className,
-    'px-4 py-2 rounded-lg font-medium text-sm',
-    'transition-all duration-200',
-    'disabled:opacity-50 disabled:cursor-not-allowed',
-    variant === 'primary' && 'bg-(--primary) text-white',
-    variant === 'secondary' &&
-      'bg-(--keyword-bg) text-(--foreground) border border-(--border) hover:bg-(--hover-strong)',
-    variant === 'ghost' &&
-      'bg-transparent text-(--foreground) hover:bg-(--hover-surface)',
-    variant === 'onBoarding' &&
-      'w-full max-w-sm py-3 rounded-xl bg-(--primary) text-(--text-white)  font-semibold'
-  );
+  const base =
+    'inline-flex items-center justify-center rounded-xl transition-colors duration-150 font-semibold disabled:opacity-50 disabled:cursor-not-allowed';
+
+  const sizes = {
+    sm: 'px-3 py-2 text-sm',
+    md: 'px-4 py-3 text-sm',
+    lg: 'px-5 py-4 text-base',
+  };
+
+  const variants = {
+    primary: 'bg-(--primary) text-white hover:bg-(--primary-strong)',
+    secondary:
+      'bg-white text-(--text-body) border border-(--border) hover:bg-(--hover-surface)',
+    ghost: 'bg-transparent text-(--text-body) hover:bg-(--hover-surface)',
+  };
 
   return (
-    <button {...props} className={ButtonColor}>
+    <button
+      {...props}
+      className={clsx(
+        base,
+        sizes[size],
+        variants[variant],
+        full && 'w-full',
+        className
+      )}
+    >
       {children}
     </button>
   );

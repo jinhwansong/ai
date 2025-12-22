@@ -1,30 +1,46 @@
-export interface NewsSource {
-  id: string | null;
-  name: string;
-}
-
 export interface NewsArticle {
-  source: NewsSource;
-  author: string | null;
-  title: string;
-  description: string | null;
+  source?: {
+    id: string | null;
+    name: string;
+  };
+  author?: string | null;
+  title?: string;
+  description?: string;
   url: string;
-  urlToImage: string | null;
+  urlToImage?: string;
   publishedAt: string;
-  content: string | null;
+  content?: string;
 }
 
-export type TranslateNewsItem = {
+export interface NormalizedNews {
+  id: string;
+  source: string;
+  title: string;
+  summary: string;
+  url: string;
+  imageUrl?: string;
+  publishedAt: string;
+
+  language: 'en' | 'ko';
+  tags?: string[];
+}
+
+export interface TranslateNewsItem {
   url: string;
   title: string;
   description: string;
-};
+}
 
-export type FetchNewsParams = {
+export interface SummarizeNewsInput {
+  title: string;
+  content: string;
+}
+
+export interface FetchNewsParams {
   endpoint: 'top-headlines' | 'everything';
   query?: string;
-  category?: string;
-  language?: string;
-  pageSize?: number;
+  category?: 'business' | 'technology' | 'science';
+  language?: 'en' | 'ko';
   sortBy?: 'publishedAt' | 'relevancy';
-};
+  pageSize?: number;
+}

@@ -1,48 +1,42 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f9fafb;
-  --foreground: #1f2937;
+  --background: #f8fafc;
+  --foreground: #191919;
 
   --card-bg: #ffffff;
-  --border: #e5e7eb;
+  --border: #e2e8f0;
 
-  --primary: #2563eb;
-  --primary-sub: #dbeafe;
+  --primary: #6366f1;
+  --primary-strong: #4f46e5;
+  --primary-soft: #e0e7ff;
 
-  --text-title: #111827;
-  --text-body: #374151;
-  --text-muted: #6b7280;
-  --text-muted-light: #9ca3af;
+  --text-title: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
   --text-white: #ffffff;
 
-  --keyword-bg: #f3f4f6;
-  --keyword-active: #dbeafe;
-
-  --hover-surface: #e5e7eb55;
-  --hover-strong: #d1d5db;
+  --hover-surface: #f1f5f9;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f1115;
-    --foreground: #f3f4f6;
+    --background: #131314;
+    --foreground: #1e1f20;
 
-    --card-bg: #1a1c20;
-    --border: #2d2f36;
+    --card-bg: #1e1f20;
+    --border: #1e293b;
 
-    --primary: #2563eb;
-    --primary-sub: #1e40af44;
+    --primary: #818cf8;
+    --primary-strong: #6366f1;
+    --primary-soft: #1e1b4b;
 
-    --text-title: #f3f4f6;
-    --text-body: #d1d5db;
-    --text-muted: #9ca3af;
+    --text-title: #f8fafc;
+    --text-body: #cbd5e1;
+    --text-muted: #94a3b8;
     --text-white: #ffffff;
-    --keyword-bg: #2a2d33;
-    --keyword-active: #2342a755;
 
-    --hover-surface: #ffffff11;
-    --hover-strong: #ffffff22;
+    --hover-surface: #020617;
   }
 }
 @layer base {

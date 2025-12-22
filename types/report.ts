@@ -1,15 +1,22 @@
-import { DailyBriefing } from './ai';
+import { DailyBriefing } from './briefing';
 import { DailyStrategy } from './strategy';
-import { NewsArticle } from './news';
 
 export type DailyReport = {
-  date: string; 
-  keyword?: string;
-  englishKeyword?: string;
-
+  date: string;
+  generatedAt: string;
   briefing: DailyBriefing;
-  strategy?: DailyStrategy;
-
-  articles: NewsArticle[];
-  createdAt: string;
+  strategy: DailyStrategy;
 };
+
+export interface TranslatedNews {
+  url: string;
+  titleKo: string;
+  summaryKo: string;
+}
+
+export interface DailyIssue {
+  title: string;
+  description: string;
+  relatedUrls: string[];
+  tags: string[];
+}

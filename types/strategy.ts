@@ -1,32 +1,34 @@
-export type MarketImpact = {
-  kospi: string;
-  kosdaq: string;
-  comment: string;
-};
-
-export type JapanMarketImpact = {
-  nikkei: string;
-  topix: string;
-  comment: string;
-};
+export type SectorStance = 'positive' | 'neutral' | 'cautious';
 
 export type SectorStrategy = {
   name: string;
-  score: number;
-  strategy: string;
+  stance: SectorStance;
+  label: string;
+  reason: string;
+  extra?: {
+    type: 'etf' | 'strategy';
+    value: string;
+  };
+};
+
+export type MarketImpact = {
+  market: 'KR' | 'US' | 'JP' | 'CN';
+  stance: SectorStance;
+  comment: string;
 };
 
 export type EtfStrategy = {
-  name: string; 
+  symbol: string;
   region: 'US' | 'KR' | 'JP';
-  strategy: string;
+  comment: string;
 };
 
 export type DailyStrategy = {
-  marketImpact: {
-    korea: MarketImpact;
-    japan: JapanMarketImpact;
-  };
+  date: string;
+  summary: string;
+
   sectors: SectorStrategy[];
-  etfs: EtfStrategy[];
+
+  markets?: MarketImpact[];
+  etfs?: EtfStrategy[];
 };
