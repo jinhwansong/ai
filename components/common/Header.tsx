@@ -1,47 +1,94 @@
 'use client';
 
-import Link from 'next/link';
+import { Search, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+
+const navItems = [
+  { name: '시그널', active: true },
+  { name: '마켓', active: false },
+  { name: '섹터', active: false },
+  { name: '포트폴리오', active: false },
+];
 
 export default function Header() {
-  const menuItems = [
-    { label: '오늘의 시그널', href: '#signals' },
-    { label: '시장 현황', href: '#snapshot' },
-    { label: '맞춤 시그널', href: '#personalized' },
-    { label: '검색', href: '#search' },
-  ];
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-(--background)/80 backdrop-blur-sm border-b border-(--border)">
-      <div className="page-wrapper">
-        <div className="flex items-center justify-between h-14 px-5">
-          <Link href="/" className="text-xl font-semibold text-(--text-title)">
+    <header className="glass-header sticky top-0 z-50 w-full px-4 py-3 md:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        {/* Logo */}
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--primary) text-(--text-white) shadow-lg shadow-indigo-500/30">
+            <span className="text-sm font-bold italic">S</span>
+          </div>
+          <span className="hidden text-lg font-bold tracking-tight text-(--text-title) sm:block">
             오늘의 시그널
-          </Link>
+          </span>
+        </div>
 
-          <nav className="hidden md:flex space-x-6">
-            {menuItems.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => scrollToSection(item.href)}
-                className="text-sm text-(--text-body) hover:text-(--primary) transition-colors"
+        {/* Desktop Navigation & Search */}
+        <div className="flex flex-1 items-center justify-center gap-4">
+          <AnimatePresence mode="wait">
+            {!isSearchExpanded ? (
+              <motion.nav
+                key="nav"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="hidden items-center gap-1 md:flex"
               >
-                {item.label}
-              </button>
-            ))}
-          </nav>
+                {navItems.map((item) => (
+                  <button
+                    key={item.name}
+                    className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+                      item.active
+                        ? 'bg-(--primary-soft) text-(--primary-strong)'
+                        : 'text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)'
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </motion.nav>
+            ) : (
+              <motion.div
+                key="search"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex w-full max-w-md items-center gap-2 rounded-full bg-(--hover-surface) px-4 py-2 border border-(--border)"
+              >
+                <Search size={18} className="text-(--text-muted)" />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="관심 키워드나 섹터를 검색하세요"
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-(--text-muted) text-(--text-body)"
+                />
+                <button 
+                  onClick={() => setIsSearchExpanded(false)}
+                  className="text-(--text-muted) hover:text-(--text-body)"
+                >
+                  <X size={18} />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-          {/* 모바일 메뉴 버튼 (추후 구현 가능) */}
-          <button className="md:hidden text-(--text-body)">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          {!isSearchExpanded && (
+            <button 
+              onClick={() => setIsSearchExpanded(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"
+            >
+              <Search size={20} />
+            </button>
+          )}
+          <button className="flex h-10 w-10 items-center justify-center rounded-full text-(--text-muted) md:hidden">
+            <Menu size={24} />
           </button>
         </div>
       </div>

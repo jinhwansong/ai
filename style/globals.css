@@ -1,58 +1,75 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #f8fafc;
-  --foreground: #191919;
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f8fafc;
+    --bg-main: #f3f4f6;
+    --foreground: #0f172a;
+    --light-bg: #f9fafb;
+    --deep-navy: #0f172a;
 
-  --card-bg: #ffffff;
-  --border: #e2e8f0;
+    --card-bg: #ffffff;
+    --border: #f1f5f9;
 
-  --primary: #6366f1;
-  --primary-strong: #4f46e5;
-  --primary-soft: #e0e7ff;
+    --primary: #6366f1;
+    --primary-strong: #4f46e5;
+    --primary-soft: #eef2ff;
 
-  --text-title: #0f172a;
-  --text-body: #334155;
-  --text-muted: #64748b;
-  --text-white: #ffffff;
+    --text-title: #111827;
+    --text-body: #374151;
+    --text-muted: #6b7280;
+    --text-white: #ffffff;
 
-  --hover-surface: #f1f5f9;
+    --hover-surface: #f9fafb;
+
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #131314;
-    --foreground: #1e1f20;
+    --background: #0b0c12;
+    --bg-main: #020617;
+    --foreground: #f8fafc;
+    --light-bg: #111827;
+    --deep-navy: #070910;
 
     --card-bg: #1e1f20;
-    --border: #1e293b;
+    --border: #262626;
 
     --primary: #818cf8;
     --primary-strong: #6366f1;
     --primary-soft: #1e1b4b;
 
     --text-title: #f8fafc;
-    --text-body: #cbd5e1;
-    --text-muted: #94a3b8;
+    --text-body: #d1d5db;
+    --text-muted: #9ca3af;
     --text-white: #ffffff;
 
-    --hover-surface: #020617;
+    --hover-surface: #171717;
+
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 }
+
 @layer base {
   html,
   body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
-      sans-serif;
-    background: var(--background);
-    color: var(--foreground);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-body);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
   button {
     cursor: pointer;
     box-sizing: border-box;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   p {
@@ -60,30 +77,32 @@
     word-break: keep-all;
   }
 
-  button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  /* 카카오 T 스타일 카드 - 은은한 그림자와 큰 곡률 */
+  .kakao-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  em {
-    font-style: normal;
-    word-break: keep-all;
+  .kakao-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   }
 
-  a {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    word-break: keep-all;
-  }
-
-  /* 모바일 스크롤 개선 */
-  * {
-    -webkit-tap-highlight-color: transparent;
+  .glass-header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
   }
 }
 
-/* 페이지 기본 패딩 */
-.page-wrapper {
-  @apply max-w-3xl mx-auto;
+/* 유틸리티 클래스 */
+.text-gradient {
+  background: linear-gradient(to right, var(--primary), var(--primary-strong));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

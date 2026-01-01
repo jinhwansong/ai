@@ -1,18 +1,22 @@
 import { GlobalMacro } from './macro';
 
-export type BriefingIssue = {
+export interface TodayNews {
   title: string;
-  description: string;
-};
+  descriptionShort: string;
+  contentLong: string;
+  tags: string[];
+}
 
-export type DailyBriefing = {
-  id: string;
+export interface TodaySignal {
   date: string;
   publishTime: string;
-
   title: string;
-  summary: string;
+  summaryShort: string;
+  summaryLong: string;
+}
 
-  keyIssues: BriefingIssue[];
+export interface DailyBriefing {
+  signal: TodaySignal;
+  news: TodayNews[];
   globalMacro: GlobalMacro;
-};
+}

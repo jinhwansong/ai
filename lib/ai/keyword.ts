@@ -1,4 +1,4 @@
-import { buildKeywordPrompt } from "../prompt/gemini.keyword";
+import { buildKeywordPrompt } from "../prompts/keyword";
 import { runGeminiText } from "./gemini";
 
 export async function convertKeywordToEnglish(

@@ -212,3 +212,5 @@ src/
 > AI로 요약·해석해  
 > 한국 사용자 기준의 ‘오늘의 경제 흐름과 전략’을 제공하는  
 > 개인 투자 판단 보조용 경제 브리핑 서비스**
+
+curl -X POST http://localhost:3000/api/internal/generate-briefing -H "x-internal-secret: internal-api-secret-2025"

@@ -1,5 +1,10 @@
-import { DailyBriefing } from '@/types/briefing';
 import { Fetcher } from '@/util/fetcher';
 
-export const fetchBriefing = (id: string) =>
-  Fetcher<DailyBriefing>(`/api/briefing/${id}`);
+export const fetchBriefing = (keywords: string[]) =>
+  Fetcher(`/api/ai`, {
+    method: 'POST',
+    body: JSON.stringify({
+      modelType: 'gemini',
+      userKeywords: keywords,
+    }),
+  });

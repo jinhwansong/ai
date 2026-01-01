@@ -1,52 +1,61 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { useOnboardingStore } from '@/stores/useOnboardingStore';
-
-const DEFAULT_KEYWORDS = ['경제', '주식'];
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Button from '../common/Button';
+import { fetchBriefing } from '@/lib/api/briefing';
 
 export default function StepStart() {
-  const { keywords, setKeywords, completeOnboarding } = useOnboardingStore();
+  const { keywords, completeOnboarding } = useOnboardingStore();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (keywords.length === 0) {
-      setKeywords(DEFAULT_KEYWORDS);
-    }
-  }, [setKeywords, keywords.length]);
-
-  const handleStart = () => {
+  const handleFinish = async() => {
     completeOnboarding();
+    fetchBriefing(keywords);
+    router.push('/');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-8 text-center">
-      <Image
-        src="/onboarding4.png"
-        width={210}
-        height={210}
-        alt="온보딩"
-        className="mb-5"
-      />
-
-      <h1 className="text-3xl font-bold mb-4">
-        이제, 나만의 브리핑을 시작해볼까요
-      </h1>
-
-      <p className="text-gray-500 mb-10">
-        {keywords.length === 0
-          ? '선택하신 내용이 없어 기본 추천으로 구성했어요.'
-          : '선택하신 관심사 기준으로 브리핑을 준비했어요.'}
-      </p>
-
-      <Link
-        href="/"
-        onClick={handleStart}
-        className="w-full max-w-sm py-3  bg-(--primary) text-(--text-white)  font-semibold rounded-lg text-sm"
+    <div className="flex flex-col items-center justify-center gap-10 pt-10 text-center">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', damping: 15 }}
+        className="relative"
       >
-        시작하기
-      </Link>
+        <div className="absolute -inset-10 rounded-full bg-(--primary-soft) blur-3xl opacity-50" />
+        <Image
+          src="/onboarding4.png"
+          width={260}
+          height={260}
+          alt="완료"
+          className="relative drop-shadow-2xl"
+        />
+      </motion.div>
+
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold text-(--text-title) leading-tight">
+          준비가 완료되었습니다!
+        </h2>
+        <p className="text-(--text-muted) text-lg">
+          {keywords.length > 0 
+            ? `${keywords.join(', ')} 분야를 중심으로 최적의 분석 리포트를 준비했어요.`
+            : '지금 바로 실시간 시장 분석을 시작해보세요.'}
+        </p>
+      </div>
+
+      <Button
+        full
+        variant="onBoarding"
+        size="xl"
+        onClick={handleFinish}
+        className="mt-10 max-w-md"
+      >
+        분석 리포트 확인하기
+      </Button>
     </div>
   );
 }
+
