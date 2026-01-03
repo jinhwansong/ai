@@ -23,6 +23,8 @@ ${JSON.stringify(newsList, null, 2)}
 }
 
 ## 가이드라인:
+- 반드시 **총 5개**의 핵심 뉴스를 선별해서 제공해줘. (메인 대시보드 규격)
+- 모든 필드(title, descriptionShort, contentLong)는 반드시 **한국어**로 작성하거나 번역해서 제공해줘.
 - 핵심 이슈를 관통하는 태그를 생성해줘.
 - 시장에 미치는 영향도(impact)를 엄격하게 판정해줘.
 

@@ -6,7 +6,16 @@ export type MainBriefing = {
   briefingId: string;
 };
 
-type SectorStance = 'positive' | 'neutral' | 'cautious' | 'negative';
+export interface MainSignal {
+  focus: string;
+  description: string;
+  value: string;
+  change: string;
+  tags: string[];
+  updatedAt: string;
+}
+
+export type SectorStance = 'POSITIVE' | 'NEUTRAL' | 'WATCHING' | 'NEGATIVE';
 type SectorType = 'sector' | 'etf';
 
 export interface MainSectorStrategy {
@@ -27,11 +36,22 @@ export interface MainNewsItem {
   tags: string[];
   published_at: string;
   source: string;
+  impact: 'High' | 'Medium' | 'Low';
 }
 
 export interface MainNewsResponse {
   news: MainNewsItem[];
   date: string;
+}
+
+export type MarketStance = 'positive' | 'neutral' | 'cautious' | 'negative';
+
+export interface GlobalMacroItem {
+  region: string;
+  indexName: string;
+  value: string;
+  change: string;
+  status: MarketStance;
 }
 
 export interface MarketIndex {
@@ -87,8 +107,39 @@ export interface RecommendedPortfolio {
   aiConfidence: number;
 }
 
+export interface PortfolioPerformanceItem {
+  label: string;
+  value: string;
+  delta: string;
+}
+
+export interface PortfolioHoldingItem {
+  name: string;
+  ratio: string;
+  change: string;
+}
+
+export interface PortfolioData {
+  performance: PortfolioPerformanceItem[];
+  holdings: PortfolioHoldingItem[];
+  strategicSummary?: string;
+}
+
 export interface PortfolioResponse {
   portfolio: RecommendedPortfolio;
   lastUpdate: string;
   source: string;
 }
+
+export interface NewsItem {
+  title: string;
+  summary: string;
+  tags: string[];
+  published_at: string;
+  source: string;
+  impact: 'High' | 'Medium' | 'Low';
+};
+
+export interface NewsFeedProps {
+  news: NewsItem[];
+};

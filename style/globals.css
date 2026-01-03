@@ -21,6 +21,8 @@
     --text-white: #ffffff;
 
     --hover-surface: #f9fafb;
+--btn-text: #ffffff;
+--btn-bg-hover: #1e293b;
 
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
@@ -49,6 +51,8 @@
     --text-white: #ffffff;
 
     --hover-surface: #171717;
+--btn-bg-hover: #e5e7eb;
+--btn-text: #0f172a;
 
     --glass-bg: rgba(15, 23, 42, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
@@ -59,7 +63,8 @@
 @layer base {
   html,
   body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+      sans-serif;
     background: var(--bg-main);
     color: var(--text-body);
     line-height: 1.6;
@@ -80,7 +85,7 @@
   /* 카카오 T 스타일 카드 - 은은한 그림자와 큰 곡률 */
   .kakao-card {
     background: var(--card-bg);
-    border-radius: 24px;
+    border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--border);
     transition: transform 0.2s ease, box-shadow 0.2s ease;

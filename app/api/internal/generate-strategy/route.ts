@@ -11,10 +11,13 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 주요 섹터별 매크로 상황을 분석하여 전략 데이터 갱신
-    // 비로그인 기반이므로 대표 섹터 키워드들을 사용
-    const representativeKeywords = ['반도체', '배터리', 'AI', '인프라', '금리'];
-    const marketData = {}; // TODO: 실시간 매크로 지표 데이터 연동 시 보완
+    // 12개 전체 섹터에 대한 시장 상황을 분석하여 DB/Redis에 데이터 확보 (유저 개인화 대응)
+    const representativeKeywords = [
+      '국내증시', '미국증시', '금리/채권', '환율', 
+      '반도체/AI', '이차전지', '바이오', '빅테크', 
+      '부동산', '원자재', '가상자산', '소비재'
+    ];
+    const marketData = {};
 
     const sectorRes = await runGeminiJSON(
       buildSectorPrompt(representativeKeywords, marketData)

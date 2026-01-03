@@ -1,41 +1,86 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { fetchDailyNews } from '@/lib/news/fetchNews';
+import { fetchSearchNews } from '@/lib/news/fetchNews';
+
+const ONBOARDING_KEYWORDS = [
+  { name: '국내증시', query: 'Korea stock market KOSPI KOSDAQ' },
+  { name: '미국증시', query: 'US stock market Nasdaq S&P500' },
+  { name: '금리/채권', query: 'interest rates Fed treasury bonds' },
+  { name: '환율', query: 'forex USD KRW exchange rate' },
+  { name: '반도체/AI', query: 'semiconductor AI NVIDIA TSMC' },
+  { name: '이차전지', query: 'EV battery lithium-ion Tesla' },
+  { name: '바이오', query: 'biotech pharmaceutical healthcare' },
+  { name: '빅테크', query: 'Big Tech Apple Microsoft Google Meta' },
+  { name: '부동산', query: 'real estate housing market mortgage' },
+  { name: '원자재', query: 'commodities oil gold copper' },
+  { name: '가상자산', query: 'crypto Bitcoin Ethereum' },
+  { name: '소비재', query: 'consumer goods retail e-commerce' },
+];
 
 export async function GET(req: Request) {
-  // 공통 보안 사항: Cron Secret 검증
+  // ... (보안 로직 생략)
   const authHeader = req.headers.get('Authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const articles = await fetchDailyNews();
-    
+    const allArticles = [];
+
+    // 키워드별로 뉴스 수집 (영어 쿼리로 검색하여 데이터 확보)
+    for (const item of ONBOARDING_KEYWORDS) {
+      try {
+        console.log(`Collecting news for: ${item.name}...`);
+        const articles = await fetchSearchNews(item.query);
+        
+        // 각 기사에 수집된 키워드 태그 추가
+        const taggedArticles = articles.map(a => ({
+          ...a,
+          collected_tag: item.name
+        }));
+        
+        allArticles.push(...taggedArticles);
+      } catch (err) {
+        console.error(`Error collecting news for ${item.name}:`, err);
+      }
+    }
+
+    if (allArticles.length === 0) {
+      return NextResponse.json({ success: true, message: 'No news found' });
+    }
+
     // 뉴스 제목(title)이나 URL을 기준으로 중복 저장 방지 (Upsert)
-    const newsToUpsert = articles.map(article => ({
+    const newsToUpsert = allArticles.map((article) => ({
       title: article.title,
       description: article.description,
       url: article.url,
-      imageUrl: article.urlToImage,
-      publishedAt: article.publishedAt,
-      content: article.content
+      image_url: article.urlToImage,
+      published_at: article.published_at,
+      content: article.content,
     }));
+
+    // URL 중복 제거 (여러 키워드에 중복으로 걸릴 수 있음)
+    const uniqueNews = Array.from(new Map(newsToUpsert.map(item => [item.url, item])).values());
 
     const { error } = await supabase
       .from('raw_news')
-      .upsert(newsToUpsert, { onConflict: 'url' });
+      .upsert(uniqueNews, { onConflict: 'url' });
 
     if (error) throw error;
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'News collected and upserted successfully',
-      count: newsToUpsert.length 
+      count: uniqueNews.length,
+      keywords_processed: ONBOARDING_KEYWORDS.length
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     console.error('Collect News Error:', error);
-    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: errorMessage },
+      { status: 500 }
+    );
   }
 }

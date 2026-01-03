@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/redis/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
+import { MacroItem, NewsItem, SectorItem, PortfolioPerformanceItem, PortfolioHoldingItem } from '@/types/services';
 
 export async function GET(req: Request) {
   // 공통 보안 사항: Cron Secret 검증
@@ -11,12 +12,12 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 1. raw_news 테이블에서 최신 뉴스 가져오기
+    // 1. raw_news 테이블에서 최신 뉴스 가져오기 (충분한 풀 확보를 위해 50개)
     const { data: rawNews, error: newsError } = await supabase
       .from('raw_news')
       .select('*')
-      .order('publishedAt', { ascending: false })
-      .limit(10);
+      .order('published_at', { ascending: false })
+      .limit(50);
 
     if (newsError) throw newsError;
 
@@ -29,13 +30,18 @@ export async function GET(req: Request) {
     }
 
     // 3. 공통 서비스를 통한 AI 분석 수행
-    const defaultKeywords = ['경제', '산업', '주식'];
-    const marketData = {}; // TODO: 실시간 시장 데이터 연동 필요 시 보완
+    // 온보딩 12개 핵심 카테고리 전체를 대상으로 분석 수행
+    const allKeywords = [
+      '국내증시', '미국증시', '금리/채권', '환율', 
+      '반도체/AI', '이차전지', '바이오', '빅테크', 
+      '부동산', '원자재', '가상자산', '소비재'
+    ];
+    const marketData = {};
     const userPortfolio = {};
 
     const analysisResult = await performAIAnalysis({
       modelType: 'gemini',
-      userKeywords: defaultKeywords,
+      userKeywords: allKeywords,
       marketData,
       newsList: rawNews,
       userPortfolio,
@@ -46,16 +52,98 @@ export async function GET(req: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    // 4. Redis 저장 (dashboard:latest) - 메인 대시보드용 핵심 데이터
+     // 4. Redis 저장 (dashboard:latest) - 기존 호환성 유지
     await redis.set('dashboard:latest', JSON.stringify(finalData.main));
 
-    // 5. Supabase 저장 (briefing_history) - 상세 리포트 및 이력 저장용
-    const { error: saveError } = await supabase.from('briefing_history').insert({
-      data: finalData,
-      created_at: new Date().toISOString(),
-    });
+    // 5. Supabase 개별 테이블 저장 (메인 페이지 API 연동용)
+    const sectors = finalData.main.sectorSummary || [];
+    const topSector = sectors[0]; // 최상위 섹터 정보를 메인 시그널로 활용
 
-    if (saveError) throw saveError;
+    await Promise.all([
+      // A. 메인 시그널 저장
+      supabase.from('main_signals').insert({
+        focus: topSector?.focus || '전략적 시장 분석 완료',
+        description: topSector
+          ? `${topSector.name} 섹션에서 ${topSector.momentum} 수준의 모멘텀이 감지되었습니다. ${topSector.focus}`
+          : '현재 시장 상황을 기반으로 한 AI 분석 시그널입니다.',
+        value: topSector?.momentum === 'Strong' ? '92.4' : '78.5',
+        change: topSector?.signal === 'POSITIVE' ? '+2.1%' : '0.0%',
+        tags: topSector ? [topSector.name, topSector.momentum] : ['시장분석'],
+      }),
+
+      // B. 글로벌 매크로 지표 저장
+      supabase.from('market_indices').insert(
+        (finalData.main.macro || []).map((m: MacroItem) => ({
+          region: m.region,
+          index_name: m.indexName,
+          value: m.value,
+          change: m.change,
+          status: m.status.toLowerCase(),
+        }))
+      ),
+
+      //  섹터 전략 저장
+      supabase.from('sector_strategies').insert(
+        sectors.map(
+          (s: Pick<SectorItem, 'name' | 'signal' | 'momentum' | 'focus'>) => ({
+            date: new Date().toISOString().split('T')[0],
+            name: s.name,
+            stance: s.signal,
+            label: s.momentum,
+            reason: s.focus,
+            type: 'sector',
+            guide:
+              s.signal === 'POSITIVE'
+                ? '비중 확대 정책 유지'
+                : '중립적 관점 유지',
+          })
+        )
+      ),
+
+      //  가공 뉴스 저장
+      supabase.from('news_articles').upsert(
+        (finalData.main.newsHighlights || []).map(
+          (
+            n: Pick<
+              NewsItem,
+              'title' | 'descriptionShort' | 'tags' | 'impact' | 'contentLong'
+            >
+          ) => ({
+            title: n.title,
+            summary: n.descriptionShort,
+            content: n.contentLong,
+            tags: n.tags,
+            impact: n.impact,
+            published_at: new Date().toISOString(),
+          })
+        ),
+        { onConflict: 'title,published_at' }
+      ),
+
+      // E. 포트폴리오 성과 저장
+      supabase.from('portfolio_performance').insert(
+        finalData.main.portfolio.performance.map((p: PortfolioPerformanceItem) => ({
+          label: p.label,
+          value: p.value,
+          delta: p.delta,
+        }))
+      ),
+
+      // F. 포트폴리오 보유 비중 저장
+      supabase.from('portfolio_holdings').insert(
+        finalData.main.portfolio.holdings.map((h: PortfolioHoldingItem) => ({
+          name: h.name,
+          ratio: h.ratio,
+          change: h.change,
+        }))
+      ),
+
+      // G. 전체 이력 저장
+      supabase.from('briefing_history').insert({
+        data: finalData,
+        created_at: new Date().toISOString(),
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,

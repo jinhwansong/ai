@@ -6,7 +6,7 @@ export function fetchDailyNews(): Promise<NewsArticle[]> {
   return fetchNewsCore({
     endpoint: 'top-headlines',
     category: 'business',
-    sortBy: 'publishedAt',
+    sortBy: 'published_at',
     pageSize: 10,
   });
 }
@@ -16,7 +16,7 @@ export function fetchSearchNews(keyword: string): Promise<NewsArticle[]> {
   return fetchNewsCore({
     endpoint: 'everything',
     query: keyword,
-    sortBy: 'publishedAt',
+    sortBy: 'published_at',
     pageSize: 10,
   });
 }

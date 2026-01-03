@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding' | 'dark';
 
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -30,11 +30,14 @@ export default function Button({
   };
 
   const variants = {
-    primary: 'bg-(--primary) text-white hover:bg-(--primary-strong) shadow-lg shadow-indigo-500/20',
+    primary:
+      'bg-(--primary) text-white hover:bg-(--primary-strong) shadow-lg shadow-indigo-500/20',
     secondary:
       'bg-white text-(--text-body) border border-(--border) hover:bg-(--hover-surface)',
     ghost: 'bg-transparent text-(--text-body) hover:bg-(--hover-surface)',
-    onBoarding: 'bg-(--primary) text-white shadow-xl shadow-indigo-500/30 hover:bg-(--primary-strong) disabled:bg-(--border) disabled:text-(--text-muted) disabled:shadow-none',
+    dark: 'bg-(--foreground) text-(--btn-text) hover:bg-(--btn-bg-hover) ',
+    onBoarding:
+      'bg-(--primary) text-white shadow-xl shadow-indigo-500/30 hover:bg-(--primary-strong) disabled:bg-(--border) disabled:text-(--text-muted) disabled:shadow-none',
   };
 
   return (

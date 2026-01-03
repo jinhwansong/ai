@@ -24,10 +24,12 @@ ${JSON.stringify({ userPortfolio, marketContext }, null, 2)}
       "change": "최근 비중 변동 (ex: +2.4%)"
     }
   ],
-  "strategicSummary": "전략 포트폴리오 핵심 요약"
+  "strategicSummary": "전략 포트폴리오 핵심 요약 (반드시 2줄 정도로 요약해서 작성)"
 }
 
 ## 가이드라인:
+- 반드시 **총 5개**의 주요 보유 종목(Major Holdings)을 선별해서 제공해줘. (메인 대시보드 규격)
+- **strategicSummary**는 전체 시장 전략을 관통하는 핵심 통찰을 **반드시 2줄**로 요약하여 제공해줘.
 - Major Holdings 비중의 합이 100%에 근접하도록 구성해줘.
 - 오늘의 섹터 전략과 일관성 있는 자산 배분안을 제시해줘.
 

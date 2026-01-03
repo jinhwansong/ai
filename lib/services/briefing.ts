@@ -51,12 +51,14 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
       newsHighlights: newsRes.news.map((n) => ({
         title: n.title,
         descriptionShort: n.descriptionShort,
+        contentLong: n.contentLong,
         impact: n.impact,
         tags: n.tags,
       })),
       portfolio: {
         performance: portfolioRes.performance,
         holdings: portfolioRes.holdings,
+        strategicSummary: portfolioRes.strategicSummary,
       },
     },
     detail: {

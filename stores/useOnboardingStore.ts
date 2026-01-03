@@ -21,9 +21,12 @@ export const useOnboardingStore = create<OnboardingState>()(
       hasHydrated: false,
       _hydrate: () => set({ hasHydrated: true }),
       addKeyword: (k) =>
-        set((state) => ({
-          keywords: Array.from(new Set([...state.keywords, k])),
-        })),
+        set((state) => {
+          if (state.keywords.length >= 4) return state;
+          return {
+            keywords: Array.from(new Set([...state.keywords, k])),
+          };
+        }),
 
       removeKeyword: (k) =>
         set((state) => ({

@@ -22,7 +22,8 @@ ${JSON.stringify(data, null, 2)}
   ]
 }
 
-## 상태 판정 가이드 (카카오 T 스타일):
+## 가이드라인 (카카오 T 스타일):
+- 모든 필드(region, indexName)는 반드시 **한국어**로 작성해줘.
 - positive: 상승세 및 호재 중심
 - neutral: 변동성이 적고 대기세
 - cautious: 불확실성이나 지표 악화 조짐

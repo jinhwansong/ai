@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { performAIAnalysis, BriefingInquiry } from '@/lib/services/briefing';
-import { supabase } from '@/lib/supabase'; 
+import { supabase } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
   try {
-
     const body: BriefingInquiry = await req.json();
 
     // 1. 비어있다면, 백엔드 DB에서 최신 뉴스를 직접 가져옴
@@ -12,7 +11,7 @@ export async function POST(req: NextRequest) {
       const { data: latestNews } = await supabase
         .from('raw_news')
         .select('*')
-        .order('publishedAt', { ascending: false })
+        .order('published_at', { ascending: false })
         .limit(10);
 
       body.newsList = latestNews || [];
@@ -22,7 +21,6 @@ export async function POST(req: NextRequest) {
     if (!body.marketData) {
       body.marketData = {};
     }
-
 
     // 공통 서비스 호출을 통한 분석 수행
     const result = await performAIAnalysis(body);

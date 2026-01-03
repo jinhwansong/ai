@@ -7,18 +7,20 @@ export function getDailyBriefingMeta() {
   const now = toZonedTime(new Date(), TIMEZONE);
 
   const hour = Number(format(now, 'HH'));
-  let publishTime = '09:00';
-  if (hour >= 12 && hour < 18) publishTime = '12:00';
-  else if (hour >= 18 && hour < 21) publishTime = '18:00';
-  else if (hour >= 21) publishTime = '21:00';
-
-  const date = format(now, 'yyyy-MM-dd');
-  const compact = format(now, 'yyyyMMdd');
-  const timeKey = publishTime.replace(':', '');
-
+  let publishTime: '09:00 AM' | '12:00 PM' | '18:00 PM' | '21:00 PM';
+if (hour >= 21) {
+  publishTime = '21:00 PM';
+} else if (hour >= 18) {
+  publishTime = '18:00 PM';
+} else if (hour >= 12) {
+  publishTime = '12:00 PM';
+} else if (hour >= 9) {
+  publishTime = '09:00 AM';
+} else {
+  publishTime = '21:00 PM';
+}
   return {
-    id: `daily-${compact}-${timeKey}`,
-    date,
     publishTime,
   };
 }
+

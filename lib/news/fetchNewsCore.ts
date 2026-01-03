@@ -15,7 +15,11 @@ export async function fetchNewsCore(
 
   url.searchParams.set('language', params.language ?? 'en');
   url.searchParams.set('pageSize', String(params.pageSize ?? 10));
-  if (params.sortBy) url.searchParams.set('sortBy', params.sortBy);
+  
+  if (params.sortBy) {
+    const apiSortBy = params.sortBy === 'published_at' ? 'publishedAt' : params.sortBy;
+    url.searchParams.set('sortBy', apiSortBy);
+  }
 
   url.searchParams.set('apiKey', API_KEY);
 
@@ -28,5 +32,15 @@ export async function fetchNewsCore(
   }
 
   const data = await res.json();
-  return data.articles as NewsArticle[];
+  
+  interface RawNewsArticle extends Omit<NewsArticle, 'published_at'> {
+    publishedAt: string;
+  }
+
+  const articles = (data.articles || []).map((article: RawNewsArticle) => ({
+    ...article,
+    published_at: article.publishedAt,
+  }));
+
+  return articles as NewsArticle[];
 }

@@ -8,7 +8,7 @@ export interface NewsArticle {
   description?: string;
   url: string;
   urlToImage?: string;
-  publishedAt: string;
+  published_at: string;
   content?: string;
 }
 
@@ -18,8 +18,8 @@ export interface NormalizedNews {
   title: string;
   summary: string;
   url: string;
-  imageUrl?: string;
-  publishedAt: string;
+  image_url?: string;
+  published_at: string;
 
   language: 'en' | 'ko';
   tags?: string[];
@@ -41,6 +41,6 @@ export interface FetchNewsParams {
   query?: string;
   category?: 'business' | 'technology' | 'science';
   language?: 'en' | 'ko';
-  sortBy?: 'publishedAt' | 'relevancy';
+  sortBy?: 'published_at' | 'relevancy';
   pageSize?: number;
 }

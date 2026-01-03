@@ -3,12 +3,21 @@ import {
   fetchMainBriefing,
   fetchMainMacro,
   fetchMainSector,
-  fetchMainKeywords,
+  fetchMainNews,
   fetchMainMarketIndices,
   fetchMainEconomicIndicators,
   fetchMainPortfolio,
+  fetchMainSignal,
 } from '@/lib/api/main';
 import { withQueryDefaults } from './withQueryDefaults';
+
+export const useMainSignal = () =>
+  useQuery(
+    withQueryDefaults({
+      queryKey: ['main-signal'],
+      queryFn: fetchMainSignal,
+    })
+  );
 
 export const useMainBriefing = () =>
   useQuery(
@@ -34,11 +43,11 @@ export const useMainSector = () =>
     })
   );
 
-export const useMainKeywords = () =>
+export const useMainNews = () =>
   useQuery(
     withQueryDefaults({
-      queryKey: ['main-keywords'],
-      queryFn: fetchMainKeywords,
+      queryKey: ['main-news'],
+      queryFn: fetchMainNews,
     })
   );
 

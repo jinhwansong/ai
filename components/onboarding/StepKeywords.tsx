@@ -43,7 +43,7 @@ export default function StepKeywords() {
       addKeyword(id);
     }
   };
-
+  console.log(keywords);
   return (
     <div className="flex flex-col gap-8 ">
       <div className="space-y-2">
@@ -53,22 +53,25 @@ export default function StepKeywords() {
           관심이 있으신가요?
         </h2>
         <p className="text-(--text-muted) text-sm">
-          관심 있는 섹터를 모두 선택해 주세요.
+          관심 있는 섹터를 선택해 주세요. (최대 4개)
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3  gap-4">
         {SECTOR_OPTIONS.map((sector) => {
           const isSelected = keywords.includes(sector.name);
+          const isMaxReached = keywords.length >= 4;
           const Icon = sector.icon;
 
           return (
             <motion.button
               key={sector.name}
-              whileTap={{ scale: 0.98 }}
+              whileTap={!isSelected && isMaxReached ? {} : { scale: 0.98 }}
               onClick={() => toggle(sector.name)}
+              disabled={!isSelected && isMaxReached}
               animate={{
                 borderColor: isSelected ? 'var(--primary)' : 'var(--border)',
+                opacity: !isSelected && isMaxReached ? 0.5 : 1,
               }}
               className={`relative flex items-center gap-4 rounded-lg p-6 text-left bg-(--card-bg) border border-(--border) transition-all duration-300 ${
                 isSelected

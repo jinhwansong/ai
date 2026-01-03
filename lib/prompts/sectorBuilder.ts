@@ -16,13 +16,18 @@ ${JSON.stringify(marketData, null, 2)}
   "sectors": [
     {
       "name": "섹터명",
-      "signal": "BUY | HOLD | SELL",
+      "signal": "POSITIVE | WATCHING | NEUTRAL | NEGATIVE",
       "focus": "핵심 요약 (한 줄)",
       "momentum": "Strong | Moderate | Building",
       "descriptionLong": "섹터별 상세 투자 전략 리포트 (Supabase 저장용)"
     }
   ]
 }
+
+## 가이드라인:
+- **전달된 모든 키워드**에 대해 각각의 섹터 전략을 생성해줘. (유저 개인화 지원을 위해 전체 풀 확보 필요)
+- 모든 필드(name, focus, descriptionLong)는 반드시 **한국어**로 작성해줘.
+- signal은 반드시 POSITIVE, WATCHING, NEUTRAL, NEGATIVE 중 하나를 선택해줘.
 
 반드시 JSON 형식으로만 응답해줘.
 `;
