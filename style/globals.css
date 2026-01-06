@@ -21,8 +21,8 @@
     --text-white: #ffffff;
 
     --hover-surface: #f9fafb;
---btn-text: #ffffff;
---btn-bg-hover: #1e293b;
+    --btn-text: #ffffff;
+    --btn-bg-hover: #1e293b;
 
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);

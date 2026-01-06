@@ -1,26 +1,22 @@
 'use client';
 
 import { MainSectorStrategy } from '@/types/main';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
 
 export default function SectorStrategy({ items }: MainSectorStrategy) {
   return (
     <section className="space-y-4">
-      <div className="flex items-end justify-between px-2">
-        <div className="flex gap-4">
-          <h3 className="text-xl font-bold text-(--text-title)">
-            오늘의 섹터 전략
-          </h3>
-          <p className="text-xs text-(--text-muted) mt-2">
-            AI가 감지한 섹터별 모멘텀 방향성 요약입니다.
-          </p>
-        </div>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-(--text-muted)">
-          Sector Focus
-        </span>
+      <div className="flex gap-2 items-center justify-between">
+        <h3 className="text-xl font-bold text-(--text-title)">
+          오늘의 섹터 전략
+        </h3>
+        <p className="text-[10px] text-(--text-muted) ">
+          AI가 감지한 섹터별 모멘텀 방향성 요약입니다.
+        </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 ">
         {items?.map((sector, index) => (
           <motion.article
             key={sector.name}
@@ -30,15 +26,18 @@ export default function SectorStrategy({ items }: MainSectorStrategy) {
             className="kakao-card p-6"
           >
             <div className="flex items-start justify-between">
-              <span
-                className={`rounded-md px-2.5 py-1 text-[10px] font-black tracking-tighter ${
-                  sector.stance === 'POSITIVE'
-                    ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'
-                    : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                }`}
-              >
-                {sector.stance}
-              </span>
+              <h4 className="text-base font-bold text-(--text-title) flex items-center gap-2">
+                <span
+                  className={clsx(
+                    'h-2 w-2 rounded-full block',
+                    sector.stance === 'POSITIVE' && 'bg-rose-500',
+                    sector.stance === 'NEUTRAL' && 'bg-emerald-500',
+                    sector.stance === 'NEGATIVE' && 'bg-slate-500',
+                    sector.stance === 'WATCHING' && 'bg-amber-500'
+                  )}
+                />
+                {sector.name}
+              </h4>
               <div className="flex flex-col items-end">
                 <span className="text-[9px] font-bold text-(--text-muted)">
                   Momentum
@@ -49,30 +48,16 @@ export default function SectorStrategy({ items }: MainSectorStrategy) {
               </div>
             </div>
 
-            <h4 className="mt-3 text-lg font-bold text-(--text-title)">
-              {sector.name}
-            </h4>
-            <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500 line-clamp-2">
+            <p className="mt-2 text-xs font-medium leading-relaxed text-(--text-muted) line-clamp-2">
               {sector.reason}
             </p>
-            <div className="mt-6 h-1.5 w-full overflow-hidden rounded-full bg-(--light-bg)">
-              <motion.div
-                className={`h-full ${
-                  sector.label === 'Strong' ? 'bg-rose-500' : 'bg-amber-500'
-                }`}
-                initial={{ width: 0 }}
-                animate={{
-                  width: sector.label === 'Strong' ? '85%' : '60%',
-                }}
-                transition={{ duration: 1, delay: 0.5 }}
-              />
-            </div>
-            <div className="mt-4 rounded-lg bg-(--light-bg) p-3 dark:bg-slate-800/40">
+
+            <div className="mt-2 rounded-lg bg-(--light-bg) p-3 ">
               <div className="flex items-center gap-2">
-                <div className="h-1 w-1 rounded-full bg-(--primary)"></div>
+                <div className="h-1 w-1 rounded-full bg-(--primary)" />
                 <p className="text-[11px] font-bold text-(--text-body) leading-tight">
                   <span className="mr-1 text-(--primary) opacity-80">
-                    ACTION:
+                    ACTION :
                   </span>
                   {sector.guide}
                 </p>

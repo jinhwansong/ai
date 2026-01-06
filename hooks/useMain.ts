@@ -4,9 +4,6 @@ import {
   fetchMainMacro,
   fetchMainSector,
   fetchMainNews,
-  fetchMainMarketIndices,
-  fetchMainEconomicIndicators,
-  fetchMainPortfolio,
   fetchMainSignal,
 } from '@/lib/api/main';
 import { withQueryDefaults } from './withQueryDefaults';
@@ -48,29 +45,5 @@ export const useMainNews = () =>
     withQueryDefaults({
       queryKey: ['main-news'],
       queryFn: fetchMainNews,
-    })
-  );
-
-export const useMainMarketIndices = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-market-indices'],
-      queryFn: fetchMainMarketIndices,
-    })
-  );
-
-export const useMainEconomicIndicators = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-economic-indicators'],
-      queryFn: fetchMainEconomicIndicators,
-    })
-  );
-
-export const useMainPortfolio = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-portfolio'],
-      queryFn: fetchMainPortfolio,
     })
   );

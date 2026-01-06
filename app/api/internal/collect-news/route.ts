@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { fetchSearchNews } from '@/lib/news/fetchNews';
+import { verifyCronAuth } from '@/util/verifyCronAuth';
 
-const ONBOARDING_KEYWORDS = [
+const NEWS_CATEGORIES = [
   { name: '국내증시', query: 'Korea stock market KOSPI KOSDAQ' },
   { name: '미국증시', query: 'US stock market Nasdaq S&P500' },
   { name: '금리/채권', query: 'interest rates Fed treasury bonds' },
@@ -17,17 +18,12 @@ const ONBOARDING_KEYWORDS = [
   { name: '소비재', query: 'consumer goods retail e-commerce' },
 ];
 
-export async function GET(req: Request) {
-  const authHeader = req.headers.get('Authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = verifyCronAuth(async () => {
   try {
     const allArticles = [];
 
     // 키워드별로 뉴스 수집 (영어 쿼리로 검색하여 데이터 확보)
-    for (const item of ONBOARDING_KEYWORDS) {
+    for (const item of NEWS_CATEGORIES) {
       try {
         console.log(`Collecting news for: ${item.name}...`);
         const articles = await fetchSearchNews(item.query);
@@ -71,7 +67,7 @@ export async function GET(req: Request) {
       success: true,
       message: 'News collected and upserted successfully',
       count: uniqueNews.length,
-      keywords_processed: ONBOARDING_KEYWORDS.length
+      categories_processed: NEWS_CATEGORIES.length
     });
   } catch (error: unknown) {
     const errorMessage =
@@ -82,4 +78,4 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
-}
+});

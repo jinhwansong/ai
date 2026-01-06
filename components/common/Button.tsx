@@ -1,9 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding' | 'dark';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding' | 'dark' | 'link';
 
-type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl' | 'xs';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -23,6 +23,7 @@ export default function Button({
     'inline-flex items-center justify-center transition-all duration-200 font-bold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed';
 
   const sizes = {
+    xs: 'text-xs',
     sm: 'px-3 py-2 text-sm rounded-lg',
     md: 'px-4 py-3 text-sm rounded-xl',
     lg: 'px-5 py-4 text-lg rounded-xl',
@@ -36,6 +37,7 @@ export default function Button({
       'bg-white text-(--text-body) border border-(--border) hover:bg-(--hover-surface)',
     ghost: 'bg-transparent text-(--text-body) hover:bg-(--hover-surface)',
     dark: 'bg-(--foreground) text-(--btn-text) hover:bg-(--btn-bg-hover) ',
+    link: 'font-bold text-(--primary-strong) hover:underline',
     onBoarding:
       'bg-(--primary) text-white shadow-xl shadow-indigo-500/30 hover:bg-(--primary-strong) disabled:bg-(--border) disabled:text-(--text-muted) disabled:shadow-none',
   };

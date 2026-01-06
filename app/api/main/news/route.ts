@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     const dashboard = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
-    const news = (dashboard.newsHighlights || []).slice(0, 6); // 6개로 고정
+    const news = (dashboard.newsHighlights || []).slice(0, 4); 
 
     return NextResponse.json({
       news: news.map((n: NewsItem) => ({

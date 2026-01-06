@@ -4,23 +4,23 @@ import { NewsFeedProps } from '@/types/main';
 import { getDailyBriefingMeta } from '@/util/times';
 import { motion } from 'framer-motion';
 import { Clock, ExternalLink } from 'lucide-react';
+import Button from '../common/Button';
 
 export default function NewsFeed({ news }: NewsFeedProps) {
-  // 개선 포인트: 본문은 text-slate-500 정도로 대비를 주어 가독성을 높이고 카드 내 위계 정리
   return (
     <section className="space-y-4">
       <div className="flex items-end justify-between px-2">
         <div className="flex gap-2 items-center">
           <h3 className="text-xl font-bold text-(--text-title)">
-            주요 마켓 브리핑
+            오늘의 핵심 뉴스
           </h3>
           <span className="text-[10px] text-(--text-muted)">
             Generated at {getDailyBriefingMeta().publishTime}
           </span>
         </div>
-        <button className="text-xs font-bold text-(--primary-strong) hover:underline">
+        <Button variant="link" size="xs">
           전체보기
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-4">
@@ -43,11 +43,11 @@ export default function NewsFeed({ news }: NewsFeedProps) {
                       : 'bg-emerald-500'
                   }`}
                 />
-                <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-(--text-muted)">
                   <Clock size={12} />
                   {getDailyBriefingMeta().publishTime}
                 </div>
-                <span className="rounded-md bg-slate-50 px-1.5 py-0.5 text-[9px] font-black text-slate-400 dark:bg-slate-800">
+                <span className="rounded-md bg-(--background) px-1.5 py-0.5 text-[9px] font-black text-(--text-muted) ">
                   IMPACT: {item.impact}
                 </span>
               </div>
@@ -55,12 +55,22 @@ export default function NewsFeed({ news }: NewsFeedProps) {
               <h4 className="text-base font-bold text-(--text-title) group-hover:text-(--primary-strong) transition-colors line-clamp-1">
                 {item.title}
               </h4>
-              <p className="line-clamp-1 text-sm font-medium text-slate-500">
+              <p className="line-clamp-1 text-sm font-medium text-(--text-muted)">
                 {item.summary}
               </p>
+              <div className="flex gap-2 mt-2">
+                {item.tags.map((items) => (
+                  <span
+                    key={items}
+                    className="rounded-sm bg-(--light-bg) px-3 py-1.5 text-xs  text-(--text-body) "
+                  >
+                    #{items}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-(--light-bg) text-slate-400 transition-all group-hover:bg-(--primary-soft) group-hover:text-(--primary-strong)">
+            <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-(--light-bg) text-(--text-muted)  transition-all group-hover:bg-(--primary-soft) group-hover:text-(--primary-strong)">
               <ExternalLink size={18} />
             </button>
           </motion.article>

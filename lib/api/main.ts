@@ -1,5 +1,5 @@
 import { Fetcher } from '@/util/fetcher';
-import { MainBriefing, MainSectorStrategy, MainNewsResponse, MarketIndicesResponse, EconomicIndicatorsResponse, PortfolioResponse, MainSignal } from '@/types/main';
+import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal } from '@/types/main';
 import { MainMacroResponse } from '@/types/macro';
 
 export const fetchMainSignal = () =>
@@ -17,11 +17,4 @@ export const fetchMainSector = () =>
 export const fetchMainNews = () =>
   Fetcher<MainNewsResponse>('/api/main/news');
 
-export const fetchMainMarketIndices = () =>
-  Fetcher<MarketIndicesResponse>('/api/main/market-indices');
 
-export const fetchMainEconomicIndicators = () =>
-  Fetcher<EconomicIndicatorsResponse>('/api/main/economic-indicators');
-
-export const fetchMainPortfolio = () =>
-  Fetcher<PortfolioResponse>('/api/main/portfolio');

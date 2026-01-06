@@ -2,15 +2,11 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/redis/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
-import { MacroItem, NewsItem, SectorItem, PortfolioPerformanceItem, PortfolioHoldingItem } from '@/types/services';
+import { MacroItem, NewsItem, SectorItem } from '@/types/services';
+import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
+import { verifyCronAuth } from '@/util/verifyCronAuth';
 
-export async function GET(req: Request) {
-  // 공통 보안 사항: Cron Secret 검증
-  const authHeader = req.headers.get('Authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const GET = verifyCronAuth(async () => {
   try {
     // 1. raw_news 테이블에서 최신 뉴스 가져오기 (충분한 풀 확보를 위해 50개)
     const { data: rawNews, error: newsError } = await supabase
@@ -28,20 +24,15 @@ export async function GET(req: Request) {
         message: '데이터 부족 (최소 3개 이상의 뉴스가 필요합니다)',
       });
     }
-
-    // 3. 공통 서비스를 통한 AI 분석 수행
-    // 온보딩 12개 핵심 카테고리 전체를 대상으로 분석 수행
-    const allKeywords = [
-      '국내증시', '미국증시', '금리/채권', '환율', 
-      '반도체/AI', '이차전지', '바이오', '빅테크', 
-      '부동산', '원자재', '가상자산', '소비재'
-    ];
-    const marketData = {};
+    
+    const { fetchGlobalIndices } = await import('@/lib/api/yahooFinance');
+    const globalIndices = await fetchGlobalIndices();
+    const marketData = { globalIndices };
     const userPortfolio = {};
 
     const analysisResult = await performAIAnalysis({
       modelType: 'gemini',
-      userKeywords: allKeywords,
+      userKeywords: ANALYSIS_KEYWORDS,
       marketData,
       newsList: rawNews,
       userPortfolio,
@@ -79,6 +70,7 @@ export async function GET(req: Request) {
           value: m.value,
           change: m.change,
           status: m.status.toLowerCase(),
+          ai_analysis: m.aiAnalysis,
         }))
       ),
 
@@ -106,36 +98,19 @@ export async function GET(req: Request) {
           (
             n: Pick<
               NewsItem,
-              'title' | 'descriptionShort' | 'tags' | 'impact' | 'contentLong'
+              'title' | 'descriptionShort' | 'tags' | 'relatedSectors' | 'impact' | 'contentLong'
             >
           ) => ({
             title: n.title,
             summary: n.descriptionShort,
             content: n.contentLong,
             tags: n.tags,
+            related_sectors: n.relatedSectors,
             impact: n.impact,
             published_at: new Date().toISOString(),
           })
         ),
         { onConflict: 'title,published_at' }
-      ),
-
-      // E. 포트폴리오 성과 저장
-      supabase.from('portfolio_performance').insert(
-        finalData.main.portfolio.performance.map((p: PortfolioPerformanceItem) => ({
-          label: p.label,
-          value: p.value,
-          delta: p.delta,
-        }))
-      ),
-
-      // F. 포트폴리오 보유 비중 저장
-      supabase.from('portfolio_holdings').insert(
-        finalData.main.portfolio.holdings.map((h: PortfolioHoldingItem) => ({
-          name: h.name,
-          ratio: h.ratio,
-          change: h.change,
-        }))
       ),
 
       // G. 전체 이력 저장
@@ -158,4 +133,4 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
-}
+});

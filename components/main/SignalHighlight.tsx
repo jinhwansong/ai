@@ -34,16 +34,16 @@ export default function SignalHighlight({
             {updatedAt && (
               <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
                 <Clock size={12} />
-                {getDailyBriefingMeta().publishTime} 브리핑
+                {getDailyBriefingMeta().publishTime}
               </div>
             )}
           </div>
 
-          <h2 className="text-2xl font-bold leading-tight text-(--text-title) md:text-4xl lg:text-5xl">
+          <h2 className="line-clamp-1 text-2xl font-bold leading-tight text-(--text-title) md:text-4xl">
             {focus}
           </h2>
 
-          <p className="max-w-2xl text-sm leading-relaxed text-(--text-muted) md:text-base">
+          <p className="text-sm leading-relaxed text-(--text-muted) md:text-base line-clamp-2">
             {description}
           </p>
           <p className="text-xs text-(--text-muted) italic opacity-75">

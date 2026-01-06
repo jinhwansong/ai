@@ -11,6 +11,7 @@ export type GlobalMacroItem = {
   value: string;
   change: string;
   status: MacroStatus;
+  aiAnalysis: string;
 };
 
 type GlobalMacroProps = {
@@ -44,44 +45,64 @@ export default function GlobalMacro({ data }: GlobalMacroProps) {
   return (
     <section className="space-y-4">
       <div className="flex items-end justify-between px-2">
-        <h3 className="text-xl font-bold text-(--text-title)">글로벌 매크로</h3>
+        <h3 className="text-xl font-bold text-(--text-title)">
+          글로벌 시장 요약
+        </h3>
         <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.2em] text-(--text-muted)">
           <Globe size={12} />
           <span>Global Markets</span>
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {data.map((item, index) => {
           const config = statusConfig[item.status];
           const StatusIcon = config.icon;
 
           return (
             <motion.article
-              key={item.region}
+              key={item.indexName}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="kakao-card group flex items-center justify-between p-4"
+              className="kakao-card group flex flex-col p-5 hover:shadow-lg transition-shadow border border-slate-100 dark:border-slate-800"
             >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-(--text-muted) uppercase tracking-tighter">
-                    {item.region}
-                  </span>
-                  <div className={`flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-black ${config.color}`}>
-                    <StatusIcon size={10} strokeWidth={3} />
-                    <span>{config.label}</span>
-                  </div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-black text-(--text-muted) uppercase tracking-wider">
+                  {item.region}
+                </span>
+                <div
+                  className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black ${config.color}`}
+                >
+                  <StatusIcon size={10} strokeWidth={3} />
+                  <span>{config.label}</span>
                 </div>
-                <h4 className="text-sm font-bold text-(--text-title)">{item.indexName}</h4>
+              </div>
+
+              <div className="mb-2">
+                <h4 className="text-sm font-bold text-(--text-title) mb-1">
+                  {item.indexName}
+                </h4>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-lg font-black tracking-tight text-(--text-title)">{item.value}</span>
-                  <span className={`text-[11px] font-bold ${item.change.startsWith('+') ? 'text-rose-500' : 'text-blue-500'}`}>
+                  <span className="text-2xl font-black tracking-tight text-(--text-title)">
+                    {item.value}
+                  </span>
+                  <span
+                    className={`text-xs font-bold ${
+                      item.change.startsWith('+')
+                        ? 'text-rose-500'
+                        : 'text-blue-500'
+                    }`}
+                  >
                     {item.change}
                   </span>
                 </div>
               </div>
+
+              <p className="text-xs leading-relaxed text-(--text-muted) font-medium">
+                <span className="text-(--primary) font-bold mr-1">AI</span>
+                {item.aiAnalysis}
+              </p>
             </motion.article>
           );
         })}
