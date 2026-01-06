@@ -18,7 +18,6 @@ const ONBOARDING_KEYWORDS = [
 ];
 
 export async function GET(req: Request) {
-  // ... (보안 로직 생략)
   const authHeader = req.headers.get('Authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
