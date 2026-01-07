@@ -4,11 +4,11 @@ import { Search, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
-const navItems = [
-  { name: '시그널', active: true },
-  { name: '마켓', active: false },
-  { name: '섹터', active: false },
-  { name: '포트폴리오', active: false },
+const navItems: { name: string; target: string }[] = [
+  { name: '시그널', target: 'section-signal' },
+  { name: '글로벌 시장', target: 'section-macro' },
+  { name: '뉴스 & 섹터', target: 'section-news' },
+  { name: '리포트', target: 'section-observation' },
 ];
 
 export default function Header() {
@@ -41,11 +41,13 @@ export default function Header() {
                 {navItems.map((item) => (
                   <button
                     key={item.name}
-                    className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
-                      item.active
-                        ? 'bg-(--primary-soft) text-(--primary-strong)'
-                        : 'text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)'
-                    }`}
+                    onClick={() => {
+                      const el = document.getElementById(item.target);
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                    className="rounded-full px-5 py-2 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
                   >
                     {item.name}
                   </button>

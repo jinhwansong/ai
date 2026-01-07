@@ -3,18 +3,29 @@
 import { MainSectorStrategy } from '@/types/main';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { Compass } from 'lucide-react';
+import SectionHeader from '@/components/common/SectionHeader';
+import { useMainSector } from '@/hooks/useMain';
+import SectorStrategySkeleton from '@/components/skeleton/SectorStrategySkeleton';
 
-export default function SectorStrategy({ items }: MainSectorStrategy) {
+export default function SectorStrategy() {
+  const { data, isLoading } = useMainSector();
+  const items = (data?.items || []) as MainSectorStrategy['items'];
+
+  if (isLoading) return <SectorStrategySkeleton />;
   return (
-    <section className="space-y-4">
-      <div className="flex gap-2 items-center justify-between">
-        <h3 className="text-xl font-bold text-(--text-title)">
-          오늘의 섹터 전략
-        </h3>
-        <p className="text-[10px] text-(--text-muted) ">
-          AI가 감지한 섹터별 모멘텀 방향성 요약입니다.
-        </p>
-      </div>
+    <section className="space-y-6">
+      <SectionHeader
+        icon={
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-lg shadow-emerald-500/20">
+            <Compass className="h-5 w-5 text-white" />
+          </div>
+        }
+        title="오늘의 섹터 전략"
+        subtitle="AI 감지 모멘텀 요약"
+        className="px-0"
+        tooltip="상위 3개 섹터의 모멘텀·스탠스·가이드를 한눈에 보여줍니다."
+      />
 
       <div className="grid gap-3 ">
         {items?.map((sector, index) => (

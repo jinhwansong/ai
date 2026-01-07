@@ -1,16 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/internal/collect-news",
-      "schedule": "0 0,3,9,12 * * *"
-    },
-    {
-      "path": "/api/internal/generate-briefing",
-      "schedule": "5 0,9 * * *"
-    },
-    {
-      "path": "/api/internal/generate-strategy",
-      "schedule": "10 0,9 * * *"
+      "path": "/api/internal/run-pipeline",
+      "schedule": "0 9,12,18 * * *"
     }
   ]
 }

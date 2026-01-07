@@ -5,6 +5,8 @@ import {
   fetchMainSector,
   fetchMainNews,
   fetchMainSignal,
+  fetchMainObservation,
+  fetchMainInsight,
 } from '@/lib/api/main';
 import { withQueryDefaults } from './withQueryDefaults';
 
@@ -45,5 +47,21 @@ export const useMainNews = () =>
     withQueryDefaults({
       queryKey: ['main-news'],
       queryFn: fetchMainNews,
+    })
+  );
+
+export const useMainObservation = () =>
+  useQuery(
+    withQueryDefaults({
+      queryKey: ['main-observation'],
+      queryFn: fetchMainObservation,
+    })
+  );
+
+export const useMainInsight = () =>
+  useQuery(
+    withQueryDefaults({
+      queryKey: ['main-insight'],
+      queryFn: fetchMainInsight,
     })
   );

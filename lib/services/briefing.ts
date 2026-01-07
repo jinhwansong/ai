@@ -3,12 +3,16 @@ import { runGeminiJSON } from '@/lib/ai/gemini';
 import { buildMacroPrompt } from '@/lib/prompts/macroBuilder';
 import { buildSectorPrompt } from '@/lib/prompts/sectorBuilder';
 import { buildNewsPrompt } from '@/lib/prompts/newsBuilder';
-import { buildPortfolioPrompt } from '@/lib/prompts/portfolioBuilder';
+import { buildMarketImpactPrompt } from '@/lib/prompts/impactBuilder';
+import { buildObservationPrompt } from '@/lib/prompts/observationBuilder';
+import { buildInsightPrompt } from '@/lib/prompts/insightBuilder';
 import {
   MacroResponse,
   NewsResponse,
-  PortfolioResponse,
   SectorResponse,
+  MarketImpactResponse,
+  ObservationResponse,
+  InsightResponse,
 } from '@/types/services';
 
 // 공통 인터페이스 정의
@@ -26,22 +30,35 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
     userKeywords,
     marketData,
     newsList,
-    userPortfolio,
   } = inquiry;
   const runAI = modelType === 'gpt' ? runGPTJSON : runGeminiJSON;
 
   // 병렬 호출
-  const [macroRes, sectorRes, newsRes, portfolioRes] = (await Promise.all([
+  const [macroRes, sectorRes, newsRes, impactRes, observationRes, insightRes] = (await Promise.all([
     runAI(buildMacroPrompt(marketData)),
     runAI(buildSectorPrompt(userKeywords, marketData)),
     runAI(buildNewsPrompt(newsList)),
-    runAI(buildPortfolioPrompt(userPortfolio, marketData)),
-  ])) as [MacroResponse, SectorResponse, NewsResponse, PortfolioResponse];
+    runAI(buildMarketImpactPrompt(marketData, newsList)),
+    runAI(buildObservationPrompt(marketData, newsList)),
+    runAI(buildInsightPrompt(marketData, newsList)),
+  ])) as [MacroResponse, SectorResponse, NewsResponse, MarketImpactResponse, ObservationResponse, InsightResponse];
 
   // 데이터 취합 로직
   return {
     main: {
       macro: macroRes.macro,
+      signal: {
+        focus: impactRes.focus,
+        description: impactRes.description,
+        value: impactRes.score.toString(),
+        change: impactRes.direction,
+        impactZones: impactRes.zones,
+        tags: impactRes.tags,
+      },
+      observations: observationRes.observations,
+      insight: {
+        summary: insightRes.summary,
+      },
       sectorSummary: sectorRes.sectors.map((s) => ({
         name: s.name,
         signal: s.signal,
@@ -54,12 +71,9 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
         contentLong: n.contentLong,
         impact: n.impact,
         tags: n.tags,
+        relatedSectors: n.relatedSectors,
+        time: n.time,
       })),
-      portfolio: {
-        performance: portfolioRes.performance,
-        holdings: portfolioRes.holdings,
-        strategicSummary: portfolioRes.strategicSummary,
-      },
     },
     detail: {
       sectorDetails: sectorRes.sectors.map((s) => ({

@@ -1,27 +1,37 @@
 'use client';
 
-import { NewsFeedProps } from '@/types/main';
 import { getDailyBriefingMeta } from '@/util/times';
 import { motion } from 'framer-motion';
-import { Clock, ExternalLink } from 'lucide-react';
+import { Clock, Newspaper } from 'lucide-react';
 import Button from '../common/Button';
+import SectionHeader from '@/components/common/SectionHeader';
+import Tags from '../common/Tags';
+import { useMainNews } from '@/hooks/useMain';
+import NewsFeedSkeleton from '@/components/skeleton/NewsFeedSkeleton';
 
-export default function NewsFeed({ news }: NewsFeedProps) {
+export default function NewsFeed() {
+  const { data, isLoading } = useMainNews();
+  const news = data?.news || [];
+
+  if (isLoading) return <NewsFeedSkeleton />;
   return (
-    <section className="space-y-4">
-      <div className="flex items-end justify-between px-2">
-        <div className="flex gap-2 items-center">
-          <h3 className="text-xl font-bold text-(--text-title)">
-            오늘의 핵심 뉴스
-          </h3>
-          <span className="text-[10px] text-(--text-muted)">
-            Generated at {getDailyBriefingMeta().publishTime}
-          </span>
-        </div>
-        <Button variant="link" size="xs">
-          전체보기
-        </Button>
-      </div>
+    <section className="space-y-6">
+      <SectionHeader
+        icon={
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 shadow-lg shadow-rose-500/20">
+            <Newspaper className="h-5 w-5 text-white" />
+          </div>
+        }
+        title="오늘의 핵심 뉴스"
+        subtitle="AI가 분석한 시장 영향력 기준 뉴스"
+        tooltip="오늘 시장에 영향이 큰 뉴스와 관련 섹터를 요약합니다."
+        action={
+          <Button variant="link" size="xs">
+            전체보기
+          </Button>
+        }
+        className="px-0"
+      />
 
       <div className="space-y-4">
         {news.map((item, index) => (
@@ -55,24 +65,13 @@ export default function NewsFeed({ news }: NewsFeedProps) {
               <h4 className="text-base font-bold text-(--text-title) group-hover:text-(--primary-strong) transition-colors line-clamp-1">
                 {item.title}
               </h4>
-              <p className="line-clamp-1 text-sm font-medium text-(--text-muted)">
+              <p className="line-clamp-1 text-sm font-medium text-(--text-muted) mb-3">
                 {item.summary}
               </p>
-              <div className="flex gap-2 mt-2">
-                {item.tags.map((items) => (
-                  <span
-                    key={items}
-                    className="rounded-sm bg-(--light-bg) px-3 py-1.5 text-xs  text-(--text-body) "
-                  >
-                    #{items}
-                  </span>
-                ))}
-              </div>
+              <Tags tags={item.tags} size={8} />
             </div>
 
-            <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-(--light-bg) text-(--text-muted)  transition-all group-hover:bg-(--primary-soft) group-hover:text-(--primary-strong)">
-              <ExternalLink size={18} />
-            </button>
+           
           </motion.article>
         ))}
       </div>

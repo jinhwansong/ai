@@ -2,21 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Globe, AlertCircle, CheckCircle2, HelpCircle, XCircle } from 'lucide-react';
-
-export type MacroStatus = 'positive' | 'neutral' | 'cautious' | 'negative';
-
-export type GlobalMacroItem = {
-  region: string;
-  indexName: string;
-  value: string;
-  change: string;
-  status: MacroStatus;
-  aiAnalysis: string;
-};
-
-type GlobalMacroProps = {
-  data: GlobalMacroItem[];
-};
+import SectionHeader from '@/components/common/SectionHeader';
+import { useMainMacro } from '@/hooks/useMain';
+import { GlobalMacroItem } from '@/types/main';
+import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
 
 const statusConfig = {
   positive: {
@@ -41,21 +30,28 @@ const statusConfig = {
   },
 };
 
-export default function GlobalMacro({ data }: GlobalMacroProps) {
+export default function GlobalMacro() {
+  const { data, isLoading } = useMainMacro();
+  const items = (data || []) as GlobalMacroItem[];
+
+  if (isLoading) return <GlobalMacroSkeleton />;
+
   return (
-    <section className="space-y-4">
-      <div className="flex items-end justify-between px-2">
-        <h3 className="text-xl font-bold text-(--text-title)">
-          글로벌 시장 요약
-        </h3>
-        <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.2em] text-(--text-muted)">
-          <Globe size={12} />
-          <span>Global Markets</span>
-        </div>
-      </div>
+    <section className="space-y-6">
+      <SectionHeader
+        icon={
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 shadow-lg shadow-indigo-500/20">
+            <Globe className="h-5 w-5 text-white" />
+          </div>
+        }
+        title="글로벌 시장 요약"
+        subtitle="주요 국가지수 실시간 현황"
+        className="px-0"
+        tooltip="주요 지수의 현재가·등락과 AI 한 줄 코멘트를 요약합니다."
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {data.map((item, index) => {
+        {items.map((item, index) => {
           const config = statusConfig[item.status];
           const StatusIcon = config.icon;
 

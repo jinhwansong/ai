@@ -6,11 +6,17 @@ export type MainBriefing = {
   briefingId: string;
 };
 
+export interface ImpactZone {
+  label: string;
+  status: '강세' | '약세' | '중립';
+}
+
 export interface MainSignal {
   focus: string;
   description: string;
   value: string;
   change: string;
+  impactZones: ImpactZone[];
   tags: string[];
   updatedAt: string;
 }
@@ -52,83 +58,16 @@ export interface GlobalMacroItem {
   value: string;
   change: string;
   status: MarketStance;
+  aiAnalysis: string;
 }
 
-export interface MarketIndex {
+export interface ObservationItem {
   symbol: string;
   name: string;
-  value: number;
-  change: number;
-  changePercent: number;
-  currency: string;
-}
-
-export interface MarketIndicesResponse {
-  indices: MarketIndex[];
-  lastUpdate: string;
-  source: string;
-}
-
-export interface EconomicIndicator {
-  symbol: string;
-  name: string;
-  value: number;
-  unit: string;
-  change: number;
-  changePercent: number;
-  lastUpdate: string;
-  status: 'positive' | 'negative' | 'neutral';
-}
-
-export interface EconomicIndicatorsResponse {
-  indicators: EconomicIndicator[];
-  lastUpdate: string;
-  source: string;
-}
-
-export interface PortfolioAllocation {
-  asset: string;
-  name: string;
-  percentage: number;
-  currentValue: number;
-  change: number;
-}
-
-export interface RecommendedPortfolio {
-  id: string;
-  name: string;
-  riskLevel: 'conservative' | 'moderate' | 'aggressive';
-  expectedReturn: number;
-  expectedVolatility: number;
-  description: string;
-  allocations: PortfolioAllocation[];
-  keyInsights: string[];
-  lastUpdate: string;
-  aiConfidence: number;
-}
-
-export interface PortfolioPerformanceItem {
-  label: string;
-  value: string;
-  delta: string;
-}
-
-export interface PortfolioHoldingItem {
-  name: string;
-  ratio: string;
-  change: string;
-}
-
-export interface PortfolioData {
-  performance: PortfolioPerformanceItem[];
-  holdings: PortfolioHoldingItem[];
-  strategicSummary?: string;
-}
-
-export interface PortfolioResponse {
-  portfolio: RecommendedPortfolio;
-  lastUpdate: string;
-  source: string;
+  type: 'Stock' | 'ETF';
+  reason: string;
+  tags: string[];
+  momentum: 'Strong' | 'Moderate' | 'Building';
 }
 
 export interface NewsItem {
@@ -138,8 +77,12 @@ export interface NewsItem {
   published_at: string;
   source: string;
   impact: 'High' | 'Medium' | 'Low';
-};
+}
 
 export interface NewsFeedProps {
   news: NewsItem[];
-};
+}
+export interface InsightItem {
+  summary: string;
+  generatedAt: string;
+}

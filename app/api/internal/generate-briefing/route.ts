@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/redis/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
-import { MacroItem, NewsItem, SectorItem } from '@/types/services';
+import { MacroItem, NewsItem, ObservationItem, SectorItem } from '@/types/services';
 import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 
@@ -48,21 +48,33 @@ export const GET = verifyCronAuth(async () => {
 
     // 5. Supabase 개별 테이블 저장 (메인 페이지 API 연동용)
     const sectors = finalData.main.sectorSummary || [];
-    const topSector = sectors[0]; // 최상위 섹터 정보를 메인 시그널로 활용
+    const signal = finalData.main.signal;
 
     await Promise.all([
-      // A. 메인 시그널 저장
+      // 메인 시그널 저장
       supabase.from('main_signals').insert({
-        focus: topSector?.focus || '전략적 시장 분석 완료',
-        description: topSector
-          ? `${topSector.name} 섹션에서 ${topSector.momentum} 수준의 모멘텀이 감지되었습니다. ${topSector.focus}`
-          : '현재 시장 상황을 기반으로 한 AI 분석 시그널입니다.',
-        value: topSector?.momentum === 'Strong' ? '92.4' : '78.5',
-        change: topSector?.signal === 'POSITIVE' ? '+2.1%' : '0.0%',
-        tags: topSector ? [topSector.name, topSector.momentum] : ['시장분석'],
+        focus: signal.focus,
+        description: signal.description,
+        value: signal.value,
+        change: signal.change,
+        impact_zones: signal.impactZones,
+        tags: signal.tags,
       }),
 
-      // B. 글로벌 매크로 지표 저장
+      // 관찰 대상 저장
+      supabase.from('observation_items').insert(
+        (finalData.main.observations || []).map((o: ObservationItem) => ({
+          symbol: o.symbol,
+          name: o.name,
+          type: o.type,
+          reason: o.reason,
+          tags: o.tags,
+          momentum: o.momentum,
+        }))
+      ),
+
+
+      // 글로벌 매크로 지표 저장
       supabase.from('market_indices').insert(
         (finalData.main.macro || []).map((m: MacroItem) => ({
           region: m.region,
@@ -74,7 +86,7 @@ export const GET = verifyCronAuth(async () => {
         }))
       ),
 
-      //  섹터 전략 저장
+      // 섹터 전략 저장
       supabase.from('sector_strategies').insert(
         sectors.map(
           (s: Pick<SectorItem, 'name' | 'signal' | 'momentum' | 'focus'>) => ({
@@ -92,28 +104,21 @@ export const GET = verifyCronAuth(async () => {
         )
       ),
 
-      //  가공 뉴스 저장
+      // 가공 뉴스 저장
       supabase.from('news_articles').upsert(
-        (finalData.main.newsHighlights || []).map(
-          (
-            n: Pick<
-              NewsItem,
-              'title' | 'descriptionShort' | 'tags' | 'relatedSectors' | 'impact' | 'contentLong'
-            >
-          ) => ({
-            title: n.title,
-            summary: n.descriptionShort,
-            content: n.contentLong,
-            tags: n.tags,
-            related_sectors: n.relatedSectors,
-            impact: n.impact,
-            published_at: new Date().toISOString(),
-          })
-        ),
+        (finalData.main.newsHighlights || []).map((n: NewsItem) => ({
+          title: n.title,
+          summary: n.descriptionShort,
+          content: n.contentLong,
+          tags: n.tags,
+          related_sectors: n.relatedSectors,
+          impact: n.impact,
+          published_at: new Date().toISOString(),
+        })),
         { onConflict: 'title,published_at' }
       ),
 
-      // G. 전체 이력 저장
+      // 전체 이력 저장
       supabase.from('briefing_history').insert({
         data: finalData,
         created_at: new Date().toISOString(),

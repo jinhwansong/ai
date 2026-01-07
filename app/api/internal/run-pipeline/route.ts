@@ -1,11 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyCronAuth } from '@/util/verifyCronAuth';
 
-export async function POST(req: Request) {
-  const authHeader = req.headers.get('Authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export const POST = verifyCronAuth(async (req: NextRequest) => {
   const host = req.headers.get('host');
   const protocol = host?.includes('localhost') ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
@@ -53,4 +49,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
+});

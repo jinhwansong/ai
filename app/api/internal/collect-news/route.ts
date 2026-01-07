@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { fetchSearchNews } from '@/lib/news/fetchNews';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
