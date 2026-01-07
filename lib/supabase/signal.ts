@@ -23,6 +23,7 @@ export async function getLatestSignalFromSupabase(): Promise<MainSignal | null> 
     description: data.description,
     value: data.value,
     change: data.change,
+    impactZones: data.impact_zones ?? [],
     tags: data.tags,
     updatedAt: data.updated_at,
   };
@@ -34,6 +35,7 @@ export async function saveSignalToSupabase(signal: Omit<MainSignal, 'updatedAt'>
     description: signal.description,
     value: signal.value,
     change: signal.change,
+    impact_zones: signal.impactZones,
     tags: signal.tags,
   });
 
