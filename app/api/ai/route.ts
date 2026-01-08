@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: BriefingInquiry = await req.json();
 
-    // 1. 비어있다면, 백엔드 DB에서 최신 뉴스를 직접 가져옴
+    // 비어있다면, 백엔드 DB에서 최신 뉴스를 직접 가져옴
     if (!body.newsList || body.newsList.length === 0) {
       const { data: latestNews } = await supabase
         .from('raw_news')
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       body.newsList = latestNews || [];
     }
 
-    // 2. marketData가 없다면 기본값 세팅 (나중에 마켓 API 연동 가능)
+    //  marketData가 없다면 기본값 세팅
     if (!body.marketData) {
       body.marketData = {};
     }
