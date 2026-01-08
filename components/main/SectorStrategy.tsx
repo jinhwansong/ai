@@ -63,7 +63,7 @@ export default function SectorStrategy() {
               {sector.reason}
             </p>
 
-            <div className="mt-2 rounded-lg bg-(--light-bg) p-3 ">
+            <div className="mt-2 rounded-lg  bg-(--primary-soft) p-3 ">
               <div className="flex items-center gap-2">
                 <div className="h-1 w-1 rounded-full bg-(--primary)" />
                 <p className="text-[11px] font-bold text-(--text-body) leading-tight">

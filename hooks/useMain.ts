@@ -7,6 +7,7 @@ import {
   fetchMainSignal,
   fetchMainObservation,
   fetchMainInsight,
+  fetchSignalDetail,
 } from '@/lib/api/main';
 import { withQueryDefaults } from './withQueryDefaults';
 
@@ -65,3 +66,11 @@ export const useMainInsight = () =>
       queryFn: fetchMainInsight,
     })
   );
+
+  export const useSignalDetail = () =>
+    useQuery(
+      withQueryDefaults({
+        queryKey: ['signal-detail'],
+        queryFn: fetchSignalDetail,
+      })
+    );

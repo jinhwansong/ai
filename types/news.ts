@@ -44,3 +44,23 @@ export interface FetchNewsParams {
   sortBy?: 'published_at' | 'relevancy';
   pageSize?: number;
 }
+
+
+export interface AnalysisData {
+  title: string;
+  content: string;
+  publishedAt: string;
+  tags: string[];
+  checkPoints: string[];
+  relatedSectors: {
+    name: string;
+    status: '강세' | '약세' | '중립';
+    trend: 'Strong' | 'Moderate' | 'Building';
+  }[];
+  relatedNews: {
+    title: string;
+    source: string;
+    time: string;
+    url: string | null;
+  }[];
+}

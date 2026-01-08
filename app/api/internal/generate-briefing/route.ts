@@ -5,6 +5,7 @@ import { performAIAnalysis } from '@/lib/services/briefing';
 import { MacroItem, NewsItem, ObservationItem, SectorItem } from '@/types/services';
 import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
+import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/util/timeSlot';
 
 export const GET = verifyCronAuth(async () => {
   try {
@@ -43,8 +44,17 @@ export const GET = verifyCronAuth(async () => {
       createdAt: new Date().toISOString(),
     };
 
-     // 4. Redis 저장 (dashboard:latest) - 기존 호환성 유지
-    await redis.set('dashboard:latest', JSON.stringify(finalData.main));
+    // 4. 현재 시간대 감지 및 Redis 저장
+    const timeSlot = detectTimeSlotFromCron();
+    const timeSlotKey = getTimeSlotRedisKey(timeSlot);
+    
+    // 시간대별 키에 저장 (TTL: 24시간)
+    await redis.set(timeSlotKey, JSON.stringify(finalData.main), 'EX', 86400);
+    
+    // 호환성 유지용 최신 데이터 (TTL: 24시간)
+    await redis.set('dashboard:latest', JSON.stringify(finalData.main), 'EX', 86400);
+    
+    console.log(`✅ Briefing saved to Redis: ${timeSlotKey} (${timeSlot})`);
 
     // 5. Supabase 개별 테이블 저장 (메인 페이지 API 연동용)
     const sectors = finalData.main.sectorSummary || [];
@@ -104,17 +114,26 @@ export const GET = verifyCronAuth(async () => {
         )
       ),
 
-      // 가공 뉴스 저장
+      // 가공 뉴스 저장 (raw_news와 매칭하여 source, url 포함)
       supabase.from('news_articles').upsert(
-        (finalData.main.newsHighlights || []).map((n: NewsItem) => ({
-          title: n.title,
-          summary: n.descriptionShort,
-          content: n.contentLong,
-          tags: n.tags,
-          related_sectors: n.relatedSectors,
-          impact: n.impact,
-          published_at: new Date().toISOString(),
-        })),
+        (finalData.main.newsHighlights || []).map((n: NewsItem) => {
+          // 제목으로 raw_news에서 원본 뉴스 찾기
+          const rawNewsItem = rawNews?.find((raw: { title: string }) => 
+            raw.title && n.title && raw.title.toLowerCase().includes(n.title.toLowerCase().slice(0, 20))
+          );
+          
+          return {
+            title: n.title,
+            summary: n.descriptionShort,
+            content: n.contentLong,
+            tags: n.tags,
+            related_sectors: n.relatedSectors,
+            impact: n.impact,
+            source: rawNewsItem?.url ? new URL(rawNewsItem.url).hostname.replace('www.', '') : 'AI분석',
+            url: rawNewsItem?.url || null,
+            published_at: new Date().toISOString(),
+          };
+        }),
         { onConflict: 'title,published_at' }
       ),
 

@@ -18,6 +18,8 @@ export interface NewsItem {
     relatedSectors: string[];
     impact: string;
     time: string;
+    source?: string;
+    url?: string;
 }
 
 export interface NewsResponse {

@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
 import { redis } from '@/lib/redis/redis';
+import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/util/timeSlot';
 
 export async function GET() {
   try {
-    const cachedData = await redis.get('dashboard:latest');
+    // 현재 한국 시간 기준 시간대 결정
+    const currentSlot = getCurrentTimeSlot();
+    const primaryKey = getTimeSlotRedisKey(currentSlot);
+    
+    // 시간대별 데이터 우선, 없으면 fallback
+    let cachedData = await redis.get(primaryKey);
+    if (!cachedData) {
+      cachedData = await redis.get('dashboard:latest');
+    }
     
     if (!cachedData) {
       return NextResponse.json(

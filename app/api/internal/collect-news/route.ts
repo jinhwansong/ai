@@ -6,16 +6,33 @@ import { verifyCronAuth } from '@/util/verifyCronAuth';
 const NEWS_CATEGORIES = [
   { name: '국내증시', query: 'Korea stock market KOSPI KOSDAQ' },
   { name: '미국증시', query: 'US stock market Nasdaq S&P500' },
-  { name: '금리/채권', query: 'interest rates Fed treasury bonds' },
-  { name: '환율', query: 'forex USD KRW exchange rate' },
-  { name: '반도체/AI', query: 'semiconductor AI NVIDIA TSMC' },
-  { name: '이차전지', query: 'EV battery lithium-ion Tesla' },
-  { name: '바이오', query: 'biotech pharmaceutical healthcare' },
-  { name: '빅테크', query: 'Big Tech Apple Microsoft Google Meta' },
-  { name: '부동산', query: 'real estate housing market mortgage' },
-  { name: '원자재', query: 'commodities oil gold copper' },
-  { name: '가상자산', query: 'crypto Bitcoin Ethereum' },
-  { name: '소비재', query: 'consumer goods retail e-commerce' },
+  {
+    name: '금리/채권',
+    query: 'interest rates Fed treasury bonds monetary policy',
+  },
+  { name: '환율', query: 'forex USD KRW exchange rate currency volatility' },
+  { name: '반도체/AI', query: 'semiconductor HBM4 NVIDIA TSMC AI-chip' }, // HBM4 추가
+  {
+    name: '로보틱스/물리AI',
+    query: 'Physical AI Robotics Humanoid Tesla Optimus CES 2026',
+  }, // 2026 핵심 키워드 추가
+  {
+    name: '전력/에너지',
+    query: 'SMR nuclear power grid electricity AI data center',
+  }, // 데이터센터 전력난 관련 추가
+  { name: '이차전지', query: 'EV battery lithium-ion Tesla IRA policy' },
+  {
+    name: '바이오/헬스',
+    query: 'biotech GLP-1 pharmaceutical healthcare digital-health',
+  }, // 비만치료제(GLP-1) 트렌드 반영
+  { name: '빅테크', query: 'Big Tech Apple Microsoft Google Meta AI-agent' }, // AI 에이전트 추가
+  { name: '부동산', query: 'real estate housing market mortgage REITS' },
+  { name: '원자재', query: 'commodities oil gold copper lithium' },
+  { name: '가상자산', query: 'crypto Bitcoin Ethereum ETF' },
+  {
+    name: '무역/관세',
+    query: 'Trump tariff trade war supply chain protectionism',
+  }, // 트럼프 2기 관세 이슈 추가
 ];
 
 export const GET = verifyCronAuth(async () => {

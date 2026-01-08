@@ -1,6 +1,7 @@
 import { Fetcher } from '@/util/fetcher';
 import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal, ObservationItem, InsightItem } from '@/types/main';
 import { MainMacroResponse } from '@/types/macro';
+import { AnalysisData } from '@/types/news';
 
 export const fetchMainSignal = () =>
   Fetcher<MainSignal>('/api/main/signal');
@@ -23,4 +24,6 @@ export const fetchMainObservation = () =>
 export const fetchMainInsight = () =>
   Fetcher<InsightItem>('/api/main/insight');
 
+
+export const fetchSignalDetail = () => Fetcher<AnalysisData>('/api/main/analysis');
 

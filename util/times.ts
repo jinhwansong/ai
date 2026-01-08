@@ -5,7 +5,7 @@ const TIMEZONE = 'Asia/Seoul';
 
 export function getDailyBriefingMeta() {
   const now = toZonedTime(new Date(), TIMEZONE);
-
+  const date = format(now, 'yyyy-MM-dd');
   const hour = Number(format(now, 'HH'));
   let publishTime: '09:00 AM' | '12:00 PM' | '18:00 PM' | '21:00 PM';
 if (hour >= 21) {
@@ -20,6 +20,7 @@ if (hour >= 21) {
   publishTime = '21:00 PM';
 }
   return {
+    date,
     publishTime,
   };
 }

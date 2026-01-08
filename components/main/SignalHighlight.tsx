@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Clock, Map } from 'lucide-react';
+import Link from 'next/link';
 import Button from '../common/Button';
 import { MainSignal } from '@/types/main';
 import { getDailyBriefingMeta } from '@/util/times';
@@ -79,17 +80,19 @@ export default function SignalHighlight() {
               ))}
             </div>
           </div>
-          <Button
-            variant="dark"
-            size="lg"
-            className="group gap-2 rounded-full "
-          >
-            오늘 포인트 정리
-            <ArrowRight
-              size={18}
-              className="transition-transform group-hover:translate-x-1"
-            />
-          </Button>
+          <Link href="/analysis" className="w-full">
+            <Button
+              variant="dark"
+              size="lg"
+              className="group w-full gap-2 rounded-full "
+            >
+              오늘 포인트 정리
+              <ArrowRight
+                size={18}
+                className="transition-transform group-hover:translate-x-1"
+              />
+            </Button>
+          </Link>
         </div>
       </div>
     </motion.section>

@@ -12,7 +12,7 @@ export default function Tags({ size, tags }: TagProps) {
       {tags?.map((tag) => (
         <span
           key={tag}
-          className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-md"
+          className="flex items-center gap-1 text-[10px] font-bold text-(--primary) bg-(--primary-soft) px-2 py-0.5 rounded-md"
         >
           <Tag size={size} />
           {tag}
