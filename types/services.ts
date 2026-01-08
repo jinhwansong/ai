@@ -17,9 +17,8 @@ export interface NewsItem {
     tags: string[];
     relatedSectors: string[];
     impact: string;
-    time: string;
+    url: string;
     source?: string;
-    url?: string;
 }
 
 export interface NewsResponse {

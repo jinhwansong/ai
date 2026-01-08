@@ -51,6 +51,7 @@ export interface AnalysisData {
   content: string;
   publishedAt: string;
   tags: string[];
+  sentimentScore: number;
   checkPoints: string[];
   relatedSectors: {
     name: string;

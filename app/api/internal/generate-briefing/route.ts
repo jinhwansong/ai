@@ -6,6 +6,7 @@ import { MacroItem, NewsItem, ObservationItem, SectorItem } from '@/types/servic
 import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/util/timeSlot';
+  import { fetchGlobalIndices } from '@/lib/api/yahooFinance';
 
 export const GET = verifyCronAuth(async () => {
   try {
@@ -26,7 +27,6 @@ export const GET = verifyCronAuth(async () => {
       });
     }
     
-    const { fetchGlobalIndices } = await import('@/lib/api/yahooFinance');
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
     const userPortfolio = {};
@@ -114,26 +114,19 @@ export const GET = verifyCronAuth(async () => {
         )
       ),
 
-      // 가공 뉴스 저장 (raw_news와 매칭하여 source, url 포함)
+      // 가공 뉴스 저장 (AI가 url을 포함하여 반환)
       supabase.from('news_articles').upsert(
-        (finalData.main.newsHighlights || []).map((n: NewsItem) => {
-          // 제목으로 raw_news에서 원본 뉴스 찾기
-          const rawNewsItem = rawNews?.find((raw: { title: string }) => 
-            raw.title && n.title && raw.title.toLowerCase().includes(n.title.toLowerCase().slice(0, 20))
-          );
-          
-          return {
-            title: n.title,
-            summary: n.descriptionShort,
-            content: n.contentLong,
-            tags: n.tags,
-            related_sectors: n.relatedSectors,
-            impact: n.impact,
-            source: rawNewsItem?.url ? new URL(rawNewsItem.url).hostname.replace('www.', '') : 'AI분석',
-            url: rawNewsItem?.url || null,
-            published_at: new Date().toISOString(),
-          };
-        }),
+        (finalData.main.newsHighlights || []).map((n: NewsItem) => ({
+          title: n.title,
+          summary: n.descriptionShort,
+          content: n.contentLong,
+          tags: n.tags,
+          related_sectors: n.relatedSectors,
+          impact: n.impact,
+          source: n.source || 'AI분석',
+          url: n.url || null,
+          published_at: new Date().toISOString(),
+        })),
         { onConflict: 'title,published_at' }
       ),
 

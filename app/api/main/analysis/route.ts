@@ -61,6 +61,7 @@ export async function GET() {
       title: signal.focus || '시장 분석 리포트',
       content: signal.description || '분석 내용을 생성 중입니다.',
       tags: signal.tags || [],
+      sentimentScore: parseInt(signal.value) || 50,
       checkPoints,
       relatedSectors,
       relatedNews,

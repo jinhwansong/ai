@@ -72,7 +72,8 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
         impact: n.impact,
         tags: n.tags,
         relatedSectors: n.relatedSectors,
-        time: n.time,
+        url: n.url,
+        source: n.source || (n.url ? new URL(n.url).hostname.replace('www.', '') : 'AI분석'),
       })),
     },
     detail: {

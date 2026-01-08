@@ -67,6 +67,7 @@ export const GET = verifyCronAuth(async () => {
       description: article.description,
       url: article.url,
       image_url: article.urlToImage,
+      source: article.source?.name || null,
       published_at: article.published_at,
       content: article.content,
     }));

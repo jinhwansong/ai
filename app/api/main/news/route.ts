@@ -31,7 +31,7 @@ export async function GET() {
         summary: n.descriptionShort,
         tags: n.tags,
         published_at: new Date().toISOString(), // 브리핑 생성 시점 기준
-        source: 'AI Analyst',
+        source: n.source,
         impact: n.impact || 'Medium',
       })),
       date: new Date().toISOString().split('T')[0],
