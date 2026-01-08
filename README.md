@@ -1,6 +1,14 @@
 # AI 경제 브리핑 서비스 – 설계 중심 README
 사용자를 대신 판단하지 않고, **뉴스/지수/섹터를 한눈에 정리**해 초보자도 “오늘 시장이 어떤지”를 빠르게 파악하게 하는 서비스입니다. 이 문서는 “무엇을 썼는가”가 아니라 “왜 그렇게 설계했는가”에 초점을 맞춥니다.
 
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
+
 ## 1. 프로젝트 개요
 - 로그인/개인화 없이도, 한 페이지에서 “오늘 시장 흐름”을 빠르게 전달하는 브리핑 서비스
 - 실시간 지수(라이브)와 AI 코멘트(배치)를 **혼합**해 최신성+맥락을 동시에 제공
@@ -84,3 +92,8 @@
 - 자동화 고도화:
   - **모니터링/에러 자동화**: Sentry 도입 예정 (API/배치 에러 알림, 성능 트레이스)
   - **추가 제안**: Lighthouse CI로 빌드 후 성능 회귀 감시
+
+## 📸 참고용 이미지 섹션 (추가 예정)
+- 메인 화면 캡처: “오늘의 시그널 → 매크로 → 뉴스/섹터 → 관찰/인사이트” 흐름
+- 데이터 플로 다이어그램: 크론(run-pipeline) → Supabase/Redis → 프론트 섹션 맵
+- UX 예시: 최초 모달/툴팁, 색상 구분(팩트 vs AI 코멘트)

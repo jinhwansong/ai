@@ -2,12 +2,10 @@ name: AI Market Briefing Cron Pipeline
 
 on:
   schedule:
-    # KST 기준: 09:00, 13:00, 17:00, 22:00
-    # UTC 기준: 00:00, 04:00, 08:00, 13:00
     - cron: '0 0 * * *'
-    - cron: '0 4 * * *'
-    - cron: '0 8 * * *'
-    - cron: '0 13 * * *'
+    - cron: '0 9 * * *'
+    - cron: '0 12 * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch: {}
 
 jobs:
