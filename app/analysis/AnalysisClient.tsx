@@ -177,9 +177,9 @@ export default function AnalysisClient() {
                   <div
                     className={`h-2 w-2 rounded-full ${
                       sector.status === '강세'
-                        ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
+                        ? 'bg-(--text-rose) shadow-[0_0_8px_rgba(251,113,133,0.5)]'
                         : sector.status === '약세'
-                        ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                        ? 'bg-(--text-green) shadow-[0_0_8px_rgba(74,222,128,0.5)]'
                         : 'bg-slate-400'
                     }`}
                   />
@@ -191,9 +191,9 @@ export default function AnalysisClient() {
                   <span
                     className={`text-xs font-black ${
                       sector.status === '강세'
-                        ? 'text-rose-500'
+                        ? 'text-(--text-rose)'
                         : sector.status === '약세'
-                        ? 'text-emerald-500'
+                        ? 'text-(--text-green)'
                         : 'text-slate-500'
                     }`}
                   >

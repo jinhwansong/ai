@@ -10,22 +10,22 @@ import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
 const statusConfig = {
   positive: {
     label: '호재',
-    color: 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
+    color: 'bg-(--bg-rose) text-(--text-rose)',
     icon: CheckCircle2,
   },
   neutral: {
     label: '관망',
-    color: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+    color: 'bg-(--secondary-bg) text-(--text-muted)',
     icon: HelpCircle,
   },
   cautious: {
     label: '유의',
-    color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+    color: 'bg-(--bg-amber) text-(--text-amber)',
     icon: AlertCircle,
   },
   negative: {
     label: '악재',
-    color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    color: 'bg-(--bg-blue) text-(--text-blue)',
     icon: XCircle,
   },
 };
@@ -40,7 +40,7 @@ export default function GlobalMacro() {
     <section className="space-y-6">
       <SectionHeader
         icon={
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 shadow-lg shadow-indigo-500/20">
+          <div className="flex h-8 w-8 items-center  justify-center rounded-lg bg-indigo-500 shadow-lg shadow-indigo-500/20">
             <Globe className="h-5 w-5 text-white" />
           </div>
         }
@@ -61,7 +61,7 @@ export default function GlobalMacro() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="kakao-card group flex flex-col p-5 hover:shadow-lg transition-shadow border border-slate-100 dark:border-slate-800"
+              className="kakao-card group flex flex-col p-5 hover:shadow-lg transition-shadow border "
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-black text-(--text-muted) uppercase tracking-wider">

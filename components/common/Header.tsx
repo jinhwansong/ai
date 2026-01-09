@@ -6,6 +6,7 @@ import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
+import { useSearchStore } from '@/store/useSearchStore';
 
 const navItems: { name: string; target: string }[] = [
   { name: '시그널', target: 'section-signal' },
@@ -14,68 +15,33 @@ const navItems: { name: string; target: string }[] = [
   { name: '리포트', target: 'section-observation' },
 ];
 
-const RECENT_SEARCHES_KEY = 'recent_searches';
-
 export default function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
-  const recentSearches = useSyncExternalStore(
-    (callback) => {
-      window.addEventListener('storage', callback);
-      return () => window.removeEventListener('storage', callback);
-    },
-    () => {
-      if (typeof window === 'undefined') return [];
-      const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
-      if (!saved) return [];
-      try {
-        return JSON.parse(saved) as string[];
-      } catch {
-        return [];
-      }
-    },
-    () => [] // 서버 사이드 렌더링 시에는 빈 배열 반환
+  // 하이드레이션 오류 방지를 위한 mounted 상태 확인
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
   );
 
-  const saveSearch = (query: string) => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    const filtered = recentSearches.filter(s => s !== trimmed);
-    const updated = [trimmed, ...filtered].slice(0, 10);
-    
-    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
-    // storage 이벤트는 같은 창에서는 발생하지 않으므로 수동으로 트리거하거나 
-    // 로컬 상태를 별도로 관리해야 할 수도 있음. 
-    // 여기서는 간단하게 이벤트를 직접 발생시킴
-    window.dispatchEvent(new Event('storage'));
-  };
-
-  const removeSearch = (query: string) => {
-    const updated = recentSearches.filter(s => s !== query);
-    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event('storage'));
-  };
-
-  const clearHistory = () => {
-    localStorage.removeItem(RECENT_SEARCHES_KEY);
-    window.dispatchEvent(new Event('storage'));
-  };
+  const { recentSearches, addSearch, removeSearch, clearHistory } = useSearchStore();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      saveSearch(searchQuery);
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      addSearch(trimmed);
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
       setIsSearchExpanded(false);
       setSearchQuery('');
     }
   };
 
   const handleRecentClick = (query: string) => {
-    saveSearch(query);
+    addSearch(query);
     router.push(`/search?q=${encodeURIComponent(query)}`);
     setIsSearchExpanded(false);
     setSearchQuery('');
@@ -163,7 +129,7 @@ export default function Header() {
 
                 {/* 최근 검색어 레이어 */}
                 <AnimatePresence>
-                  {isSearchExpanded && recentSearches.length > 0 && (
+                  {mounted && isSearchExpanded && recentSearches.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}

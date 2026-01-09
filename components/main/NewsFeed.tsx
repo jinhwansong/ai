@@ -51,10 +51,10 @@ export default function NewsFeed() {
                   <span
                     className={`h-2 w-2 rounded-full ${
                       item.impact === 'High'
-                        ? 'bg-rose-500'
+                        ? 'bg-(--text-rose)'
                         : item.impact === 'Medium'
-                        ? 'bg-amber-500'
-                        : 'bg-emerald-500'
+                        ? 'bg-(--text-amber)'
+                        : 'bg-(--text-green)'
                     }`}
                   />
                   <div className="flex items-center gap-1 text-[10px] font-bold text-(--text-muted)">

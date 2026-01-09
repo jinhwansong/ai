@@ -31,7 +31,7 @@ export default function SignalHighlight() {
       <div className="relative flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
         <div className="flex-1 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            <div className="inline-flex items-center gap-2 rounded-full text-(--text-amber) bg-(--bg-amber) px-3 py-1 text-[10px] font-bold uppercase tracking-wider ">
               <Sparkles size={12} />
               Today&apos;s DETECTED SIGNAL
             </div>

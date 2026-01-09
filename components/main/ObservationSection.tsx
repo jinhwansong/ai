@@ -59,10 +59,10 @@ export default function ObservationSection() {
               <div
                 className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${
                   item.momentum === 'Strong'
-                    ? 'bg-rose-50 text-rose-500'
+                    ? 'bg-(--bg-rose) text-(--text-rose)'
                     : item.momentum === 'Moderate'
-                    ? 'bg-amber-50 text-(--text-amber)'
-                    : 'bg-blue-50 text-blue-500'
+                    ? 'bg-(--bg-amber) text-(--text-amber)'
+                    : 'bg-(--bg-blue) text-(--text-blue)'
                 }`}
               >
                 <TrendingUp size={10} strokeWidth={3} />

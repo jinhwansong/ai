@@ -41,10 +41,10 @@ export default function SectorStrategy() {
                 <span
                   className={clsx(
                     'h-2 w-2 rounded-full block',
-                    sector.stance === 'POSITIVE' && 'bg-rose-500',
-                    sector.stance === 'NEUTRAL' && 'bg-emerald-500',
+                    sector.stance === 'POSITIVE' && 'bg-(--text-rose)',
+                    sector.stance === 'NEUTRAL' && 'bg-(--text-green)',
                     sector.stance === 'NEGATIVE' && 'bg-slate-500',
-                    sector.stance === 'WATCHING' && 'bg-amber-500'
+                    sector.stance === 'WATCHING' && 'bg-(--text-amber)'
                   )}
                 />
                 {sector.name}
