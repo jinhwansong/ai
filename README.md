@@ -1,99 +1,170 @@
-# AI 경제 브리핑 서비스 – 설계 중심 README
-사용자를 대신 판단하지 않고, **뉴스/지수/섹터를 한눈에 정리**해 초보자도 “오늘 시장이 어떤지”를 빠르게 파악하게 하는 서비스입니다. 이 문서는 “무엇을 썼는가”가 아니라 “왜 그렇게 설계했는가”에 초점을 맞춥니다.
+# 📡 오늘의 시그널 (Today's Signal)
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![React Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
+> **AI가 분석하는 실시간 글로벌 경제 뉴스 기반 시장 브리핑 리포트**
+> 
+> 단순히 뉴스를 전달하는 것을 넘어, AI 요약 기술을 활용해 주식/ETF와 연계된 인사이트를 제공하는 모바일 퍼스트 뉴스 분석 서비스입니다.
 
-## 1. 프로젝트 개요
-- 로그인/개인화 없이도, 한 페이지에서 “오늘 시장 흐름”을 빠르게 전달하는 브리핑 서비스
-- 실시간 지수(라이브)와 AI 코멘트(배치)를 **혼합**해 최신성+맥락을 동시에 제공
-- AI는 **판단 주체가 아닌 ‘정보 정리/관찰’ 도구**로 제한
+[![Deployment](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-red-mu.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![Sentry](https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white)](https://sentry.io/)
+[![Lighthouse](https://img.shields.io/badge/Lighthouse-90+-4285F4?style=for-the-badge&logo=lighthouse&logoColor=white)](#-성능-최적화-및-품질-관리)
 
-## 2. 문제 정의 (왜 만들었나)
-- 초보자는 뉴스가 많아도 “오늘 무엇을 봐야 하는지” 모름
-- AI가 판단 주체처럼 보이는 서비스는 책임·신뢰 문제가 큼
-- 지수/뉴스/섹터/관찰 대상이 흩어져 있어 “한눈에” 파악하기 어려움
-→ **AI를 해석 보조 도구로 제한**하고, 정보 흐름을 위→아래로 설계하여 초보자도 빠르게 이해하도록 목표 설정
+---
 
-## 3. 해결 전략 (AI를 어떻게/어디까지 썼나)
-- 뉴스·지수 기반 **요약/정리/태깅**: 핵심 뉴스, 섹터 요약, 한 줄 인사이트, 관찰 대상
-- 글로벌 지수 **한 줄 코멘트** 생성 (배치 결과와 라이브 수치 병합)
-- **사용 모델**: Google Gemini 1.5 Flash(주요 요약/전략), GPT(보조 요약) → 비용/속도/품질 균형
-- **프롬프트 분리**: 초기 단일 프롬프트 → 섹션별 프롬프트로 분리해 품질·시간 최적화
-- AI가 하지 않는 것: 투자 판단, 매수/매도 추천, 단정적 문구
-- UX 장치: 최초 1회 모달(“AI는 참고용”), 섹션 헤더 툴팁, 관찰형 톤 가이드
+## 🎯 프로젝트 개요 (Overview)
 
-## 4. 기술 스택 선택 이유
-- **Next.js (App Router)**  
-  - 선택 이유: 파일 기반 라우팅, SSG/ISR/Edge 대응, Vercel 배포와 자연스러운 궁합  
-  - 비교/장단점: CRA 대비 서버 옵션이 풍부, 페이지 레벨 코드 스플릿 용이  
-  - 적합성: 배치 데이터 + 일부 라이브 데이터를 섹션 단위로 렌더하는 구조에 적합
-- **TypeScript**  
-  - 선택 이유: 프롬프트/응답 스키마 변경이 잦아 타입 안정성이 필수  
-  - 비교: JS 대비 초기 비용↑지만 리팩터링·회귀 방지 효과↑  
-  - 적합성: 섹션별 뷰 모델을 명시해 영향 범위 파악 용이
-- **TanStack Query**  
-  - 선택 이유: 캐싱/로딩/에러 처리 일관화, 섹션별 fetch 로직 분리  
-  - 비교: SWR보다 옵션 세분화, suspense 없이 isLoading 제어가 명확  
-  - 적합성: 섹션별 스켈레톤을 빠르게 노출, 서버 전환 시에도 용이
-- **Tailwind CSS**  
-  - 선택 이유: 카드/그리드 중심 UI를 빠르게 토큰화하고 일관성 유지  
-  - 비교: CSS-in-JS 대비 번들 부담↓, 디자인 시스템 반영이 단순  
-  - 적합성: 빠른 반복과 시각적 일관성을 동시에 확보
-- **Supabase (Postgres) + Redis 캐시**  
-  - 선택 이유: 배치 결과를 테이블로 저장하고, 최신 스냅샷은 Redis로 빠르게 제공  
-  - 비교: Firebase 대비 SQL 스키마 관리 용이, Redis로 초기 응답 지연을 크게 단축  
-  - 적합성: “배치 결과 + 라이브 지수” 병합 패턴을 안정적으로 처리
+"출근길 10분, 쏟아지는 경제 뉴스 속에서 길을 잃는 직장인들을 위하여"
 
-## 5. 폴더 구조와 역할
-- **types/**: API/AI 응답과 UI 뷰 모델 타입 분리. 리팩터링 시 타입이 먼저 깨져 영향 범위 파악이 용이.
-- **lib/**: 외부 연동(yahooFinance, redis, supabase), 프롬프트 빌더, 서비스 로직. UI와 분리해 순환 의존 방지.
-- **util/**: 포맷/시간 등 범용 헬퍼만 배치, 비즈니스 로직과 분리.
-- **components/**: 도메인별(main) vs 공용(common) vs 스켈레톤(skeleton)으로 역할 분리. 섹션 헤더/툴팁/스피너는 common, 섹션 UI는 main, 로딩은 skeleton.
-- **app/**: 라우팅/페이지 컴포지션만 담당. 데이터 fetch는 섹션 내부 훅으로 이동시켜 로딩/에러를 국소화.
-- **import 방향성**: app → components → lib/util/types. UI에서 lib를 역참조하지 않도록 하여 결합도를 낮춤.
-- **확장성**: 새 섹션 추가 시 main/새섹션.tsx + skeleton/새섹션Skeleton.tsx + 필요한 hook만 추가하면 되므로 영향 범위 최소.
+많은 직장인이 재테크에 관심을 두지만, 매일 아침 쏟아지는 방대한 양의 경제 뉴스를 모두 읽고 해석하기란 쉽지 않습니다. 특히 전문 용어가 가득한 기사는 초보 투자자들에게 높은 장벽이 됩니다.
 
-## 6. 핵심 기능 설계
-- **SignalHighlight**: 오늘의 핵심 포인트(문구/태그/영향 맵). 초보자가 한눈에 “오늘 관찰 포인트”를 알게 함.
-- **GlobalMacro**: 4개 지수(KOSPI/NASDAQ/Nikkei/Euro Stoxx) 라이브 수치 + AI 코멘트(배치). 팩트/AI를 시각적으로 분리.
-- **NewsFeed**: 영향도(High/Medium/Low) 라벨 + 섹터 태그. “왜 중요한가”를 한 문장으로 제공.
-- **SectorStrategy**: 모멘텀/스탠스/액션 가이드 상위 3개만 노출(뉴스 연관도+점수화 로직).
-- **Observation**: 주목 종목/ETF 3개, 선정 이유/모멘텀/태그.
-- **Insight**: AI 한 줄 요약(관찰형 문장). 단정 금지.
-- **NoticeModal + 툴팁**: 최초 1회 “AI는 참고용” 안내, 섹션마다 반복 툴팁으로 인지 강화.
+저 또한 **"뉴스를 봐도 어떤 종목과 연결되는지, 지금 시장의 온도는 어떤지 한눈에 파악하기 어렵다"**는 갈증이 있었고, 이를 해결하고자 본 프로젝트를 시작했습니다.
 
-## 7. 신뢰성과 판단 책임 분리 설계
-- **AI 역할 제한**: 요약/정리/태깅만 수행, 투자 판단 문구 금지.
-- **UX 장치**: 최초 모달 + 헤더 툴팁 + 관찰형 톤 가이드로 반복 고지.
-- **팩트 vs AI 분리**: 지수/뉴스는 사실, 코멘트는 AI 생성임을 색상/레이블로 구분.
-- **카피 톤**: “~로 보입니다”, “~을 관찰” 식의 관찰형 표현. 단정/추천 금지.
+'오늘의 시그널'은 Yahoo Finance2 API와 NewsAPI를 통해 수집한 공신력 있는 데이터를 기반으로, AI가 복잡한 맥락을 걷어내고 핵심 키워드와 투자 시그널만 골라 담아 직장인의 소중한 아침 시간을 아껴주는 '경제 나침반'이 되고자 합니다.
 
-## 8. 트러블슈팅 및 고민
-- **AI 프롬프트 분리**: 초기엔 단일 프롬프트 → 섹션별 프롬프트로 분리해 품질/속도 개선.
-- **초기 로딩 성능**: 단일 프롬프트 사용 시 초기 로딩 16,000ms → Redis 캐시 적용 시 397ms → 프롬프트 분리·캐시 최적화 후 현재 초기 로딩 속도: ___ms(측정 예정), Redis 응답은 290ms까지 감소.
-- **AI 신뢰성 정의**: “AI는 판단 도구가 아니다”를 전제로, 온보딩 대신 1회 모달 + 섹션 툴팁을 선택.
-- **로딩 전략**: react-query suspense 시 서버단 suspend 문제 → suspense 비활성, 섹션 내부 isLoading + 스켈레톤으로 명시적 제어.
-- **폴더 경계**: UI와 데이터 연동을 분리해, 새 섹션 추가 시 기존 섹션 영향 없도록 설계.
+---
 
-## 9. 현재 자동화 현황
-- **배치 크론 파이프라인**: `vercel.json` 크론 → `/api/internal/run-pipeline` 단일 엔드포인트(뉴스 수집 → 전략 생성 → 브리핑 생성)로 관리.
-- **코드 퀄리티 보호 (Husky + commitlint)**: 혼자 작업하더라도 팀 작업 수준의 규율을 유지하려고, 커밋 메시지 규칙/훅을 엄격히 적용. 협업 전환 시 추가 셋업 없이 그대로 활용 가능.
+---
 
-## 10. 개선 예정 사항
-- 섹션별 서버 컴포넌트/ISR 도입 검토 (초기 페인트 속도 추가 단축)
-- 모바일 터치 친화적 툴팁/모달 개선, 접근성(포커스/ARIA) 강화
-- 전략 가이드 문구의 보수적 톤 추가 가이드 (관망/리스크 강조)
-- 자동화 고도화:
-  - **모니터링/에러 자동화**: Sentry 도입 예정 (API/배치 에러 알림, 성능 트레이스)
-  - **추가 제안**: Lighthouse CI로 빌드 후 성능 회귀 감시
+## 🚀 주요 가치 (Value Proposition)
 
-## 📸 참고용 이미지 섹션 (추가 예정)
-- 메인 화면 캡처: “오늘의 시그널 → 매크로 → 뉴스/섹터 → 관찰/인사이트” 흐름
-- 데이터 플로 다이어그램: 크론(run-pipeline) → Supabase/Redis → 프론트 섹션 맵
-- UX 예시: 최초 모달/툴팁, 색상 구분(팩트 vs AI 코멘트)
+시간 절약 (Time Efficiency): AI가 수백 건의 뉴스를 분석하여 당일 가장 중요한 14가지 키워드로 압축합니다.
+
+직관적 연결 (Smart Connection): 뉴스 속에 숨은 종목(Stock/ETF)을 자동으로 매핑하여, 정보가 실질적인 투자 인사이트로 이어지게 합니다.
+
+쉬운 언어 (User-Friendly): 어려운 경제 용어를 AI가 쉽게 풀이하고, 시장의 분위기를 시각화(Sentiment Gauge)하여 제공합니다.
+
+---
+## 🛠 Tech Stack
+
+### Frontend
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/framer%20motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Zustand](https://img.shields.io/badge/zustand-443E38?style=for-the-badge&logo=react&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)
+![next--themes](https://img.shields.io/badge/next--themes-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Lucide](https://img.shields.io/badge/Lucide-111827?style=for-the-badge&logo=lucide&logoColor=white)
+
+### Backend & Infrastructure
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Sentry](https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![NewsAPI](https://img.shields.io/badge/NewsAPI-2C7DF7?style=for-the-badge&logo=rss&logoColor=white)
+![Yahoo Finance](https://img.shields.io/badge/Yahoo%20Finance-6001D2?style=for-the-badge&logo=yahoo&logoColor=white)
+
+---
+
+## 🧠 AI & 데이터 파이프라인 (How it works)
+
+“오늘의 시그널”의 핵심은 **뉴스/지표 수집 → AI 병렬 분석 → 캐싱/저장 → 프론트 렌더링** 흐름을 안정적으로 운영하는 것입니다.  
+프론트엔드는 이 파이프라인 위에서 **빠르게 읽히는 UI**와 **실시간 품질(성능/에러)**을 책임집니다.
+
+### 1) 데이터 수집 (Sources)
+- **뉴스 수집**: `NewsAPI` 기반 (`lib/news/fetchNewsCore.ts`, `lib/news/fetchNews.ts`)
+  - 다양한 카테고리 키워드로 `everything` 검색 → `raw_news` 테이블에 **upsert(중복 방지)** (`app/api/internal/collect-news/route.ts`)
+- **시장 지표 수집**: `yahoo-finance2`로 주요 글로벌 지수 quote 수집 (`lib/api/yahooFinance.ts`)
+
+### 2) AI 분석 (Gemini/OpenAI Dual Adapter)
+- **모델 어댑터**:
+  - Gemini: `lib/ai/gemini.ts` (`gemini-2.5-flash`)
+  - OpenAI: `lib/ai/openai.ts` (`gpt-4.1-mini`, JSON-only response_format)
+- **프롬프트 빌더**: 뉴스/섹터/영향도/관찰대상/인사이트를 각각 분리해 JSON 스키마를 강제 (`lib/prompts/*.ts`)
+- **병렬 분석**: `performAIAnalysis`에서 5개 영역을 `Promise.all`로 병렬 호출하여 latency 최소화 (`lib/services/briefing.ts`)
+
+### 3) 저장/캐싱 전략 (Supabase + Redis)
+- **Supabase**: 가공된 결과를 `news_articles`, `observation_items`, `market_indices`, `sector_strategies`, `briefing_history` 등에 저장 (`app/api/internal/generate-briefing/route.ts`)
+- **Redis**: 메인 대시보드용 결과를 시간 슬롯 키로 캐싱하고 최신 fallback 키도 유지 (`dashboard:latest`, `getTimeSlotRedisKey`)  
+  → 메인 페이지는 Redis 캐시를 빠르게 읽어 **초기 로딩을 최소화**합니다. (`app/api/main/*`)
+
+---
+
+## ✨ 핵심 기능 및 페이지 (Core Features)
+
+### 📊 메인 리포트 대시보드
+- **시각적 의사결정 지원**: AI가 분석한 당일 핵심 이슈를 대시보드 형태로 구성하여 시장의 흐름을 한눈에 파악할 수 있도록 설계했습니다.
+- **AI 시장 온도계**: 뉴스 본문을 분석하여 시장 심리를 수치화하고 애니메이션 스코어로 시각화합니다.
+
+### 📰 뉴스 상세 및 시각적 리포트
+- **데이터 기반 레이아웃**: 단순 텍스트 나열이 아닌, 주요 지수와 뉴스의 맥락을 연결한 리포트 형식의 레이아웃을 제공합니다.
+- **AI 3줄 요약**: 바쁜 현대인을 위해 핵심 체크포인트만 빠르게 전달합니다.
+
+### 🔍 통합 검색 및 스마트 매핑
+- **통합 검색 시스템**: 주식, ETF, 뉴스를 아우르는 통합 검색 결과를 제공하며 검색 기록 관리 기능을 지원합니다.
+- **Smart Mapping**: 뉴스 내 언급된 종목 정보를 감지하여 상세 분석 모달로 즉시 연결합니다.
+
+---
+
+## 💎 고급 UI/UX 기능 (Advanced UI/UX)
+
+- **무한 스크롤 (Infinite Scroll)**: `Intersection Observer API`를 활용하여 방대한 뉴스 데이터를 끊김 없이 로드합니다. 데이터 페칭 최적화를 통해 리소스 사용을 최소화했습니다.
+- **정교한 Skeleton UI**: 데이터 로딩 중 레이아웃 시프트(CLS)를 방지하고, 사용자 이탈을 막기 위해 실제 콘텐츠 구조와 일치하는 스켈레톤 화면을 설계했습니다.
+- **Pull-to-Refresh**: 모바일 전용 커스텀 PTR 컴포넌트를 구현하여 네이티브 앱과 같은 사용성을 제공합니다.
+
+---
+
+## 🏗 성능 최적화 및 품질 관리 (Engineering Excellence)
+
+### ⚡ 성능 최적화 (UX)
+- **Lighthouse All 90+**: 성능, 접근성, 권장사항, SEO 전 항목 90점 이상을 유지하고 있습니다.
+- **최적화 기법**: `next/image`를 이용한 이미지 최적화 및 `next/font`를 통한 웹 폰트 로딩 최적화를 적용했습니다.
+- **Real-user Monitoring**: Next.js Web Vitals 데이터를 Sentry로 전송하는 커스텀 훅을 구현하여 실제 사용자의 성능 지표를 실시간 모니터링합니다.
+
+### 🛠 품질 자동화 (DX)
+- **Commit 규칙 강제**: `@commitlint`와 `Husky`를 도입하여 **Conventional Commits**를 준수하도록 강제하여 팀 협업 효율을 높였습니다.
+- **검증 자동화**: 빌드 전 Lint 체크 및 Type 체크를 통해 코드 품질을 자동 관리합니다.
+- **CI/CD 파이프라인**: Vercel 자동 배포와 연동하여 배포 시 Sentry 소스맵 업로드를 자동화함으로써 에러 추적 효율을 극대화했습니다.
+
+### 🔁 프론트엔드 데이터 페칭/캐싱 전략 (TanStack Query)
+- **Query Key 설계**: 메인/뉴스상세/검색 등 도메인 단위로 queryKey를 분리 (`hooks/useMain.ts`)
+- **기본 옵션 표준화**: `staleTime`, `retry`, `refetchOnWindowFocus`를 공통화해 UX 일관성 확보 (`hooks/withQueryDefaults.ts`)
+- **Infinite Query**: 뉴스 리스트는 `useInfiniteQuery` + pagination 기반으로 끊김 없이 로드 (`useInfiniteNewsList`)
+- **모바일 새로고침 UX**: Pull-to-Refresh가 `invalidateQueries()`로 최신 데이터 동기화 (`components/common/PullToRefresh.tsx`)
+
+### 🧯 안정성/관측 가능성 (Sentry)
+- **API 실패 자동 보고**: 공통 `Fetcher`에서 HTTP 실패/네트워크 오류를 Sentry로 전송하며 URL/Status/context를 함께 남김 (`util/fetcher.ts`, `lib/sentry.ts`)
+- **소스맵 업로드 & Ad-block 우회**: `withSentryConfig` + `tunnelRoute`로 운영 환경에서 트레이싱 품질/가시성 강화 (`next.config.ts`)
+
+---
+
+## 📂 프로젝트 구조 (Folder Structure)
+
+```bash
+e:\code\ai
+├── app/                  # Next.js App Router (Page, Layout, API Routes)
+│   ├── analysis/         # AI 심층 분석 클라이언트 페이지
+│   ├── api/              # AI 연동 및 데이터 처리 API
+│   ├── news/             # 뉴스 상세 및 무한 스크롤 리스트
+│   └── search/           # 통합 검색 페이지
+├── components/           # 재사용 가능한 UI 컴포넌트
+│   ├── common/           # Header, Modal, PTR, Skeleton 등 공통 요소
+│   ├── main/             # 섹션별 핵심 비즈니스 컴포넌트
+│   └── skeleton/         # 레이아웃 시프트 방지용 스켈레톤
+├── hooks/                # Custom Hooks (Animation, Web Vitals, Data Fetching)
+├── lib/                  # 외부 서비스 설정 (AI, Supabase, Redis, Sentry)
+├── store/                # Zustand 전역 상태 관리 (Search, Toast)
+├── style/                # 테마 변수 기반 글로벌 CSS (Dark Mode 지원)
+├── types/                # TypeScript Interface/Type 정의
+└── util/                 # 공통 유틸리티 (Time, Fetcher, Auth)
+```
+
+---
+
+## 💡 기술적 도전 및 해결 (Technical Challenges)
+
+### 1️⃣ 하이드레이션(Hydration) 불일치 해결
+다크 모드 및 클라이언트 전용 데이터(`localStorage`) 사용 시 발생하는 하이드레이션 오류를 해결하기 위해 `useSyncExternalStore` 패턴을 도입했습니다. 서버와 클라이언트의 스냅샷을 분리 관리하여 안정적인 초기 렌더링을 보장합니다.
+
+### 2️⃣ Web Vitals & Sentry 커스텀 통합
+LCP, FID, CLS 등 핵심 지표를 Sentry의 `captureMeasurement` API와 연결하여 단순 에러 로깅을 넘어 성능 지표 기반의 모니터링 환경을 구축했습니다.
+
+### 3️⃣ MCP 기반 AI 협업 개발
+Model Context Protocol(MCP)을 활용하여 AI가 코드베이스의 전체 맥락을 이해하도록 함으로써, 복잡한 타입 시스템 설계 및 대규모 리팩토링 과정에서 생산성을 획기적으로 높였습니다.
+
+---
+
+## 🔗 링크 (Links)
+
+- **Live Demo**: [https://ai-red-mu.vercel.app/](https://ai-red-mu.vercel.app/)
