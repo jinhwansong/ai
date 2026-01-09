@@ -1,63 +1,64 @@
 @import 'tailwindcss';
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #f8fafc;
-    --bg-main: #f3f4f6;
-    --foreground: #0f172a;
-    --light-bg: #f9fafb;
-    --deep-navy: #0f172a;
+:root {
+  --background: #f8fafc;
+  --bg-main: #f3f4f6;
+  --foreground: #0f172a;
+  --light-bg: #f9fafb;
+  --deep-navy: #0f172a;
+  --secondary-bg: #f1f5f9;
+  --white-bg: #fff;
 
-    --card-bg: #ffffff;
-    --border: #f1f5f9;
+  --card-bg: #ffffff;
+  --border: #f1f5f9;
 
-    --primary: #6366f1;
-    --primary-strong: #4f46e5;
-    --primary-soft: #EEF2FF;
+  --primary: #6366f1;
+  --primary-strong: #4f46e5;
+  --primary-soft: #EEF2FF;
 
-    --text-title: #111827;
-    --text-body: #374151;
-    --text-muted: #6b7280;
-    --text-white: #ffffff;
+  --text-amber:#f59e0b;
+  --text-title: #111827;
+  --text-body: #374151;
+  --text-muted: #6b7280;
+  --text-white: #ffffff;
 
-    --hover-surface: #f9fafb;
-    --btn-text: #ffffff;
-    --btn-bg-hover: #1e293b;
+  --hover-surface: #f9fafb;
+  --btn-text: #ffffff;
+  --btn-bg-hover: #1e293b;
 
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-  }
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0c12;
-    --bg-main: #020617;
-    --foreground: #f8fafc;
-    --light-bg: #111827;
-    --deep-navy: #070910;
+.dark {
+  --background: #0b0c12;
+  --bg-main: #020617;
+  --foreground: #f8fafc;
+  --light-bg: #111827;
+  --deep-navy: #070910;
+  --white-bg: #314158;
+  --secondary-bg: #1d293d;
+  
+  --card-bg: #1e1f20;
+  --border: #262626;
 
-    --card-bg: #1e1f20;
-    --border: #262626;
+  --primary: #818cf8;
+  --primary-strong: #6366f1;
+  --primary-soft: #312E8133;
 
-    --primary: #818cf8;
-    --primary-strong: #6366f1;
-    --primary-soft: #312E8133;
+  --text-title: #f8fafc;
+  --text-body: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-white: #ffffff;
 
-    --text-title: #f8fafc;
-    --text-body: #d1d5db;
-    --text-muted: #9ca3af;
-    --text-white: #ffffff;
+  --hover-surface: #171717;
+  --btn-bg-hover: #e5e7eb;
+  --btn-text: #0f172a;
 
-    --hover-surface: #171717;
---btn-bg-hover: #e5e7eb;
---btn-text: #0f172a;
-
-    --glass-bg: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 @layer base {

@@ -1,60 +1,62 @@
 'use client';
 
-import { Home, LineChart, PieChart, Newspaper, Settings } from 'lucide-react';
+import { Home, LineChart, Newspaper } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const mobileTabs = [
-  { id: 'home', label: '홈', icon: Home, active: true },
-  { id: 'market', label: '마켓', icon: LineChart, active: false },
-  { id: 'portfolio', label: '포트폴리오', icon: PieChart, active: false },
-  { id: 'news', label: '뉴스', icon: Newspaper, active: false },
-  { id: 'more', label: '더보기', icon: Settings, active: false },
+  { id: 'home', label: '홈', icon: Home, href: '/' },
+  { id: 'analysis', label: 'AI분석', icon: LineChart, href: '/analysis' },
+  { id: 'news', label: '뉴스', icon: Newspaper, href: '/news' },
 ];
 
 const desktopTabs = [
   {
     title: 'Service',
     items: [
-      { label: '실시간 시그널' },
-      { label: 'AI 시황 리포트' },
-      { label: '섹터 모멘텀' },
-      { label: '전략 포트폴리오' },
+      { label: '실시간 시장 시그널', href: '/' },
+      { label: 'AI 시황 리포트', href: '/analysis' },
+      { label: '오늘의 관찰 대상', href: '/' },
+      { label: '섹터 투자 전략', href: '/' },
     ],
   },
   {
-    title: 'Analysis',
+    title: 'Support',
     items: [
-      { label: '글로벌 지표' },
-      { label: '시장 캘린더' },
-      { label: '뉴스 큐레이션' },
-      { label: 'AI 지표 알림' },
+      { label: '이용약관', href: '/terms' },
+      { label: '개인정보처리방침', href: '/privacy' },
     ],
   },
   {
-    title: 'Community',
+    title: 'Connect',
     items: [
-      { label: '공식 블로그' },
-      { label: '인사이트 뉴스레터' },
+      { label: '공식 블로그', href: 'https://song7022556.tistory.com/' },
+      { label: '깃 허브', href: 'https://github.com/jinhwansong/ai' },
     ],
   },
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-(--border) bg-(--glass-bg) px-2 pb-safe pt-2 backdrop-blur-xl md:hidden">
         {mobileTabs.map((tab) => {
           const Icon = tab.icon;
+          const isActive = pathname === tab.href;
           return (
-            <button
+            <Link
               key={tab.id}
+              href={tab.href}
               className={`flex flex-col items-center gap-1 px-3 py-1 transition-all ${
-                tab.active ? 'text-(--primary)' : 'text-(--text-muted)'
+                isActive ? 'text-(--primary)' : 'text-(--text-muted)'
               }`}
             >
               <div className="relative">
-                <Icon size={22} strokeWidth={tab.active ? 2.5 : 2} />
-                {tab.active && (
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                {isActive && (
                   <motion.div
                     layoutId="activeTab"
                     className="absolute -inset-2 -z-10 rounded-xl bg-(--primary-soft)"
@@ -63,7 +65,7 @@ export default function Footer() {
                 )}
               </div>
               <span className="text-[10px] font-bold">{tab.label}</span>
-            </button>
+            </Link>
           );
         })}
       </nav>
@@ -87,22 +89,25 @@ export default function Footer() {
             </div>
 
             <div className="flex flex-wrap justify-center gap-x-12 gap-y-8 lg:gap-x-20">
-              {desktopTabs.map((item) => (
-                <div className="flex flex-col gap-4" key={item.title}>
+              {desktopTabs.map((section) => (
+                <div className="flex flex-col gap-4" key={section.title}>
                   <h4 className="text-xs font-black uppercase tracking-widest text-(--text-title)">
-                    {item.title}
+                    {section.title}
                   </h4>
                   <ul className="grid grid-cols-1 gap-y-2.5 text-xs text-(--text-muted)">
-                  {item.items.map((label) => (
-                    <li className="hover:text-(--primary) transition-colors cursor-pointer" key={label.label}>
-                      {label.label}
-                    </li>
-                  ))}
+                    {section.items.map((item) => (
+                      <li key={item.label}>
+                        <Link
+                          href={item.href}
+                          className="hover:text-(--primary) transition-colors cursor-pointer"
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               ))}
-
-            
             </div>
           </div>
 
@@ -119,17 +124,6 @@ export default function Footer() {
                   통신 지연이나 오류가 발생할 수 있음을 알려드립니다.
                 </p>
               </div>
-              {/* <div className="flex gap-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">
-                  <div className="h-4 w-4 rounded-sm bg-slate-400"></div>
-                </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">
-                  <div className="h-4 w-4 rounded-sm bg-slate-400"></div>
-                </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">
-                  <div className="h-4 w-4 rounded-sm bg-slate-400"></div>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

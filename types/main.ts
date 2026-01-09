@@ -36,7 +36,8 @@ export interface MainSectorStrategy {
   }[];
 }
 
-export interface MainNewsItem {
+export interface NewsItem {
+  id: string;
   title: string;
   summary: string;
   tags: string[];
@@ -46,8 +47,28 @@ export interface MainNewsItem {
 }
 
 export interface MainNewsResponse {
-  news: MainNewsItem[];
+  news: NewsItem[];
   date: string;
+}
+
+export interface NewsArticle extends NewsItem {
+  url: string;
+  content: string;
+  checkpoints: string[];
+  related_sectors: string[];
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  hasNext: boolean;
+}
+
+export interface NewsListResponse {
+  data: NewsItem[];
+  success: boolean;
+  pagination: Pagination;
 }
 
 export type MarketStance = 'positive' | 'neutral' | 'cautious' | 'negative';
@@ -68,20 +89,16 @@ export interface ObservationItem {
   reason: string;
   tags: string[];
   momentum: 'Strong' | 'Moderate' | 'Building';
+  relatedNews?: {
+    title: string;
+    source: string;
+    url: string;
+    time: string;
+  }[];
 }
 
-export interface NewsItem {
-  title: string;
-  summary: string;
-  tags: string[];
-  published_at: string;
-  source: string;
-  impact: 'High' | 'Medium' | 'Low';
-}
 
-export interface NewsFeedProps {
-  news: NewsItem[];
-}
+
 export interface InsightItem {
   summary: string;
   generatedAt: string;

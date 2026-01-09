@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, TrendingUp } from 'lucide-react';
 import { ObservationItem } from '@/types/main';
@@ -7,10 +8,15 @@ import SectionHeader from '@/components/common/SectionHeader';
 import Tags from '../common/Tags';
 import { useMainObservation } from '@/hooks/useMain';
 import ObservationSkeleton from '@/components/skeleton/ObservationSkeleton';
+import Modal from '@/components/common/Modal';
+import ObservationDetail from './ObservationDetail';
 
 export default function ObservationSection() {
   const { data, isLoading } = useMainObservation();
+  const [selectedItem, setSelectedItem] = useState<ObservationItem | null>(null);
+  
   const items = (data || []) as ObservationItem[];
+  
   if (isLoading) return <ObservationSkeleton />;
   if (!items || items.length === 0) return null;
 
@@ -35,11 +41,12 @@ export default function ObservationSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="kakao-card group flex flex-col p-5 transition-all hover:shadow-xl border border-slate-100 dark:border-slate-800"
+            onClick={() => setSelectedItem(item)}
+            className="kakao-card group flex cursor-pointer flex-col p-5 transition-all hover:shadow-xl border border-(--border)"
           >
             <div className="mb-4 flex items-start justify-between">
               <div>
-                <span className="mb-1 inline-block rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 uppercase dark:bg-slate-800">
+                <span className="mb-1 inline-block rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-(--text-muted) uppercase">
                   {item.type}
                 </span>
                 <h4 className="text-base font-black text-(--text-title) group-hover:text-(--primary-strong) transition-colors">
@@ -54,7 +61,7 @@ export default function ObservationSection() {
                   item.momentum === 'Strong'
                     ? 'bg-rose-50 text-rose-500'
                     : item.momentum === 'Moderate'
-                    ? 'bg-amber-50 text-amber-500'
+                    ? 'bg-amber-50 text-(--text-amber)'
                     : 'bg-blue-50 text-blue-500'
                 }`}
               >
@@ -63,7 +70,7 @@ export default function ObservationSection() {
               </div>
             </div>
 
-            <p className="mb-4 flex-1 text-xs font-medium leading-relaxed text-slate-600 dark:text-slate-400 line-clamp-3">
+            <p className="mb-4 flex-1 text-xs font-medium leading-relaxed text-(--text-muted) line-clamp-3">
               {item.reason}
             </p>
 
@@ -71,6 +78,15 @@ export default function ObservationSection() {
           </motion.div>
         ))}
       </div>
+
+      <Modal
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        title="관찰 대상 상세 분석"
+        maxWidth="lg"
+      >
+        {selectedItem && <ObservationDetail item={selectedItem} />}
+      </Modal>
     </section>
   );
 }

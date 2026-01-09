@@ -11,14 +11,16 @@ export interface SectorResponse {
 }
 
 export interface NewsItem {
-    title: string;
-    descriptionShort: string;
-    contentLong: string;
-    tags: string[];
-    relatedSectors: string[];
-    impact: string;
-    url: string;
-    source?: string;
+  id?: string;
+  title: string;
+  descriptionShort: string;
+  contentLong: string;
+  checkpoints: string[];
+  tags: string[];
+  relatedSectors: string[];
+  impact: string;
+  url: string;
+  source: string;
 }
 
 export interface NewsResponse {
@@ -63,8 +65,4 @@ export interface MacroItem {
     change: string;
     status: string;
     aiAnalysis: string;
-}
-
-export interface MacroResponse {
-  macro: MacroItem[];
 }

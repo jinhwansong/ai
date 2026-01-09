@@ -1,27 +1,27 @@
 import { runGPTJSON } from '@/lib/ai/openai';
 import { runGeminiJSON } from '@/lib/ai/gemini';
-import { buildMacroPrompt } from '@/lib/prompts/macroBuilder';
 import { buildSectorPrompt } from '@/lib/prompts/sectorBuilder';
 import { buildNewsPrompt } from '@/lib/prompts/newsBuilder';
 import { buildMarketImpactPrompt } from '@/lib/prompts/impactBuilder';
 import { buildObservationPrompt } from '@/lib/prompts/observationBuilder';
 import { buildInsightPrompt } from '@/lib/prompts/insightBuilder';
 import {
-  MacroResponse,
   NewsResponse,
   SectorResponse,
   MarketImpactResponse,
   ObservationResponse,
   InsightResponse,
 } from '@/types/services';
+import { MarketIndexData } from '@/lib/api/yahooFinance';
 
 // 공통 인터페이스 정의
 export interface BriefingInquiry {
   modelType?: 'gpt' | 'gemini';
   userKeywords: string[];
-  marketData: Record<string, unknown>;
+  marketData: {
+    globalIndices: MarketIndexData[];
+  };
   newsList: unknown[];
-  userPortfolio: Record<string, unknown>;
 }
 
 export async function performAIAnalysis(inquiry: BriefingInquiry) {
@@ -34,19 +34,37 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
   const runAI = modelType === 'gpt' ? runGPTJSON : runGeminiJSON;
 
   // 병렬 호출
-  const [macroRes, sectorRes, newsRes, impactRes, observationRes, insightRes] = (await Promise.all([
-    runAI(buildMacroPrompt(marketData)),
-    runAI(buildSectorPrompt(userKeywords, marketData)),
+  const [sectorRes, newsRes, impactRes, observationRes, insightRes] = (await Promise.all([
+    runAI(buildSectorPrompt(userKeywords, marketData, newsList)),
     runAI(buildNewsPrompt(newsList)),
     runAI(buildMarketImpactPrompt(marketData, newsList)),
     runAI(buildObservationPrompt(marketData, newsList)),
     runAI(buildInsightPrompt(marketData, newsList)),
-  ])) as [MacroResponse, SectorResponse, NewsResponse, MarketImpactResponse, ObservationResponse, InsightResponse];
+  ])) as [SectorResponse, NewsResponse, MarketImpactResponse, ObservationResponse, InsightResponse];
 
   // 데이터 취합 로직
   return {
     main: {
-      macro: macroRes.macro,
+      macro: marketData.globalIndices.map((idx) => ({
+        region: idx.region,
+        indexName: idx.name,
+        value: idx.price.toLocaleString(),
+        change: `${idx.changePercent >= 0 ? '+' : ''}${idx.changePercent.toFixed(2)}%`,
+        status:
+          idx.changePercent > 0.5
+            ? 'positive'
+            : idx.changePercent < -0.5
+            ? 'negative'
+            : idx.changePercent < 0
+            ? 'cautious'
+            : 'neutral',
+        aiAnalysis:
+          idx.changePercent > 0
+            ? '상승 흐름을 보이고 있습니다.'
+            : idx.changePercent < 0
+            ? '조정 또는 하락세를 나타내고 있습니다.'
+            : '현재 보합권에서 등락 중입니다.',
+      })),
       signal: {
         focus: impactRes.focus,
         description: impactRes.description,
@@ -69,6 +87,7 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
         title: n.title,
         descriptionShort: n.descriptionShort,
         contentLong: n.contentLong,
+        checkpoints: n.checkpoints || [],
         impact: n.impact,
         tags: n.tags,
         relatedSectors: n.relatedSectors,
@@ -84,6 +103,7 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
       newsDetails: newsRes.news.map((n) => ({
         title: n.title,
         contentLong: n.contentLong,
+        checkpoints: n.checkpoints || [],
       })),
     },
   };

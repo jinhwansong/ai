@@ -14,7 +14,8 @@ ${JSON.stringify(newsList, null, 2)}
     {
       "title": "뉴스 제목 (원본 제목 또는 번역된 제목)",
       "descriptionShort": "메인 대시보드용 한 줄 요약 (30~50자)",
-      "contentLong": "상세 페이지용 심층 분석 본문 (100~200자)",
+      "contentLong": "상세 페이지용 심층 분석 본문 (공백 제외 800자 ~ 1,200자 내외)",
+      "checkpoints": ["핵심 관전 포인트 1", "핵심 관전 포인트 2", "핵심 관전 포인트 3"],
       "tags": ["태그1", "태그2", "태그3"],
       "relatedSectors": ["섹터1", "섹터2"],
       "impact": "High | Medium | Low",

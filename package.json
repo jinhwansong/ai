@@ -13,6 +13,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "lhci": "lhci collect && lhci assert",
     "test": "echo \"No tests specified\" && exit 0",
     "prepare": "husky",
     "commit": "cz"
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.33.0",
+    "@sentry/nextjs": "^10.32.1",
     "@supabase/supabase-js": "^2.89.0",
     "@tanstack/react-query": "^5.90.12",
     "clsx": "^2.1.1",
@@ -33,10 +35,13 @@
     "ioredis": "^5.4.1",
     "lucide-react": "^0.562.0",
     "next": "16.0.10",
+    "next-themes": "^0.4.6",
     "openai": "^6.10.0",
     "pg": "^8.16.3",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-intersection-observer": "^10.0.0",
+    "react-virtuoso": "^4.18.1",
     "swiper": "^12.0.3",
     "yahoo-finance2": "^3.11.2",
     "zustand": "^5.0.9"
@@ -44,6 +49,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
+    "@lhci/cli": "^0.13.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",

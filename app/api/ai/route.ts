@@ -17,11 +17,6 @@ export async function POST(req: NextRequest) {
       body.newsList = latestNews || [];
     }
 
-    //  marketData가 없다면 기본값 세팅
-    if (!body.marketData) {
-      body.marketData = {};
-    }
-
     // 공통 서비스 호출을 통한 분석 수행
     const result = await performAIAnalysis(body);
 

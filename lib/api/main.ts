@@ -1,5 +1,5 @@
 import { Fetcher } from '@/util/fetcher';
-import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal, ObservationItem, InsightItem } from '@/types/main';
+import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal, ObservationItem, InsightItem, NewsItem } from '@/types/main';
 import { MainMacroResponse } from '@/types/macro';
 import { AnalysisData } from '@/types/news';
 
@@ -27,3 +27,5 @@ export const fetchMainInsight = () =>
 
 export const fetchSignalDetail = () => Fetcher<AnalysisData>('/api/main/analysis');
 
+export const fetchSearchResults = (query: string) => 
+  Fetcher<{ news: NewsItem[]; observations: ObservationItem[] }>(`/api/main/search?q=${encodeURIComponent(query)}`);

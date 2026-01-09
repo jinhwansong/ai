@@ -18,7 +18,7 @@ export default function InsightSection() {
               <Sparkles className="text-white w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">
+              <span className="text-[10px] font-black uppercase tracking-widest text-(--primary)">
                 AI 한 줄 요약
               </span>
               <span className="text-xs font-bold text-slate-500">

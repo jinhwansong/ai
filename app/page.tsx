@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import SignalHighlight from '@/components/main/SignalHighlight';
@@ -10,46 +11,61 @@ import NewsFeed from '@/components/main/NewsFeed';
 import ObservationSection from '@/components/main/ObservationSection';
 import InsightSection from '@/components/main/InsightSection';
 import NoticeModal from '@/components/common/NoticeModal';
+import PullToRefresh from '@/components/common/PullToRefresh';
 
 export default function Home() {
-  const [showNotice, setShowNotice] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return !localStorage.getItem('ai_notice_dismissed');
-  });
+  const queryClient = useQueryClient();
+  const [isClosedManually, setIsClosedManually] = useState(false);
+
+  const isDismissed = useSyncExternalStore(
+    () => () => {}, 
+    () => localStorage.getItem('ai_notice_dismissed') === 'true',
+    () => true 
+  );
+
+  const showNotice = !isDismissed && !isClosedManually;
 
   const handleCloseNotice = () => {
-    setShowNotice(false);
+    setIsClosedManually(true);
     if (typeof window !== 'undefined') {
       localStorage.setItem('ai_notice_dismissed', 'true');
     }
+  };
+
+  const handleRefresh = async () => {
+    // 모든 쿼리를 무효화하고 다시 페칭
+    await queryClient.invalidateQueries();
+    // 애니메이션 시인성을 위한 최소 대기 시간
+    await new Promise(resolve => setTimeout(resolve, 800));
   };
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main className="flex-1 px-4 py-8 md:px-8 relative">
-        <div className="mx-auto max-w-7xl space-y-10 pb-10">
-          <div id="section-signal">
-            <SignalHighlight />
-          </div>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <main className="flex-1 px-4 py-8 md:px-8 relative">
+          <div className="mx-auto max-w-7xl space-y-10 pb-10">
+            <div id="section-signal">
+              <SignalHighlight />
+            </div>
 
-          <div id="section-macro">
-            <GlobalMacro />
-          </div>
+            <div id="section-macro">
+              <GlobalMacro />
+            </div>
 
-          <div id="section-news" className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-            <NewsFeed />
-            <div>
+            <div id="section-news" className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+              <NewsFeed />
               <SectorStrategy />
             </div>
+            <div id="section-observation">
+              <ObservationSection />
+            </div>
           </div>
-          <div id="section-observation">
-            <ObservationSection />
-          </div>
-        </div>
-        <InsightSection />
-      </main>
+          <InsightSection />
+        </main>
+      </PullToRefresh>
+
       <Footer />
 
       <NoticeModal open={showNotice} onClose={handleCloseNotice}>
