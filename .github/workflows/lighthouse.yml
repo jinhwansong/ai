@@ -31,7 +31,10 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} 
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          
       - name: Run Lighthouse CI
         run: |
           npx lhci collect
