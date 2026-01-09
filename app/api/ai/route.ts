@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { performAIAnalysis, BriefingInquiry } from '@/lib/services/briefing';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const body: BriefingInquiry = await req.json();
