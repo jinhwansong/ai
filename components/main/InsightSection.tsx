@@ -34,7 +34,7 @@ export default function InsightSection() {
                 '반도체 수출 호조와 연준의 비둘기파적 발언으로 국내 증시의 단기 반등 모멘텀이 강화되고 있습니다.'}
               &ldquo;
             </p>
-            <p className="mt-1 text-[11px] font-medium text-slate-400">
+            <p className="mt-1 text-[11px] font-medium text-slate-300">
               초보자를 위한 한 줄 요약입니다. 투자 판단은 별도로 확인하세요.
             </p>
           </div>

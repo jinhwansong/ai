@@ -82,7 +82,7 @@ export default function Header() {
                       <Link
                         key={item.name}
                         href="/news"
-                        className="rounded-full px-5 py-2 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
+                        className="inline-flex items-center justify-center rounded-full px-5 py-2 min-h-12 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
                       >
                         {item.name}
                       </Link>
@@ -97,7 +97,7 @@ export default function Header() {
                           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
                       }}
-                      className="rounded-full px-5 py-2 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
+                      className="inline-flex items-center justify-center rounded-full px-5 py-2 min-h-12 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
                     >
                       {item.name}
                     </button>
@@ -201,7 +201,7 @@ export default function Header() {
             <button 
               onClick={() => setIsSearchExpanded(true)}
               aria-label="검색 열기"
-              className="flex h-10 w-10 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"
+              className="flex h-12 w-12 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"
             >
               <Search size={20} />
             </button>

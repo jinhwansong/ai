@@ -25,7 +25,7 @@ export default function Error({
         onReset={reset}
       />
       {error.digest && (
-        <p className="absolute bottom-4 text-[10px] text-slate-400">Error ID: {error.digest}</p>
+        <p className="absolute bottom-4 text-[10px] text-slate-600 dark:text-slate-400">Error ID: {error.digest}</p>
       )}
     </div>
   );

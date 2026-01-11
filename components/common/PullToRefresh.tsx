@@ -115,7 +115,7 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
   return (
     <div className="relative overflow-hidden">
       {/* 새로고침 인디케이터 - 터치 기기에서만 활성 */}
-      {isTouchDevice && (
+      {isTouchDevice && (pullDistance > 0 || isRefreshing) && (
         <div 
           className="fixed left-0 w-full flex justify-center items-center pointer-events-none z-50"
           style={{

@@ -52,7 +52,7 @@ export default function ObservationSection() {
                 <h4 className="text-base font-black text-(--text-title) group-hover:text-(--primary-strong) transition-colors">
                   {item.name}
                 </h4>
-                <span className="text-xs font-bold text-slate-400">
+                <span className="text-xs font-bold text-slate-600">
                   {item.symbol}
                 </span>
               </div>

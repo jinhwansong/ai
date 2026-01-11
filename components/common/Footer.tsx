@@ -130,7 +130,7 @@ export default function Footer() {
                 <p className="text-[10px] font-medium text-(--text-muted)">
                   © 2026 오늘의 시그널 Insights. All rights reserved.
                 </p>
-                <p className="max-w-2xl text-[9px] leading-relaxed text-slate-400 dark:text-slate-500">
+                <p className="max-w-2xl text-[9px] leading-relaxed text-slate-600 dark:text-slate-400">
                   면책고지: 오늘의 시그널에서 제공하는 모든 정보는 투자
                   참고용이며, 투자 결과에 대한 법적 책임은 투자자 본인에게
                   있습니다. 모든 데이터는 실시간 정보 제공사로부터 제공받으나,

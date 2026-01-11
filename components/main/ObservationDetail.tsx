@@ -97,7 +97,7 @@ export default function ObservationDetail({ item }: ObservationDetailProps) {
       <Tags tags={item.tags} size={10} />
 
       <div className="rounded-xl border border-dashed border-slate-200 p-4 dark:border-slate-800">
-        <p className="text-center text-xs font-medium text-slate-400">
+        <p className="text-center text-xs font-medium text-slate-600 dark:text-slate-400">
           본 리포트는 AI에 의해 생성되었으며 투자 권유가 아닙니다. <br />
           최종 투자 결정은 반드시 본인의 판단하에 이루어져야 합니다.
         </p>
