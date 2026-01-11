@@ -9,7 +9,7 @@ interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
 }
 
-const PULL_THRESHOLD = 80; // 당기는 임계치 (px)
+const PULL_THRESHOLD = 40; // 당기는 임계치 (px)
 
 export default function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);

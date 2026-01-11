@@ -40,8 +40,8 @@ export default function NewsListPage() {
   const allNews = data?.pages.flatMap((page) => page.data) || [];
 
   const handleRefresh = async () => {
-    // 뉴스 리스트만 새로고침 (페이지/필터 포함한 infinite query 갱신)
-    await queryClient.invalidateQueries({ queryKey: ['news-list'] });
+    // PTR에서는 스켈레톤이 다시 보이도록 reset 후 재요청
+    await queryClient.resetQueries({ queryKey: ['news-list'], type: 'active' });
     // 애니메이션 시인성을 위한 최소 대기 시간
     await new Promise((resolve) => setTimeout(resolve, 600));
   };
