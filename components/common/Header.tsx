@@ -51,7 +51,11 @@ export default function Header() {
     <header className="glass-header sticky top-0 z-50 w-full px-4 py-3 md:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-2">
+        <Link
+          href="/"
+          aria-label="오늘의 시그널 홈으로 이동"
+          className="flex shrink-0 items-center gap-2"
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--primary) text-(--text-white) shadow-lg shadow-indigo-500/30">
             <span className="text-sm font-bold italic">S</span>
           </div>
@@ -69,6 +73,7 @@ export default function Header() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
+                aria-label="주요 메뉴"
                 className="hidden items-center gap-1 md:flex"
               >
                 {navItems.map((item) => {
@@ -107,20 +112,28 @@ export default function Header() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
+                  role="search"
+                  aria-label="사이트 검색"
                   className="flex w-full items-center gap-2 rounded-full bg-(--hover-surface) px-4 py-2 border border-(--border)"
                 >
                   <Search size={18} className="text-(--text-muted)" />
+                  <label htmlFor="header-search" className="sr-only">
+                    검색어 입력
+                  </label>
                   <input
+                    id="header-search"
                     autoFocus
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="관심 키워드나 섹터를 검색하세요"
+                    aria-label="검색어"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-(--text-muted) text-(--text-body)"
                   />
                   <button 
                     type="button"
                     onClick={() => setIsSearchExpanded(false)}
+                    aria-label="검색 닫기"
                     className="text-(--text-muted) hover:text-(--text-body)"
                   >
                     <X size={18} />
@@ -166,6 +179,7 @@ export default function Header() {
                                 e.stopPropagation();
                                 removeSearch(query);
                               }}
+                              aria-label={`최근 검색어 삭제: ${query}`}
                               className="text-(--text-muted) opacity-0 group-hover:opacity-100 hover:text-rose-500 transition-all"
                             >
                               <X size={14} />
@@ -186,6 +200,7 @@ export default function Header() {
           {!isSearchExpanded && (
             <button 
               onClick={() => setIsSearchExpanded(true)}
+              aria-label="검색 열기"
               className="flex h-10 w-10 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"
             >
               <Search size={20} />

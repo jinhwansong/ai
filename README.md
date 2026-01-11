@@ -52,7 +52,7 @@
 ![Sentry](https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![NewsAPI](https://img.shields.io/badge/NewsAPI-2C7DF7?style=for-the-badge&logo=rss&logoColor=white)
+![The%20News%20API](https://img.shields.io/badge/The%20News%20API-111827?style=for-the-badge&logo=rss&logoColor=white)
 ![Yahoo Finance](https://img.shields.io/badge/Yahoo%20Finance-6001D2?style=for-the-badge&logo=yahoo&logoColor=white)
 
 ---
@@ -65,6 +65,8 @@
 ### 1) 데이터 수집 (Sources)
 - **뉴스 수집**: **The News API** 기반 (`lib/news/theNewsApi.ts`)
   - 12개 섹터를 순차 호출(2초 딜레이) → `raw_news` 테이블에 **uuid 기준 upsert(중복 방지)** (`app/api/internal/collect-news/route.ts`)
+  - **스케줄(KST)**: 08:30 / 14:00 / 18:00 (GitHub Actions cron은 UTC 기준으로 변환하여 설정: `.github/workflows/cron.yml`)
+  - **쿼터/레이트리밋 대응**: `for...of` + `await setTimeout(2000)`로 섹터별 순차 호출(1회 실행 총 36개 요청)
 - **시장 지표 수집**: `yahoo-finance2`로 주요 글로벌 지수 quote 수집 (`lib/api/yahooFinance.ts`)
 
 ### 2) AI 분석 (Gemini/OpenAI Dual Adapter)
@@ -102,6 +104,7 @@
 - **무한 스크롤 (Infinite Scroll)**: `Intersection Observer API`를 활용하여 방대한 뉴스 데이터를 끊김 없이 로드합니다. 데이터 페칭 최적화를 통해 리소스 사용을 최소화했습니다.
 - **정교한 Skeleton UI**: 데이터 로딩 중 레이아웃 시프트(CLS)를 방지하고, 사용자 이탈을 막기 위해 실제 콘텐츠 구조와 일치하는 스켈레톤 화면을 설계했습니다.
 - **Pull-to-Refresh**: 모바일 전용 커스텀 PTR 컴포넌트를 구현하여 네이티브 앱과 같은 사용성을 제공합니다.
+- **Mobile Modal UX**: 종목/ETF 상세 팝업을 모바일에서 풀스크린으로 제공하고, 스크롤 잠금 및 safe-area를 고려해 겹침 없이 표시합니다. (`components/common/Modal.tsx`)
 
 ---
 
@@ -162,6 +165,14 @@ LCP, FID, CLS 등 핵심 지표를 Sentry의 `captureMeasurement` API와 연결�
 
 ### 3️⃣ MCP 기반 AI 협업 개발
 Model Context Protocol(MCP)을 활용하여 AI가 코드베이스의 전체 맥락을 이해하도록 함으로써, 복잡한 타입 시스템 설계 및 대규모 리팩토링 과정에서 생산성을 획기적으로 높였습니다.
+
+### 4️⃣ NewsAPI → The News API 마이그레이션 (운영 안정성)
+- 기존 NewsAPI 의존을 제거하고, **The News API 기반으로 12개 섹터 최신 뉴스(섹터당 3개, 총 36개)**를 하루 3회 수집하도록 개편했습니다.
+- **uuid(원천 ID) 기반 upsert**로 중복 수집을 방지하고, 섹터 키워드 매핑을 `contact/keyword.ts`로 단일화하여 수집-분석-필터의 일관성을 유지했습니다.
+
+### 5️⃣ 모바일 UX 이슈: PTR/Sticky/Modal 충돌 해결
+- PTR의 터치 이벤트가 스크롤을 막는 문제를 해결하기 위해 **모바일 + 최상단 + 아래로 당김** 조건에서만 `preventDefault`가 동작하도록 정리했습니다. (`components/common/PullToRefresh.tsx`)
+- `position: sticky`가 transform/stacking context에 의해 깨지는 케이스를 피하기 위해, 필요한 UI는 fixed/portal 기반으로 안정화했습니다. (예: `Modal` portal)
 
 ---
 

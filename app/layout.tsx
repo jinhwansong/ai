@@ -49,7 +49,7 @@ export default function RootLayout({
 }>) {
   
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body className="bg-(--background) text-(--foreground)">
         <Providers>
           <MicrosoftClarity/>

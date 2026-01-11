@@ -42,7 +42,10 @@ export default function Footer() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-(--border) bg-(--glass-bg) px-2 pb-safe pt-2 backdrop-blur-xl md:hidden">
+      <nav
+        aria-label="하단 탭 네비게이션"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-(--border) bg-(--glass-bg) px-2 pb-safe pt-2 backdrop-blur-xl md:hidden"
+      >
         {mobileTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = pathname === tab.href;
@@ -50,6 +53,7 @@ export default function Footer() {
             <Link
               key={tab.id}
               href={tab.href}
+              aria-current={isActive ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 px-3 py-1 transition-all ${
                 isActive ? 'text-(--primary)' : 'text-(--text-muted)'
               }`}
