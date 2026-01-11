@@ -21,8 +21,9 @@ export async function runGeminiJSON(prompt: string) {
       throw new Error('JSON 객체를 찾을 수 없습니다.');
     }
     return JSON.parse(match[0]);
-  } catch {
-    throw new Error('Gemini 에러 발생');
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Gemini JSON Error: ${msg}`);
   }
 }
 

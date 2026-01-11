@@ -14,9 +14,32 @@ import {
 } from '@/types/services';
 import { MarketIndexData } from '@/lib/api/yahooFinance';
 
+export type AIModelType = 'gpt' | 'gemini';
+export type AnalysisTask = 'sector' | 'news' | 'impact' | 'observation' | 'insight';
+
 // 공통 인터페이스 정의
 export interface BriefingInquiry {
-  modelType?: 'gpt' | 'gemini';
+  /**
+   * 기존 방식(호환 유지): 전체 분석을 하나의 모델로 실행
+   * - 기본값: 'gemini'
+   */
+  modelType?: AIModelType;
+
+  /**
+   * 분리 방식: 분석 영역별로 모델 지정
+   * - 지정하지 않은 영역은 modelType(기본 'gemini')를 따릅니다.
+   *
+   * 예)
+   * { news: 'gemini', impact: 'gpt', insight: 'gpt' }
+   */
+  modelPlan?: Partial<Record<AnalysisTask, AIModelType>>;
+
+  /**
+   * 1차 모델이 실패했을 때 1회 리트라이할 fallback 모델
+   * - 미지정이면 "반대 모델"로 1회 리트라이합니다.
+   */
+  fallbackModel?: AIModelType;
+
   userKeywords: string[];
   marketData: {
     globalIndices: MarketIndexData[];
@@ -27,19 +50,41 @@ export interface BriefingInquiry {
 export async function performAIAnalysis(inquiry: BriefingInquiry) {
   const {
     modelType = 'gemini',
+    modelPlan,
+    fallbackModel,
     userKeywords,
     marketData,
     newsList,
   } = inquiry;
-  const runAI = modelType === 'gpt' ? runGPTJSON : runGeminiJSON;
+
+  const runJSON = (model: AIModelType, prompt: string) =>
+    model === 'gpt' ? runGPTJSON(prompt) : runGeminiJSON(prompt);
+
+  const getModelForTask = (task: AnalysisTask): AIModelType =>
+    modelPlan?.[task] ?? modelType;
+
+  const getFallbackModel = (primary: AIModelType): AIModelType =>
+    fallbackModel ?? (primary === 'gpt' ? 'gemini' : 'gpt');
+
+  const runTask = async <T>(task: AnalysisTask, prompt: string): Promise<T> => {
+    const primary = getModelForTask(task);
+    try {
+      return (await runJSON(primary, prompt)) as T;
+    } catch (err) {
+      const fallback = getFallbackModel(primary);
+      // 같은 모델로의 fallback은 의미 없으니 그대로 throw
+      if (fallback === primary) throw err;
+      return (await runJSON(fallback, prompt)) as T;
+    }
+  };
 
   // 병렬 호출
   const [sectorRes, newsRes, impactRes, observationRes, insightRes] = (await Promise.all([
-    runAI(buildSectorPrompt(userKeywords, marketData, newsList)),
-    runAI(buildNewsPrompt(newsList)),
-    runAI(buildMarketImpactPrompt(marketData, newsList)),
-    runAI(buildObservationPrompt(marketData, newsList)),
-    runAI(buildInsightPrompt(marketData, newsList)),
+    runTask<SectorResponse>('sector', buildSectorPrompt(userKeywords, marketData, newsList)),
+    runTask<NewsResponse>('news', buildNewsPrompt(newsList)),
+    runTask<MarketImpactResponse>('impact', buildMarketImpactPrompt(marketData, newsList)),
+    runTask<ObservationResponse>('observation', buildObservationPrompt(marketData, newsList)),
+    runTask<InsightResponse>('insight', buildInsightPrompt(marketData, newsList)),
   ])) as [SectorResponse, NewsResponse, MarketImpactResponse, ObservationResponse, InsightResponse];
 
   // 데이터 취합 로직

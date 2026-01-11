@@ -92,6 +92,8 @@
     color: var(--text-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    /* Disable browser pull-to-refresh / scroll chaining on mobile (esp. Chrome Android) */
+    overscroll-behavior-y: contain;
   }
 
   button {

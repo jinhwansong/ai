@@ -15,6 +15,7 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [indicatorTop, setIndicatorTop] = useState(0);
   const controls = useAnimation();
   const startYRef = useRef<number | null>(null);
 
@@ -24,6 +25,19 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
       setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
     };
     checkTouch();
+  }, []);
+
+  useEffect(() => {
+    // Header가 sticky top-0 이라, 인디케이터가 header 아래에 보이도록 offset을 계산
+    const computeTop = () => {
+      const header = document.querySelector('header.glass-header') as HTMLElement | null;
+      const h = header?.getBoundingClientRect().height ?? 0;
+      setIndicatorTop(h);
+    };
+
+    computeTop();
+    window.addEventListener('resize', computeTop);
+    return () => window.removeEventListener('resize', computeTop);
   }, []);
 
   const handleTouchStart = useCallback(
@@ -103,8 +117,12 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
       {/* 새로고침 인디케이터 - 터치 기기에서만 활성 */}
       {isTouchDevice && (
         <div 
-          className="absolute top-0 left-0 w-full flex justify-center items-center pointer-events-none z-50"
-          style={{ height: PULL_THRESHOLD, transform: `translateY(${pullDistance - PULL_THRESHOLD}px)` }}
+          className="fixed left-0 w-full flex justify-center items-center pointer-events-none z-50"
+          style={{
+            top: indicatorTop,
+            height: PULL_THRESHOLD,
+            transform: `translateY(${pullDistance - PULL_THRESHOLD}px)`,
+          }}
         >
           <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg border border-(--border)">
             <motion.div

@@ -29,8 +29,23 @@ export const GET = verifyCronAuth(async () => {
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
 
+    // 영역별 모델 분리:
+    // - Gemini: news/sector (대량 텍스트 가공/요약)
+    // - OpenAI: impact/observation/insight (JSON 구조 안정성)
+    // 단, OPENAI_API_KEY가 없으면 안전하게 전체 Gemini로 동작
+    const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
+
     const analysisResult = await performAIAnalysis({
       modelType: 'gemini',
+      modelPlan: hasOpenAI
+        ? {
+            news: 'gemini',
+            sector: 'gemini',
+            impact: 'gpt',
+            observation: 'gpt',
+            insight: 'gpt',
+          }
+        : undefined,
       userKeywords: ANALYSIS_KEYWORDS,
       marketData,
       newsList: rawNews,
