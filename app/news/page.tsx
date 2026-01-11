@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import SectionHeader from '@/components/common/SectionHeader';

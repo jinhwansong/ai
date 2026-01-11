@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/redis/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
-import { MacroItem, ObservationItem, SectorItem } from '@/types/services';
+import { ObservationItem, SectorItem } from '@/types/services';
 import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/util/timeSlot';
@@ -102,16 +102,6 @@ export const GET = verifyCronAuth(async () => {
           reason: o.reason,
           tags: o.tags,
           momentum: o.momentum,
-        }))
-      ),
-      supabase.from('market_indices').insert(
-        (finalData.main.macro || []).map((m: MacroItem) => ({
-          region: m.region,
-          index_name: m.indexName,
-          value: m.value,
-          change: m.change,
-          status: m.status.toLowerCase(),
-          ai_analysis: m.aiAnalysis,
         }))
       ),
       supabase.from('sector_strategies').insert(

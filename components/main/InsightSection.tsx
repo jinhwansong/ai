@@ -10,7 +10,7 @@ export default function InsightSection() {
 
   if (isLoading) return <InsightSectionSkeleton />;
   return (
-    <div className="sticky bottom-6 left-0 right-0 z-40 px-4 md:px-8 pointer-events-none">
+    <div className="sticky bottom-0 left-0 right-0 z-40 px-4 md:px-8 pointer-events-none">
       <div className="mx-auto max-w-7xl pointer-events-auto">
         <section className="bg-slate-900/90 backdrop-blur-md border border-slate-700 p-4 md:p-6 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center gap-4 md:gap-6 group transition-all hover:bg-slate-900">
           <div className="flex items-center gap-3 shrink-0">

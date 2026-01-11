@@ -134,3 +134,19 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Floating Insight CTA (stable on mobile even with transformed wrappers like PullToRefresh) */
+.insight-float {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  /* 72px: mobile bottom nav(대략) + 16px spacing + iOS safe-area */
+  bottom: calc(env(safe-area-inset-bottom) + 72px + 16px);
+}
+
+@media (min-width: 768px) {
+  .insight-float {
+    bottom: 24px;
+  }
+}

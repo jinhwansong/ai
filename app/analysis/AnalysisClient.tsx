@@ -71,7 +71,7 @@ export default function AnalysisClient() {
   return (
     <div className="min-h-screen bg-(--background) text-(--text-body)">
       {/* 고정 상단 바 */}
-      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-(--border) bg-white/80 px-4 backdrop-blur-md dark:bg-(--background)/80">
+      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-(--border) px-4 glass-header">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.back()}
@@ -110,7 +110,8 @@ export default function AnalysisClient() {
               <Clock size={14} />
               {mounted && (
                 <>
-                  {getDailyBriefingMeta().date} {getDailyBriefingMeta().publishTime}
+                  {getDailyBriefingMeta().date}{' '}
+                  {getDailyBriefingMeta().publishTime}
                 </>
               )}
             </div>

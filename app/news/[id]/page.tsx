@@ -102,7 +102,7 @@ export default function NewsDetailPage() {
 
                 {/*  AI 3줄 요약 */}
                 {data?.checkpoints && data.checkpoints.length > 0 && (
-                  <div className="mt-6 rounded-2xl border-l-4 border-(--primary-strong) bg-blue-50/50 p-5 dark:bg-blue-900/10">
+                  <div className="mt-6 rounded-2xl bg-(--primary-soft) p-5 border border-(--primary)/10 ">
                     <h3 className="mb-3 text-sm font-black text-(--primary-strong) flex items-center gap-2">
                       <TrendingUp size={16} />
                       AI 3줄 요약

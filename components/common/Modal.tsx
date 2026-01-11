@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { ReactNode, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 type ModalProps = {
   isOpen: boolean;
@@ -30,6 +31,11 @@ export default function Modal({
   // Prevent scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
+      // 모바일에서는 풀스크린 모달을 띄우므로, 열릴 때 최상단으로 이동
+      if (typeof window !== 'undefined') {
+        const isCoarse = window.matchMedia?.('(pointer: coarse)')?.matches ?? false;
+        if (isCoarse) window.scrollTo({ top: 0, left: 0 });
+      }
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -39,10 +45,12 @@ export default function Modal({
     };
   }, [isOpen]);
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-9999 flex items-end justify-center p-0 md:items-center md:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -58,7 +66,17 @@ export default function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
-            className={`relative w-full ${maxWidthClasses[maxWidth]} overflow-hidden rounded-2xl bg-(--background) shadow-2xl border border-(--border)`}
+            role="dialog"
+            aria-modal="true"
+            className={[
+              'relative w-full overflow-hidden bg-(--background) shadow-2xl border border-(--border) flex flex-col',
+              // mobile: full screen
+              'h-dvh rounded-none',
+              // desktop: centered modal
+              `md:h-auto md:rounded-2xl ${maxWidthClasses[maxWidth]}`,
+              // safe-area for iOS
+              'pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]',
+            ].join(' ')}
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-(--border) p-4 px-6">
@@ -75,12 +93,13 @@ export default function Modal({
             </div>
 
             {/* Body */}
-            <div className="max-h-[80vh] overflow-y-auto p-6 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide md:max-h-[80vh]">
               {children}
             </div>
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

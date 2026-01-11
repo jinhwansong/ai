@@ -4,11 +4,11 @@ on:
   # 수동 실행 가능
   workflow_dispatch:
 
-  # 지정된 시간(KST 09:05, 12:05, 18:05)에 자동 실행
+  # 지정된 시간(KST 08:30, 14:00, 18:00)에 자동 실행
   schedule:
-    - cron: '5 0 * * *'  # KST 09:05 (morning)
-    - cron: '5 3 * * *'  # KST 12:05 (afternoon)
-    - cron: '5 9 * * *'  # KST 18:05 (evening) 
+    - cron: '30 23 * * *' # KST 08:30 (UTC 23:30 - 전날)
+    - cron: '0 5 * * *'   # KST 14:00 (UTC 05:00)
+    - cron: '0 9 * * *'   # KST 18:00 (UTC 09:00)
 
 jobs:
   run-pipeline:

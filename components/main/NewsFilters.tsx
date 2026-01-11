@@ -1,5 +1,7 @@
 'use client';
 
+import { THE_NEWS_SECTORS } from '@/contact/keyword';
+
 const SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },
   { label: '과거순', value: 'oldest' },
@@ -13,11 +15,8 @@ const PERIOD_OPTIONS = [
   { label: '전체', value: 'all' },
 ];
 
-const CATEGORIES = [
-  '전체', '국내증시', '미국증시', '금리/채권', '환율', 
-  '반도체/AI', '로보틱스/물리AI', '전력/에너지', '이차전지', 
-  '바이오/헬스', '빅테크', '부동산', '원자재', '가상자산', '무역/관세'
-];
+// 수집(12개 섹터) ↔ 분석(related_sectors) 일관성을 위해 단일 소스 사용
+const CATEGORIES = ['전체', ...THE_NEWS_SECTORS.map((s) => s.name)];
 
 interface NewsFiltersProps {
   sort: string;

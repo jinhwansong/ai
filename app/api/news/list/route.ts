@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { subDays, subMonths, startOfDay } from 'date-fns';
+import { NEWS_SECTOR_ALIASES } from '@/contact/keyword';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -28,8 +29,10 @@ export async function GET(request: Request) {
 
     // 2. 카테고리 필터 (Category)
     if (category !== 'all') {
-      // news_articles 테이블은 summary 컬럼을 사용합니다.
-      query = query.or(`title.ilike.%${category}%,summary.ilike.%${category}%`);
+      // 기존 데이터 호환: related_sectors가 ["로봇","클라우드"] 처럼 세부 키워드일 수 있으므로
+      // 카테고리(섹터명) → 별칭 배열로 overlaps(교집합 존재) 필터링
+      const aliases = NEWS_SECTOR_ALIASES[category] ?? [category];
+      query = query.overlaps('related_sectors', aliases);
     }
 
     // 3. 정렬 (Sort)
@@ -38,7 +41,7 @@ export async function GET(request: Request) {
     } else if (sort === 'importance') {
       // impact 순서대로 정렬 (High -> Medium -> Low)
       query = query
-        .order('impact', { ascending: false }) // H, M, L 순서가 되도록 유도 (필요시 DB 로직 보완)
+        .order('impact', { ascending: false }) 
         .order('published_at', { ascending: false });
     } else {
       query = query.order('published_at', { ascending: false });

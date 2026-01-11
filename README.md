@@ -63,8 +63,8 @@
 프론트엔드는 이 파이프라인 위에서 **빠르게 읽히는 UI**와 **실시간 품질(성능/에러)**을 책임집니다.
 
 ### 1) 데이터 수집 (Sources)
-- **뉴스 수집**: `NewsAPI` 기반 (`lib/news/fetchNewsCore.ts`, `lib/news/fetchNews.ts`)
-  - 다양한 카테고리 키워드로 `everything` 검색 → `raw_news` 테이블에 **upsert(중복 방지)** (`app/api/internal/collect-news/route.ts`)
+- **뉴스 수집**: **The News API** 기반 (`lib/news/theNewsApi.ts`)
+  - 12개 섹터를 순차 호출(2초 딜레이) → `raw_news` 테이블에 **uuid 기준 upsert(중복 방지)** (`app/api/internal/collect-news/route.ts`)
 - **시장 지표 수집**: `yahoo-finance2`로 주요 글로벌 지수 quote 수집 (`lib/api/yahooFinance.ts`)
 
 ### 2) AI 분석 (Gemini/OpenAI Dual Adapter)
@@ -75,7 +75,7 @@
 - **병렬 분석**: `performAIAnalysis`에서 5개 영역을 `Promise.all`로 병렬 호출하여 latency 최소화 (`lib/services/briefing.ts`)
 
 ### 3) 저장/캐싱 전략 (Supabase + Redis)
-- **Supabase**: 가공된 결과를 `news_articles`, `observation_items`, `market_indices`, `sector_strategies`, `briefing_history` 등에 저장 (`app/api/internal/generate-briefing/route.ts`)
+- **Supabase**: 가공된 결과를 `news_articles`, `observation_items`, `sector_strategies`, `briefing_history` 등에 저장 (`app/api/internal/generate-briefing/route.ts`)
 - **Redis**: 메인 대시보드용 결과를 시간 슬롯 키로 캐싱하고 최신 fallback 키도 유지 (`dashboard:latest`, `getTimeSlotRedisKey`)  
   → 메인 페이지는 Redis 캐시를 빠르게 읽어 **초기 로딩을 최소화**합니다. (`app/api/main/*`)
 

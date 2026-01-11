@@ -42,10 +42,9 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-
       <PullToRefresh onRefresh={handleRefresh}>
-        <main className="flex-1 px-4 py-8 md:px-8 relative">
-          <div className="mx-auto max-w-7xl space-y-10 pb-10">
+        <main className="flex-1 px-4 py-8 md:px-8 md:pb-8 relative">
+          <div className="mx-auto max-w-7xl space-y-10">
             <div id="section-signal">
               <SignalHighlight />
             </div>
@@ -54,7 +53,10 @@ export default function Home() {
               <GlobalMacro />
             </div>
 
-            <div id="section-news" className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+            <div
+              id="section-news"
+              className="grid gap-8 lg:grid-cols-[2fr_1fr]"
+            >
               <NewsFeed />
               <SectorStrategy />
             </div>
@@ -62,10 +64,10 @@ export default function Home() {
               <ObservationSection />
             </div>
           </div>
-          <InsightSection />
         </main>
       </PullToRefresh>
 
+      <InsightSection />
       <Footer />
 
       <NoticeModal open={showNotice} onClose={handleCloseNotice}>

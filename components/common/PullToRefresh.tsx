@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
 interface PullToRefreshProps {
@@ -16,6 +16,7 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const controls = useAnimation();
+  const startYRef = useRef<number | null>(null);
 
   useEffect(() => {
     // 모바일/태블릿(터치 기기) 여부 확인
@@ -25,44 +26,71 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
     checkTouch();
   }, []);
 
-  const handlePan = useCallback(
-    (_: unknown, info: PanInfo) => {
-      if (isRefreshing || !isTouchDevice) return;
-
-      // 페이지 최상단일 때만 작동 (scrollTop === 0)
-      // 모바일 브라우저의 기본 오버스크롤 효과와 충돌 방지
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isTouchDevice || isRefreshing) return;
+      // 최상단에서만 PTR 시작 (그 외는 기본 스크롤을 방해하지 않음)
       if (window.scrollY > 0) return;
-
-      // 아래로 당길 때만 거리 계산
-      if (info.offset.y > 0) {
-        // 저항감 부여 (많이 당길수록 덜 움직이게)
-        const distance = Math.min(info.offset.y * 0.4, PULL_THRESHOLD + 20);
-        setPullDistance(distance);
-      }
+      startYRef.current = e.touches[0]?.clientY ?? null;
     },
-    [isRefreshing, isTouchDevice]
+    [isTouchDevice, isRefreshing]
   );
 
-  const handlePanEnd = useCallback(async () => {
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isTouchDevice || isRefreshing) return;
+      if (startYRef.current === null) return;
+
+      // 최상단이 아니면 즉시 PTR 해제 (스크롤 방해 방지)
+      if (window.scrollY > 0) {
+        startYRef.current = null;
+        setPullDistance(0);
+        return;
+      }
+
+      const currentY = e.touches[0]?.clientY ?? 0;
+      const dy = currentY - startYRef.current;
+
+      if (dy <= 0) {
+        setPullDistance(0);
+        return;
+      }
+
+      // 아래로 당길 때만 거리 계산 (저항감 부여)
+      const distance = Math.min(dy * 0.4, PULL_THRESHOLD + 20);
+      setPullDistance(distance);
+
+      // iOS 오버스크롤/바운스와 충돌 방지 (최상단에서 아래로 당길 때만)
+      e.preventDefault();
+    },
+    [isTouchDevice, isRefreshing]
+  );
+
+  const finish = useCallback(() => {
+    startYRef.current = null;
+    setPullDistance(0);
+    controls.start({ y: 0 });
+  }, [controls]);
+
+  const handleTouchEnd = useCallback(async () => {
+    if (!isTouchDevice) return;
     if (isRefreshing) return;
 
     if (pullDistance >= PULL_THRESHOLD) {
       setIsRefreshing(true);
       setPullDistance(PULL_THRESHOLD);
-      
+
       try {
         await onRefresh();
       } finally {
-        // 새로고침 완료 후 원위치
         setIsRefreshing(false);
-        setPullDistance(0);
-        controls.start({ y: 0 });
+        finish();
       }
-    } else {
-      setPullDistance(0);
-      controls.start({ y: 0 });
+      return;
     }
-  }, [isRefreshing, pullDistance, onRefresh, controls]);
+
+    finish();
+  }, [isTouchDevice, isRefreshing, pullDistance, onRefresh, finish]);
 
   useEffect(() => {
     if (!isRefreshing) {
@@ -71,7 +99,7 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
   }, [pullDistance, isRefreshing, controls]);
 
   return (
-    <div className={`relative overflow-hidden ${isTouchDevice ? 'touch-none!' : ''}`}>
+    <div className="relative overflow-hidden">
       {/* 새로고침 인디케이터 - 터치 기기에서만 활성 */}
       {isTouchDevice && (
         <div 
@@ -94,11 +122,10 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
 
       {/* 컨텐츠 영역 */}
       <motion.div
-        drag={isTouchDevice ? "y" : false}
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.5}
-        onPan={isTouchDevice ? handlePan : undefined}
-        onPanEnd={isTouchDevice ? handlePanEnd : undefined}
+        onTouchStart={isTouchDevice ? handleTouchStart : undefined}
+        onTouchMove={isTouchDevice ? handleTouchMove : undefined}
+        onTouchEnd={isTouchDevice ? handleTouchEnd : undefined}
+        onTouchCancel={isTouchDevice ? handleTouchEnd : undefined}
         animate={controls}
         className="relative z-10"
       >

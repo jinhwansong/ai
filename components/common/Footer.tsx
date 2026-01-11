@@ -70,6 +70,15 @@ export default function Footer() {
         })}
       </nav>
 
+      <div
+        className="md:hidden"
+        style={{
+          height: 72,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+        aria-hidden="true"
+      />
+
       <footer className="mt-20 hidden border-t border-(--border) bg-(--light-bg) py-12 px-8 md:block">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-between gap-8 md:flex-row">

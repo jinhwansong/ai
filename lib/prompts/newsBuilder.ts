@@ -1,4 +1,7 @@
+import { THE_NEWS_SECTORS } from '@/contact/keyword';
+
 export const buildNewsPrompt = (newsList: unknown[]) => {
+  const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);
   return `
 # Role: Financial News Curator
 # Task: 뉴스 리스트 분석 및 요약/상세 리포트 생성
@@ -29,7 +32,8 @@ ${JSON.stringify(newsList, null, 2)}
 1. **반드시 총 10개**의 핵심 뉴스를 선별해서 제공해줘. (메인 대시보드 및 리포트 최적화)
 2. **url 및 source 필드는 필수**: 입력된 뉴스의 원본 url과 출처(source)를 **정확히 그대로** 복사해서 포함시켜줘. 정보가 없는 뉴스는 선택하지 마.
 3. **모든 텍스트는 한국어**: title, descriptionShort, contentLong은 반드시 한국어로 작성하거나 번역해줘.
-4. **relatedSectors**: 해당 뉴스와 관련된 산업 섹터 1~2개를 배열로 제공 (예: ["반도체", "AI"], ["금리", "채권"])
+4. **relatedSectors**: 아래 "허용 섹터 목록"에서만 1~2개를 **정확히 문자열 일치**로 선택해 배열로 제공해줘.
+   - 허용 섹터 목록: ${JSON.stringify(allowedSectors)}
 5. **impact 판정**: 시장에 미치는 영향도를 엄격하게 평가 (High: 시장 전체 영향, Medium: 특정 섹터 영향, Low: 정보성)
 6. **태그는 3개**: 뉴스의 핵심 키워드를 정확히 3개 추출
 
