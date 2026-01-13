@@ -17,12 +17,44 @@ function normalizeStrategyModel(value: string | undefined): StrategyModel | unde
   return undefined;
 }
 
+type RawNewsRow = {
+  uuid?: string | null;
+  title?: string | null;
+  description?: string | null;
+  content?: string | null;
+  source?: string | null;
+  url?: string | null;
+  published_at?: string | null;
+};
+
+function truncateText(input: unknown, maxLen: number): string | null {
+  if (typeof input !== 'string') return null;
+  const s = input.trim();
+  if (!s) return null;
+  if (s.length <= maxLen) return s;
+  return `${s.slice(0, Math.max(0, maxLen - 1))}…`;
+}
+
+function compactNewsForPrompt(rows: RawNewsRow[]) {
+  // Keep only fields that help analysis; aggressively truncate to avoid token blowups.
+  // This is critical because OpenAI JSON mode will fail if output is cut off (finish_reason=length).
+  return rows.map((r) => ({
+    uuid: r.uuid ?? null,
+    published_at: r.published_at ?? null,
+    source: truncateText(r.source, 80),
+    title: truncateText(r.title, 180),
+    description: truncateText(r.description ?? r.content, 320),
+    url: r.url ?? null,
+  }));
+}
+
 export const GET = verifyCronAuth(async () => {
   try {
     // 뉴스 데이터 가져오기
     const { data: rawNews } = await supabase
       .from('raw_news')
-      .select('*')
+      // select('*') can explode prompt tokens (content/image/etc). Keep it lean for strategy generation.
+      .select('uuid,title,description,content,source,url,published_at')
       .order('published_at', { ascending: false })
       .limit(30);
 
@@ -37,10 +69,16 @@ export const GET = verifyCronAuth(async () => {
       normalizeStrategyModel(process.env.AI_STRATEGY_FALLBACK_MODEL) ??
       (preferred === 'gpt' ? 'gemini' : 'gpt');
 
-    const prompt = buildSectorPrompt(ANALYSIS_KEYWORDS, marketData, rawNews || []);
+    const prompt = buildSectorPrompt(
+      ANALYSIS_KEYWORDS,
+      marketData,
+      compactNewsForPrompt((rawNews || []) as RawNewsRow[])
+    );
 
     const run = async (model: StrategyModel) =>
-      model === 'gpt' ? runGPTJSON(prompt) : runGeminiJSON(prompt);
+      model === 'gpt'
+        ? runGPTJSON(prompt, { maxTokens: 2000, tag: 'generate-strategy' })
+        : runGeminiJSON(prompt);
 
     const canUseOpenAI = Boolean(process.env.OPENAI_API_KEY);
     const primaryModel: StrategyModel =
@@ -64,7 +102,7 @@ export const GET = verifyCronAuth(async () => {
   } catch (error: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
-    // console.error('Generate Strategy Error:', error);
+    console.error('Generate Strategy Error:', error);
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: 500 }

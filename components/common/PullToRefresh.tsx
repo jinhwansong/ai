@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from 'react';
+import LibPullToRefresh from 'react-simple-pull-to-refresh';
+import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
 interface PullToRefreshProps {
@@ -9,15 +10,39 @@ interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
 }
 
-const PULL_THRESHOLD = 40; // 당기는 임계치 (px)
+const PULL_THRESHOLD = 20; // px
+
+function PTRIndicator({
+  indicatorTop,
+  state,
+}: {
+  indicatorTop: number;
+  state: 'pulling' | 'refreshing';
+}) {
+  return (
+    <div
+      className="flex w-full justify-center items-center"
+      style={{ paddingTop: indicatorTop, height: PULL_THRESHOLD + indicatorTop }}
+    >
+      <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg border border-(--border)">
+        <motion.div
+          animate={state === 'refreshing' ? { rotate: 360 } : { rotate: 180 }}
+          transition={
+            state === 'refreshing'
+              ? { repeat: Infinity, duration: 1, ease: 'linear' }
+              : { type: 'spring', damping: 20 }
+          }
+        >
+          <RefreshCw size={20} className="text-(--primary-strong)" />
+        </motion.div>
+      </div>
+    </div>
+  );
+}
 
 export default function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
-  const [pullDistance, setPullDistance] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [indicatorTop, setIndicatorTop] = useState(0);
-  const controls = useAnimation();
-  const startYRef = useRef<number | null>(null);
 
   useEffect(() => {
     // 모바일/태블릿(터치 기기) 여부 확인
@@ -28,7 +53,6 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
   }, []);
 
   useEffect(() => {
-    // Header가 sticky top-0 이라, 인디케이터가 header 아래에 보이도록 offset을 계산
     const computeTop = () => {
       const header = document.querySelector('header.glass-header') as HTMLElement | null;
       const h = header?.getBoundingClientRect().height ?? 0;
@@ -40,115 +64,33 @@ export default function PullToRefresh({ children, onRefresh }: PullToRefreshProp
     return () => window.removeEventListener('resize', computeTop);
   }, []);
 
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isTouchDevice || isRefreshing) return;
-      // 최상단에서만 PTR 시작 (그 외는 기본 스크롤을 방해하지 않음)
-      if (window.scrollY > 0) return;
-      startYRef.current = e.touches[0]?.clientY ?? null;
-    },
-    [isTouchDevice, isRefreshing]
+  const indicator = useMemo(
+    () => ({
+      pullingContent: <PTRIndicator indicatorTop={indicatorTop} state="pulling" />,
+      refreshingContent: (
+        <PTRIndicator indicatorTop={indicatorTop} state="refreshing" />
+      ),
+    }),
+    [indicatorTop]
   );
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isTouchDevice || isRefreshing) return;
-      if (startYRef.current === null) return;
-
-      // 최상단이 아니면 즉시 PTR 해제 (스크롤 방해 방지)
-      if (window.scrollY > 0) {
-        startYRef.current = null;
-        setPullDistance(0);
-        return;
-      }
-
-      const currentY = e.touches[0]?.clientY ?? 0;
-      const dy = currentY - startYRef.current;
-
-      if (dy <= 0) {
-        setPullDistance(0);
-        return;
-      }
-
-      // 아래로 당길 때만 거리 계산 (저항감 부여)
-      const distance = Math.min(dy * 0.4, PULL_THRESHOLD + 20);
-      setPullDistance(distance);
-
-      // iOS 오버스크롤/바운스와 충돌 방지 (최상단에서 아래로 당길 때만)
-      e.preventDefault();
-    },
-    [isTouchDevice, isRefreshing]
+  const wrappedChildren = useMemo(
+    () => <div className="relative z-10">{children}</div>,
+    [children]
   );
-
-  const finish = useCallback(() => {
-    startYRef.current = null;
-    setPullDistance(0);
-    controls.start({ y: 0 });
-  }, [controls]);
-
-  const handleTouchEnd = useCallback(async () => {
-    if (!isTouchDevice) return;
-    if (isRefreshing) return;
-
-    if (pullDistance >= PULL_THRESHOLD) {
-      setIsRefreshing(true);
-      setPullDistance(PULL_THRESHOLD);
-
-      try {
-        await onRefresh();
-      } finally {
-        setIsRefreshing(false);
-        finish();
-      }
-      return;
-    }
-
-    finish();
-  }, [isTouchDevice, isRefreshing, pullDistance, onRefresh, finish]);
-
-  useEffect(() => {
-    if (!isRefreshing) {
-      controls.start({ y: pullDistance });
-    }
-  }, [pullDistance, isRefreshing, controls]);
 
   return (
-    <div className="relative overflow-hidden">
-      {/* 새로고침 인디케이터 - 터치 기기에서만 활성 */}
-      {isTouchDevice && (pullDistance > 0 || isRefreshing) && (
-        <div 
-          className="fixed left-0 w-full flex justify-center items-center pointer-events-none z-50"
-          style={{
-            top: indicatorTop,
-            height: PULL_THRESHOLD,
-            transform: `translateY(${pullDistance - PULL_THRESHOLD}px)`,
-          }}
-        >
-          <div className="bg-white dark:bg-slate-800 rounded-full p-2 shadow-lg border border-(--border)">
-            <motion.div
-              animate={isRefreshing ? { rotate: 360 } : { rotate: pullDistance * 2 }}
-              transition={isRefreshing ? { repeat: Infinity, duration: 1, ease: "linear" } : { type: "spring", damping: 20 }}
-            >
-              <RefreshCw 
-                size={20} 
-                className={pullDistance >= PULL_THRESHOLD ? "text-(--primary-strong)" : "text-(--text-muted)"} 
-              />
-            </motion.div>
-          </div>
-        </div>
-      )}
-
-      {/* 컨텐츠 영역 */}
-      <motion.div
-        onTouchStart={isTouchDevice ? handleTouchStart : undefined}
-        onTouchMove={isTouchDevice ? handleTouchMove : undefined}
-        onTouchEnd={isTouchDevice ? handleTouchEnd : undefined}
-        onTouchCancel={isTouchDevice ? handleTouchEnd : undefined}
-        animate={controls}
-        className="relative z-10"
-      >
-        {children}
-      </motion.div>
-    </div>
+    <LibPullToRefresh
+      isPullable={isTouchDevice}
+      onRefresh={onRefresh}
+      pullDownThreshold={PULL_THRESHOLD}
+      maxPullDownDistance={PULL_THRESHOLD + 20}
+      resistance={2.5}
+      pullingContent={indicator.pullingContent}
+      refreshingContent={indicator.refreshingContent}
+      className="relative overflow-hidden"
+    >
+      {wrappedChildren}
+    </LibPullToRefresh>
   );
 }

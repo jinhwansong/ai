@@ -5,7 +5,6 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
   const host = req.headers.get('host');
   const protocol = host?.includes('localhost') ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
-
   const results: Record<string, unknown> = {};
 
   try {
