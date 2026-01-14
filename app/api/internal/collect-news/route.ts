@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { fetchTheNewsApiLatestBySearch } from '@/lib/news/theNewsApi';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 import { THE_NEWS_SECTORS } from '@/contact/keyword';
+import { reportError } from '@/lib/sentry';
 
 const RATE_LIMIT_DELAY_MS = 2000;
 
@@ -75,6 +76,7 @@ export const GET = verifyCronAuth(async () => {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
     console.error('Collect News Error:', error);
+    reportError(error, { route: '/api/internal/collect-news' });
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: 500 }

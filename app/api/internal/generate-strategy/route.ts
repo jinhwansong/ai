@@ -7,6 +7,7 @@ import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 import { supabase } from '@/lib/supabase';
 import { fetchGlobalIndices } from '@/lib/api/yahooFinance';
+import { reportError } from '@/lib/sentry';
 
 type StrategyModel = 'gemini' | 'gpt';
 
@@ -36,8 +37,6 @@ function truncateText(input: unknown, maxLen: number): string | null {
 }
 
 function compactNewsForPrompt(rows: RawNewsRow[]) {
-  // Keep only fields that help analysis; aggressively truncate to avoid token blowups.
-  // This is critical because OpenAI JSON mode will fail if output is cut off (finish_reason=length).
   return rows.map((r) => ({
     uuid: r.uuid ?? null,
     published_at: r.published_at ?? null,
@@ -53,7 +52,6 @@ export const GET = verifyCronAuth(async () => {
     // 뉴스 데이터 가져오기
     const { data: rawNews } = await supabase
       .from('raw_news')
-      // select('*') can explode prompt tokens (content/image/etc). Keep it lean for strategy generation.
       .select('uuid,title,description,content,source,url,published_at')
       .order('published_at', { ascending: false })
       .limit(30);
@@ -61,9 +59,6 @@ export const GET = verifyCronAuth(async () => {
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
 
-    // 모델 선택(환경변수로 제어)
-    // - AI_STRATEGY_MODEL: 'gemini' | 'gpt' (default: gemini)
-    // - AI_STRATEGY_FALLBACK_MODEL: 'gemini' | 'gpt' (default: opposite model)
     const preferred = normalizeStrategyModel(process.env.AI_STRATEGY_MODEL) ?? 'gemini';
     const fallback =
       normalizeStrategyModel(process.env.AI_STRATEGY_FALLBACK_MODEL) ??
@@ -91,7 +86,6 @@ export const GET = verifyCronAuth(async () => {
       return await run(fb);
     });
 
-    // Redis 저장: 섹터별 상세 전략 정보 업데이트
     await redis.set('strategy:latest', JSON.stringify(sectorRes.sectors));
 
     return NextResponse.json({
@@ -103,6 +97,7 @@ export const GET = verifyCronAuth(async () => {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
     console.error('Generate Strategy Error:', error);
+    reportError(error, { route: '/api/internal/generate-strategy' });
     return NextResponse.json(
       { success: false, error: errorMessage },
       { status: 500 }

@@ -10,7 +10,7 @@ interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
 }
 
-const PULL_THRESHOLD = 20; // px
+const PULL_THRESHOLD = 40; // px
 
 function PTRIndicator({
   indicatorTop,

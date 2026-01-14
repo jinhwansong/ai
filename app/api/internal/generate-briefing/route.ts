@@ -7,6 +7,7 @@ import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
 import { verifyCronAuth } from '@/util/verifyCronAuth';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/util/timeSlot';
 import { fetchGlobalIndices } from '@/lib/api/yahooFinance';
+import { reportError } from '@/lib/sentry';
 
 export const GET = verifyCronAuth(async () => {
   try {
@@ -143,6 +144,7 @@ export const GET = verifyCronAuth(async () => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Generate Briefing Error:', error);
+    reportError(error, { route: '/api/internal/generate-briefing' });
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 });
