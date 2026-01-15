@@ -1,5 +1,5 @@
 import { NewsListResponse, NewsArticle } from '@/types/main';
-import { Fetcher } from "@/util/fetcher";
+import { Fetcher } from "@/lib/utils/fetcher";
 
 export const fetchNewsList = (params: {
   sort: string;

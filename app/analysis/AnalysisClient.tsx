@@ -14,11 +14,11 @@ import {
   Search,
 } from 'lucide-react';
 import Tags from '@/components/common/Tags';
-import { getDailyBriefingMeta } from '@/util/times';
+import { getDailyBriefingMeta } from '@/lib/utils/times';
 import AnalysisSkelton from '@/components/skeleton/AnalysisSkelton';
 import { useSignalDetail } from '@/hooks/useMain';
 import { useAnimatedScore } from '@/hooks/useAnimatedScore';
-import { useToastStore } from '@/store/useToastStore';
+import { useToastStore } from '@/stores/useToastStore';
 import SmartParagraphs from '@/components/common/SmartParagraphs';
 import ThemeToggle from '@/components/common/ThemeToggle';
 
@@ -218,7 +218,7 @@ export default function AnalysisClient() {
             <Newspaper size={20} className="text-(--text-muted) opacity-50" />
           </div>
           <div className="space-y-3">
-            {data?.relatedNews.map((news, idx) => (
+            {data?.relatedNews.map((news: { title: string; source: string; url: string | null; time: string }, idx) => (
               <motion.div
                 key={idx}
                 whileTap={{ scale: 0.99 }}

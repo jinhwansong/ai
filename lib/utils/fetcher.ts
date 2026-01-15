@@ -1,4 +1,4 @@
-import { reportError } from '@/lib/sentry';
+import { reportError } from '@/lib/core/sentry';
 
 type FetcherOptions = RequestInit & {
   json?: boolean;

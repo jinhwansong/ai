@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Tags from '@/components/common/Tags';
 import NewsDetailSkeleton from '@/components/skeleton/NewsDetailSkeleton';
-import { useToastStore } from '@/store/useToastStore';
+import { useToastStore } from '@/stores/useToastStore';
 import SmartParagraphs from '@/components/common/SmartParagraphs';
 
 export default function NewsDetailPage() {

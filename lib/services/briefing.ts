@@ -1,10 +1,10 @@
 import { runGPTJSON } from '@/lib/ai/openai';
 import { runGeminiJSON } from '@/lib/ai/gemini';
-import { buildSectorPrompt } from '@/lib/prompts/sectorBuilder';
-import { buildNewsPrompt } from '@/lib/prompts/newsBuilder';
-import { buildMarketImpactPrompt } from '@/lib/prompts/impactBuilder';
-import { buildObservationPrompt } from '@/lib/prompts/observationBuilder';
-import { buildInsightPrompt } from '@/lib/prompts/insightBuilder';
+import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
+import { buildNewsPrompt } from '@/lib/ai/prompts/newsBuilder';
+import { buildMarketImpactPrompt } from '@/lib/ai/prompts/impactBuilder';
+import { buildObservationPrompt } from '@/lib/ai/prompts/observationBuilder';
+import { buildInsightPrompt } from '@/lib/ai/prompts/insightBuilder';
 import {
   NewsResponse,
   SectorResponse,
@@ -12,7 +12,7 @@ import {
   ObservationResponse,
   InsightResponse,
 } from '@/types/services';
-import { MarketIndexData } from '@/lib/api/yahooFinance';
+import { MarketIndexData } from '@/lib/external/yahooFinance';
 
 export type AIModelType = 'gpt' | 'gemini';
 export type AnalysisTask = 'sector' | 'news' | 'impact' | 'observation' | 'insight';

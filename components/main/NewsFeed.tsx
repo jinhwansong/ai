@@ -1,6 +1,6 @@
 'use client';
 
-import { getDailyBriefingMeta } from '@/util/times';
+import { getDailyBriefingMeta } from '@/lib/utils/times';
 import { motion } from 'framer-motion';
 import { Clock, Newspaper } from 'lucide-react';
 import Button from '../common/Button';

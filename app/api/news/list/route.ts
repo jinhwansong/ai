@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { subDays, subMonths, startOfDay } from 'date-fns';
-import { NEWS_SECTOR_ALIASES } from '@/contact/keyword';
+import { NEWS_SECTOR_ALIASES } from '@/constants/keyword';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

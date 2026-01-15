@@ -1,4 +1,4 @@
-import { Fetcher } from '@/util/fetcher';
+import { Fetcher } from '@/lib/utils/fetcher';
 
 export const fetchBriefing = (keywords: string[]) =>
   Fetcher(`/api/ai`, {

@@ -2,67 +2,68 @@
  * The News API 수집용 섹터 매핑 (KST 하루 3회, 섹터당 limit=3)
  * - NOTE: 요구사항은 "12개 섹터 (총 36개)"이므로, 아래 12개로 고정합니다.
  * - 언어: en / 정렬: published_at (최신 우선) / 검색어는 중복 사용 가능
+ * - UPDATE: 키워드를 간소화하여 검색 성공률 향상 (2024-12)
  */
 export const THE_NEWS_SECTORS: Array<{ id: string; name: string; search: string }> = [
   {
     id: 'macro',
     name: '거시경제',
-    search: 'macroeconomics GDP inflation recession economic growth PMI',
+    search: 'economy GDP inflation recession growth',
   },
   {
     id: 'monetary_fx',
     name: '통화정책·환율',
-    search: 'central bank interest rate hike cut forex USD JPY EUR inflation expectations',
+    search: 'Fed interest rates forex dollar euro',
   },
   {
     id: 'ai_semis',
     name: 'AI·반도체',
-    search: 'AI semiconductor Nvidia AMD Intel TSMC ASML HBM GPU chip',
+    search: 'artificial intelligence AI Nvidia AMD TSMC semiconductor',
   },
   {
     id: 'bigtech_platform',
     name: '빅테크·플랫폼',
-    search: 'Apple Microsoft Google Meta Amazon platform antitrust cloud',
+    search: 'Apple Microsoft Google Meta Amazon tech',
   },
   {
     id: 'robotics_physical_ai',
     name: '로보틱스·피지컬 AI',
-    search: 'robotics humanoid physical AI automation industrial robot',
+    search: 'robotics AI automation industrial robots',
   },
   {
     id: 'energy_power_infra',
     name: '에너지·전력 인프라',
-    search: 'energy power grid electricity utility nuclear SMR data center',
+    search: 'energy power electricity nuclear renewable',
   },
   {
     id: 'battery_ev',
     name: '이차전지·전기차',
-    search: 'electric vehicle EV battery lithium CATL Tesla BYD charging',
+    search: 'electric vehicle EV Tesla battery lithium',
   },
   {
     id: 'commodities_supply_chain',
     name: '원자재·공급망',
-    search: 'commodities supply chain shipping oil copper rare earths logistics',
+    search: 'commodities oil copper supply chain logistics',
   },
   {
     id: 'bio_health',
     name: '바이오·헬스케어',
-    search: 'biotech healthcare pharma FDA clinical trial GLP-1',
+    search: 'biotech healthcare pharmaceutical medicine',
   },
   {
     id: 'real_assets',
     name: '부동산·실물자산',
-    search: 'real estate commercial property REIT mortgage housing',
+    search: 'real estate property housing commercial',
   },
   {
     id: 'crypto_blockchain',
     name: '가상자산·블록체인',
-    search: 'cryptocurrency Bitcoin Ethereum blockchain crypto ETF',
+    search: 'Bitcoin cryptocurrency crypto blockchain Ethereum',
   },
   {
     id: 'trade_geopolitics',
     name: '무역·지정학 리스크',
-    search: 'geopolitics sanctions trade tariff export controls conflict',
+    search: 'trade geopolitics sanctions tariffs conflict',
   },
 ];
 

@@ -1,6 +1,6 @@
+import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { addBreadcrumb, reportError } from '@/lib/core/sentry';
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyCronAuth } from '@/util/verifyCronAuth';
-import { addBreadcrumb, reportError } from '@/lib/sentry';
 
 async function readSafeBody(res: Response) {
   // Avoid throwing on invalid JSON and avoid leaking large bodies.

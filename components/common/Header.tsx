@@ -6,7 +6,7 @@ import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
-import { useSearchStore } from '@/store/useSearchStore';
+import { useSearchStore } from '@/stores/useSearchStore';
 
 const navItems: { name: string; target: string }[] = [
   { name: '시그널', target: 'section-signal' },

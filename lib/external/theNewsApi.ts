@@ -28,9 +28,12 @@ export async function fetchTheNewsApiLatestBySearch(opts: {
   url.searchParams.set('language', opts.language ?? 'en');
   url.searchParams.set('sort', opts.sort ?? 'published_at');
 
+  console.log(`🔍 [TheNewsAPI] Searching: "${opts.search}" (limit: ${opts.limit})`);
   const res = await fetch(url.toString(), { cache: 'no-store' });
+
   if (!res.ok) {
     const body = await res.text().catch(() => '');
+    console.error(`❌ [TheNewsAPI] Request failed (${res.status}): ${body}`);
     throw new Error(`TheNewsAPI request failed (${res.status}): ${body}`);
   }
 
@@ -39,14 +42,17 @@ export async function fetchTheNewsApiLatestBySearch(opts: {
   if (typeof json === 'object' && json !== null && 'data' in json) {
     const data = (json as { data?: unknown }).data;
     if (Array.isArray(data)) {
+      console.log(`✅ [TheNewsAPI] Found ${data.length} news items for "${opts.search}"`);
       return data as TheNewsApiItem[];
     }
   }
 
   if (Array.isArray(json)) {
+    console.log(`✅ [TheNewsAPI] Found ${json.length} news items for "${opts.search}"`);
     return json as TheNewsApiItem[];
   }
 
+  console.warn(`⚠️ [TheNewsAPI] Unexpected response format for "${opts.search}":`, json);
   return [];
 }
 

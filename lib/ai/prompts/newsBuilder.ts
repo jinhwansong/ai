@@ -1,4 +1,4 @@
-import { THE_NEWS_SECTORS } from '@/contact/keyword';
+import { THE_NEWS_SECTORS } from '@/constants/keyword';
 
 export const buildNewsPrompt = (newsList: unknown[]) => {
   const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);

@@ -5,7 +5,7 @@ import { Sparkles, ArrowRight, Clock, Map } from 'lucide-react';
 import Link from 'next/link';
 import Button from '../common/Button';
 import { MainSignal } from '@/types/main';
-import { getDailyBriefingMeta } from '@/util/times';
+import { getDailyBriefingMeta } from '@/lib/utils/times';
 import Tags from '../common/Tags';
 import { useMainSignal } from '@/hooks/useMain';
 import SignalHighlightSkeleton from '@/components/skeleton/SignalHighlightSkeleton';

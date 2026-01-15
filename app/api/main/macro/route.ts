@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { redis } from '@/lib/redis/redis';
-import { fetchGlobalIndices, MarketIndexData } from '@/lib/api/yahooFinance';
+import { redis } from '@/lib/core/redis';
+import { fetchGlobalIndices, MarketIndexData } from '@/lib/external/yahooFinance';
 import { MacroItem } from '@/types/services';
 
 // 5분 캐시 (300초) - Yahoo Finance API 호출 최소화

@@ -1,13 +1,13 @@
-import {  NextResponse } from 'next/server';
 import { runGeminiJSON } from '@/lib/ai/gemini';
 import { runGPTJSON } from '@/lib/ai/openai';
-import { buildSectorPrompt } from '@/lib/prompts/sectorBuilder';
-import { redis } from '@/lib/redis/redis';
-import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
-import { verifyCronAuth } from '@/util/verifyCronAuth';
+import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
+import { redis } from '@/lib/core/redis';
+import { ANALYSIS_KEYWORDS } from '@/constants/keyword';
+import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
+import { reportError } from '@/lib/core/sentry';
 import { supabase } from '@/lib/supabase';
-import { fetchGlobalIndices } from '@/lib/api/yahooFinance';
-import { reportError } from '@/lib/sentry';
+import { NextResponse } from 'next/server';
 
 type StrategyModel = 'gemini' | 'gpt';
 

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { fetchTheNewsApiLatestBySearch } from '@/lib/news/theNewsApi';
-import { verifyCronAuth } from '@/util/verifyCronAuth';
-import { THE_NEWS_SECTORS } from '@/contact/keyword';
-import { reportError } from '@/lib/sentry';
+import { fetchTheNewsApiLatestBySearch } from '@/lib/external/theNewsApi';
+import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { THE_NEWS_SECTORS } from '@/constants/keyword';
+import { reportError } from '@/lib/core/sentry';
 
 const RATE_LIMIT_DELAY_MS = 2000;
 
@@ -23,7 +23,7 @@ export const GET = verifyCronAuth(async () => {
     // 섹터별로 순차 수집 (Rate Limit 방지: 2초 간격)
     for (const sector of THE_NEWS_SECTORS) {
       try {
-        console.log(`Collecting TheNewsAPI for: ${sector.name}...`);
+        console.log(`📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`);
         const items = await fetchTheNewsApiLatestBySearch({
           search: sector.search,
           limit: 3,
@@ -31,6 +31,7 @@ export const GET = verifyCronAuth(async () => {
           sort: 'published_at',
         });
 
+        let validItems = 0;
         for (const it of items) {
           if (!it?.uuid) continue;
           allItems.push({
@@ -43,9 +44,12 @@ export const GET = verifyCronAuth(async () => {
             published_at: (it.published_at ?? null) as string | null,
             content: ((it.snippet ?? it.description) ?? null) as string | null,
           });
+          validItems++;
         }
+
+        console.log(`✅ [Collect News] ${sector.name}: ${validItems}/${items.length} items collected`);
       } catch (err) {
-        console.error(`Error collecting TheNewsAPI for ${sector.name}:`, err);
+        console.error(`❌ [Collect News] Failed for ${sector.name}:`, err);
       }
 
       await new Promise((res) => setTimeout(res, RATE_LIMIT_DELAY_MS));

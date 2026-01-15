@@ -9,9 +9,9 @@ import {
   fetchMainInsight,
   fetchSignalDetail,
   fetchSearchResults,
-} from '@/lib/api/main';
+} from '@/lib/services/mainApi';
 import { withQueryDefaults } from './withQueryDefaults';
-import { fetchNewsDetail, fetchNewsList } from '@/lib/api/news';
+import { fetchNewsDetail, fetchNewsList } from '@/lib/services/newsApi';
 
 export const useMainSignal = () =>
   useQuery(

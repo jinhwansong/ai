@@ -1,4 +1,4 @@
-import { Fetcher } from '@/util/fetcher';
+import { Fetcher } from '@/lib/utils/fetcher';
 import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal, ObservationItem, InsightItem, NewsItem } from '@/types/main';
 import { MainMacroResponse } from '@/types/macro';
 import { AnalysisData } from '@/types/news';

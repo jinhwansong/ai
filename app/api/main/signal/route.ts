@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { redis } from '@/lib/redis/redis';
-import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/util/timeSlot';
+import { redis } from '@/lib/core/redis';
+import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
 
 export async function GET() {
   try {

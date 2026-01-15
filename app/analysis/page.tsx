@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { supabase } from '@/lib/supabase';
 import AnalysisClient from './AnalysisClient';
+import { supabase } from '@/lib/supabase';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {

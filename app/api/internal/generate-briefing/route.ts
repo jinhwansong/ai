@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { redis } from '@/lib/redis/redis';
+import { redis } from '@/lib/core/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
 import { ObservationItem, SectorItem } from '@/types/services';
-import { ANALYSIS_KEYWORDS } from '@/contact/keyword';
-import { verifyCronAuth } from '@/util/verifyCronAuth';
-import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/util/timeSlot';
-import { fetchGlobalIndices } from '@/lib/api/yahooFinance';
-import { reportError } from '@/lib/sentry';
+import { ANALYSIS_KEYWORDS } from '@/constants/keyword';
+import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
+import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
+import { reportError } from '@/lib/core/sentry';
 
 export const GET = verifyCronAuth(async () => {
   try {
