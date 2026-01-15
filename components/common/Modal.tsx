@@ -46,12 +46,11 @@ export default function Modal({
   }, [isOpen]);
 
   if (typeof document === 'undefined') return null;
-  const titleId = 'modal-title';
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-9999 flex items-end justify-center p-0 md:items-center md:p-4">
+        <div className="fixed inset-0 z-999 flex items-end justify-center p-0 md:items-center md:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -69,7 +68,6 @@ export default function Modal({
             transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
             role="dialog"
             aria-modal="true"
-            aria-labelledby={titleId}
             className={[
               'relative w-full overflow-hidden bg-(--background) shadow-2xl border border-(--border) flex flex-col',
               // mobile: full screen
@@ -82,7 +80,7 @@ export default function Modal({
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-(--border) p-4 px-6">
-              <h3 id={titleId} className="text-lg font-bold text-(--text-title)">
+              <h3 className="text-lg font-bold text-(--text-title)">
                 {title || '상세 정보'}
               </h3>
               <button

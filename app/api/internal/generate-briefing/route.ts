@@ -9,7 +9,16 @@ import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/lib/utils/timeSlo
 import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
 import { reportError } from '@/lib/core/sentry';
 
+function getStringProp(obj: unknown, key: string): string | undefined {
+  if (!obj || typeof obj !== 'object') return undefined;
+  const record = obj as Record<string, unknown>;
+  const value = record[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
 export const GET = verifyCronAuth(async () => {
+  let progressKey: string | null = null;
+
   try {
     // 1. raw_news 테이블에서 최신 뉴스 가져오기
     const { data: rawNews, error: newsError } = await supabase
@@ -36,6 +45,15 @@ export const GET = verifyCronAuth(async () => {
     // 단, OPENAI_API_KEY가 없으면 안전하게 전체 Gemini로 동작
     const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
 
+    // 분석 진행 상태를 Redis에 저장 (중간 결과 추적 및 타임아웃 복구용)
+    progressKey = `briefing:progress:${Date.now()}`;
+    await redis.set(progressKey, JSON.stringify({
+      status: 'started',
+      timestamp: new Date().toISOString(),
+      newsCount: rawNews?.length || 0,
+      hasOpenAI,
+    }), 'EX', 3600); // 1시간 유지
+
     const analysisResult = await performAIAnalysis({
       modelType: 'gemini',
       modelPlan: hasOpenAI
@@ -51,6 +69,20 @@ export const GET = verifyCronAuth(async () => {
       marketData,
       newsList: rawNews,
     });
+
+    // 성공 시 진행 상태 업데이트
+    await redis.set(
+      progressKey,
+      JSON.stringify({
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        sections: ['sector', 'news', 'impact', 'observation', 'insight'],
+      }),
+      'EX',
+      3600
+    );
+
+    console.log('✅ [Generate Briefing] Analysis completed successfully');
 
     const finalData = {
       ...analysisResult,
@@ -143,8 +175,39 @@ export const GET = verifyCronAuth(async () => {
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Generate Briefing Error:', error);
-    reportError(error, { route: '/api/internal/generate-briefing' });
+    const finishReason = getStringProp(error, 'finish_reason');
+    const task = getStringProp(error, 'task');
+
+    // 진행 상태에 에러 정보 업데이트
+    if (progressKey) {
+      try {
+        const errorInfo = {
+          status: 'failed',
+          error: errorMessage,
+          timestamp: new Date().toISOString(),
+          finishReason,
+          task,
+        };
+        await redis.set(progressKey, JSON.stringify(errorInfo), 'EX', 7200); // 실패 정보는 2시간 유지
+      } catch (redisError) {
+        console.error('Failed to save error state to Redis:', redisError);
+      }
+    }
+
+    console.error('❌ [Generate Briefing] Analysis failed:', error);
+    reportError(error, { route: '/api/internal/generate-briefing', finishReason });
+
+    // finish_reason이 length인 경우 사용자에게 더 명확한 메시지 제공
+    if (finishReason === 'length') {
+      const userFriendlyMessage = 'AI 분석 중 응답이 너무 길어져 생성이 중단되었습니다. 뉴스 데이터 양을 줄이거나 잠시 후 다시 시도해주세요.';
+      return NextResponse.json({
+        success: false,
+        error: userFriendlyMessage,
+        details: errorMessage,
+        suggestion: '데이터가 너무 많습니다. 최근 뉴스로 제한하거나 배치 크기를 줄여보세요.'
+      }, { status: 413 }); // Payload Too Large
+    }
+
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 });

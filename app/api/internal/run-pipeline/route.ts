@@ -20,6 +20,21 @@ function getStringField(obj: unknown, key: string): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+type PipelineStep = 'collectNews' | 'generateStrategy' | 'generateBriefing';
+
+class PipelineTimeoutError extends Error {
+  public readonly step: PipelineStep;
+  public readonly timeout = true;
+  public readonly timeoutMs: number;
+
+  constructor(step: PipelineStep, timeoutMs: number) {
+    super(`${step} 작업이 ${timeoutMs / 1000}초 후 타임아웃되었습니다`);
+    this.name = 'PipelineTimeoutError';
+    this.step = step;
+    this.timeoutMs = timeoutMs;
+  }
+}
+
 export const POST = verifyCronAuth(async (req: NextRequest) => {
   const host = req.headers.get('host');
   const protocol = host?.includes('localhost') ? 'http' : 'https';
@@ -27,70 +42,99 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
   const results: Record<string, unknown> = {};
 
   try {
-    addBreadcrumb('Pipeline started', 'pipeline', { route: '/api/internal/run-pipeline' });
+    addBreadcrumb('Pipeline started', 'pipeline', {
+      route: '/api/internal/run-pipeline',
+    });
 
     const callStep = async <T extends { success?: boolean }>(
-      step: 'collectNews' | 'generateStrategy' | 'generateBriefing',
-      path: string
+      step: PipelineStep,
+      path: string,
+      timeoutMs: number = 300000 // 기본 5분, generateBriefing은 더 길게 설정 가능
     ): Promise<T> => {
-      addBreadcrumb(`Step started: ${step}`, 'pipeline', { path });
-      const res = await fetch(`${baseUrl}${path}`, {
-        headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
-      });
+      addBreadcrumb(`Step started: ${step}`, 'pipeline', { path, timeoutMs });
 
-      const body = await readSafeBody(res);
-      const data = body.data as T;
-      const ok = res.ok && (data?.success ?? true) === true;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.warn(`⏰ [Pipeline] ${step} timed out after ${timeoutMs}ms`);
+      }, timeoutMs);
 
-      if (!ok) {
-        const msg =
-          getStringField(data, 'error') ??
-          getStringField(data, 'message') ??
-          `Step ${step} failed`;
-
-        const err = new Error(msg);
-        reportError(err, {
-          kind: 'pipeline_step_failed',
-          step,
-          path,
-          status: res.status,
-          statusText: res.statusText,
-          // keep response small; never include secrets
-          responseBody: body.raw,
+      try {
+        const res = await fetch(`${baseUrl}${path}`, {
+          headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
+          signal: controller.signal,
         });
 
-        throw err;
+        clearTimeout(timeoutId);
+        const body = await readSafeBody(res);
+        const data = body.data as T;
+        const ok = res.ok && (data?.success ?? true) === true;
+
+        if (!ok) {
+          const msg =
+            getStringField(data, 'error') ??
+            getStringField(data, 'message') ??
+            `Step ${step} failed`;
+
+          const err = new Error(msg);
+          reportError(err, {
+            kind: 'pipeline_step_failed',
+            step,
+            path,
+            status: res.status,
+            statusText: res.statusText,
+            // keep response small; never include secrets
+            responseBody: body.raw,
+          });
+
+          throw err;
+        }
+
+        addBreadcrumb(`Step completed: ${step}`, 'pipeline', {
+          path,
+          status: res.status,
+        });
+        return data;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          throw new PipelineTimeoutError(step, timeoutMs);
+        }
+
+        throw fetchError;
       }
-
-      addBreadcrumb(`Step completed: ${step}`, 'pipeline', { path, status: res.status });
-      return data;
     };
-
-    // 1. 뉴스 수집
+    // 1. 뉴스 수집 (짧은 타임아웃)
     console.log('--- Step 1: Collecting News ---');
     const collectData = await callStep<{ success: boolean; message?: string }>(
       'collectNews',
-      '/api/internal/collect-news'
+      '/api/internal/collect-news',
+      60000 // 1분
     );
     results.collectNews = collectData;
 
-    // 2. 섹터 전략 생성
+    // 2. 섹터 전략 생성 (중간 타임아웃)
     console.log('--- Step 2: Generating Strategy ---');
     const strategyData = await callStep<{ success: boolean; error?: string }>(
       'generateStrategy',
-      '/api/internal/generate-strategy'
+      '/api/internal/generate-strategy',
+      120000 // 2분
     );
     results.generateStrategy = strategyData;
 
-    // 3. 브리핑 생성 (분석 및 DB 저장)
+    // 3. 브리핑 생성 (긴 타임아웃 - AI 분석이 많이 필요함)
     console.log('--- Step 3: Generating Briefing ---');
-    const briefingData = await callStep<{ success: boolean; error?: string; message?: string }>(
-      'generateBriefing',
-      '/api/internal/generate-briefing'
-    );
+    const briefingData = await callStep<{
+      success: boolean;
+      error?: string;
+      message?: string;
+    }>('generateBriefing', '/api/internal/generate-briefing', 600000); // 10분
     results.generateBriefing = briefingData;
-
-    addBreadcrumb('Pipeline completed', 'pipeline', { route: '/api/internal/run-pipeline' });
+    
+    addBreadcrumb('Pipeline completed', 'pipeline', {
+      route: '/api/internal/run-pipeline',
+    });
     return NextResponse.json({
       success: true,
       message: 'Pipeline completed successfully',
