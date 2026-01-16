@@ -19,7 +19,8 @@ export const GET = verifyCronAuth(async () => {
       published_at: string | null;
       content: string | null;
     }> = [];
-
+    const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+    const formattedDate = threeDaysAgo.toISOString().split('T')[0];
     // 섹터별로 순차 수집 (Rate Limit 방지: 2초 간격)
     for (const sector of THE_NEWS_SECTORS) {
       try {
@@ -29,20 +30,24 @@ export const GET = verifyCronAuth(async () => {
           limit: 3,
           language: 'en',
           sort: 'published_at',
+          published_after: formattedDate,
         });
 
         let validItems = 0;
         for (const it of items) {
           if (!it?.uuid) continue;
+
           allItems.push({
             uuid: it.uuid,
             title: (it.title ?? null) as string | null,
-            description: ((it.description ?? it.snippet) ?? null) as string | null,
+            description: (it.description ?? it.snippet ?? null) as
+              | string
+              | null,
             url: (it.url ?? null) as string | null,
             image_url: (it.image_url ?? null) as string | null,
             source: (it.source ?? null) as string | null,
             published_at: (it.published_at ?? null) as string | null,
-            content: ((it.snippet ?? it.description) ?? null) as string | null,
+            content: (it.snippet ?? it.description ?? null) as string | null,
           });
           validItems++;
         }
@@ -58,7 +63,14 @@ export const GET = verifyCronAuth(async () => {
     if (allItems.length === 0) {
       return NextResponse.json({ success: true, message: 'No news found' });
     }
-
+    console.log('📊 [Collect News] Summary:');
+    console.log('  - Total items collected:', allItems.length);
+    console.log('  - Unique UUIDs:', new Set(allItems.map((i) => i.uuid)).size);
+    console.log('  - Unique URLs:', new Set(allItems.map((i) => i.url)).size);
+    console.log(
+      '  - Unique titles:',
+      new Set(allItems.map((i) => i.title)).size
+    );
     // uuid 기준 중복 제거
     const uniqueNews = Array.from(
       new Map(allItems.map((item) => [item.uuid, item])).values()

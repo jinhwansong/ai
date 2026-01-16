@@ -1,12 +1,19 @@
-import { THE_NEWS_SECTORS } from '@/constants/keyword';
+import { THE_NEWS_SECTORS } from "@/constants/keyword";
 
 export const buildNewsPrompt = (newsList: unknown[]) => {
   const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);
+  const today = new Date().toISOString().split('T')[0]; // 2026-01-16
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+
   return `
 # Role: Financial News Curator
 # Task: 뉴스 리스트 분석 및 요약/상세 리포트 생성
 
 제공된 뉴스 리스트를 분석하여 사용자가 이해하기 쉬운 요약과 전문가 수준의 상세 분석을 생성해줘.
+
+## 현재 날짜: ${today}
 
 ## 뉴스 리스트:
 ${JSON.stringify(newsList, null, 2)}
@@ -23,12 +30,17 @@ ${JSON.stringify(newsList, null, 2)}
       "relatedSectors": ["섹터1", "섹터2"],
       "impact": "High | Medium | Low",
       "url": "원본 뉴스의 url을 그대로 복사 (필수)",
-      "source": "뉴스 출처 (예: 데일리뉴스, 경제신문)"
+      "source": "뉴스 출처 (예: 데일리뉴스, 경제신문)",
+      "publishedAt": "발행일 (YYYY-MM-DD 형식)"
     }
   ]
 }
 
 ## 중요 규칙:
+0. **최신성 필터링 (최우선)**: 
+   - published_at이 ${threeDaysAgo} 이후인 뉴스만 선택해줘
+   - 작년, 재작년 등 오래된 뉴스는 **절대 포함하지 마**
+   - 날짜 정보가 없는 뉴스도 제외해줘
 1. **반드시 총 20개**의 핵심 뉴스를 선별해서 제공해줘. (메인 대시보드 및 리포트 최적화)
 2. **url 및 source 필드는 필수**: 입력된 뉴스의 원본 url과 출처(source)를 **정확히 그대로** 복사해서 포함시켜줘. 정보가 없는 뉴스는 선택하지 마.
 3. **모든 텍스트는 한국어**: title, descriptionShort, contentLong은 반드시 한국어로 작성하거나 번역해줘.

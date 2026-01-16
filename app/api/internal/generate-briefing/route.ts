@@ -25,7 +25,7 @@ export const GET = verifyCronAuth(async () => {
       .from('raw_news')
       .select('*')
       .order('published_at', { ascending: false })
-      .limit(50);
+      .limit(36);
 
     if (newsError) throw newsError;
 

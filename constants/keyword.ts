@@ -3,134 +3,74 @@
  * - NOTE: 요구사항은 "12개 섹터 (총 36개)"이므로, 아래 12개로 고정합니다.
  * - 언어: en / 정렬: published_at (최신 우선) / 검색어는 중복 사용 가능
  */
-export const THE_NEWS_SECTORS: Array<{ id: string; name: string; search: string }> = [
+
+export const THE_NEWS_SECTORS: Array<{
+  id: string;
+  name: string;
+  search: string;
+}> = [
   {
     id: 'macro',
     name: '거시경제',
-    search: 'macroeconomics GDP inflation recession economic growth PMI',
-  },
-  {
-    id: 'monetary_fx',
-    name: '통화정책·환율',
-    search: 'central bank interest rate hike cut forex USD JPY EUR inflation expectations',
+    search: 'Federal Reserve | Inflation | GDP',
   },
   {
     id: 'ai_semis',
     name: 'AI·반도체',
-    search: 'AI semiconductor Nvidia AMD Intel TSMC ASML HBM GPU chip',
+    search: 'Nvidia | TSMC | AI Chip',
   },
   {
-    id: 'bigtech_platform',
-    name: '빅테크·플랫폼',
-    search: 'Apple Microsoft Google Meta Amazon platform antitrust cloud',
+    id: 'bigtech',
+    name: '빅테크',
+    search: 'Microsoft | Apple | Google | Meta | Amazon',
   },
   {
-    id: 'robotics_physical_ai',
-    name: '로보틱스·피지컬 AI',
-    search: 'robotics humanoid physical AI automation industrial robot',
+    id: 'energy_infra',
+    name: '에너지·전력',
+    search: 'Nuclear | SMR | Data Center Power',
   },
   {
-    id: 'energy_power_infra',
-    name: '에너지·전력 인프라',
-    search: 'energy power grid electricity utility nuclear SMR data center',
-  },
-  {
-    id: 'battery_ev',
-    name: '이차전지·전기차',
-    search: 'electric vehicle EV battery lithium CATL Tesla BYD charging',
-  },
-  {
-    id: 'commodities_supply_chain',
-    name: '원자재·공급망',
-    search: 'commodities supply chain shipping oil copper rare earths logistics',
+    id: 'robotics',
+    name: '로보틱스',
+    search: 'Humanoid | Tesla Bot | Automation | Robot',
   },
   {
     id: 'bio_health',
     name: '바이오·헬스케어',
-    search: 'biotech healthcare pharma FDA clinical trial GLP-1',
+    search: 'GLP-1 | Novo Nordisk | Eli Lilly | FDA',
   },
   {
-    id: 'real_assets',
-    name: '부동산·실물자산',
-    search: 'real estate commercial property REIT mortgage housing',
+    id: 'finance_crypto',
+    name: '금융·가상자산',
+    search: 'Bitcoin | Crypto | Fintech | Bank',
   },
   {
-    id: 'crypto_blockchain',
-    name: '가상자산·블록체인',
-    search: 'cryptocurrency Bitcoin Ethereum blockchain crypto ETF',
+    id: 'geopolitics',
+    name: '지정학·무역',
+    search: 'Tariff | Trade War | China US | Export Control',
   },
   {
-    id: 'trade_geopolitics',
-    name: '무역·지정학 리스크',
-    search: 'geopolitics sanctions trade tariff export controls conflict',
+    id: 'space_defense',
+    name: '우주·방산',
+    search: 'SpaceX | Satellite | Defense Tech | Drone',
+  },
+  {
+    id: 'software_cyber',
+    name: 'SW·보안',
+    search: 'Cybersecurity | SaaS | Cloud | AI Security',
+  },
+  {
+    id: 'real_estate',
+    name: '부동산',
+    search: 'Housing Market | REITs | Mortgage | Commercial Property',
+  },
+  {
+    id: 'luxury_consumer',
+    name: '소비재·사치품',
+    search: 'Luxury Goods | LVMH | Brand Trend',
   },
 ];
-// export const THE_NEWS_SECTORS: Array<{
-//   id: string;
-//   name: string;
-//   search: string;
-// }> = [
-//   {
-//     id: 'macro',
-//     name: '거시경제',
-//     search: 'economy inflation GDP growth',
-//   },
-//   {
-//     id: 'monetary_fx',
-//     name: '통화정책·환율',
-//     search: 'Fed interest rates dollar euro',
-//   },
-//   {
-//     id: 'ai_semis',
-//     name: 'AI·반도체',
-//     search: 'AI Nvidia semiconductor TSMC',
-//   },
-//   {
-//     id: 'bigtech_platform',
-//     name: '빅테크·플랫폼',
-//     search: 'Apple Microsoft Google Amazon',
-//   },
-//   {
-//     id: 'robotics_physical_ai',
-//     name: '로보틱스·피지컬 AI',
-//     search: 'robotics automation robots AI',
-//   },
-//   {
-//     id: 'energy_power_infra',
-//     name: '에너지·전력 인프라',
-//     search: 'energy oil electricity nuclear',
-//   },
-//   {
-//     id: 'battery_ev',
-//     name: '이차전지·전기차',
-//     search: 'Tesla EV battery electric vehicle',
-//   },
-//   {
-//     id: 'commodities_supply_chain',
-//     name: '원자재·공급망',
-//     search: 'oil commodities copper supply chain',
-//   },
-//   {
-//     id: 'bio_health',
-//     name: '바이오·헬스케어',
-//     search: 'biotech healthcare pharmaceutical',
-//   },
-//   {
-//     id: 'real_assets',
-//     name: '부동산·실물자산',
-//     search: 'real estate property housing',
-//   },
-//   {
-//     id: 'crypto_blockchain',
-//     name: '가상자산·블록체인',
-//     search: 'Bitcoin crypto cryptocurrency',
-//   },
-//   {
-//     id: 'trade_geopolitics',
-//     name: '무역·지정학 리스크',
-//     search: 'trade sanctions geopolitics',
-//   },
-// ];
+
 /**
  * 뉴스 리스트 카테고리 필터용 별칭(동의어) 매핑
  * - 기존 데이터가 ["로봇","클라우드"] 처럼 "세부 키워드"로 저장돼도,
