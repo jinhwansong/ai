@@ -20,7 +20,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center min-h-12 min-w-12 transition-all duration-200 font-bold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center min-h-12 min-w-12 transition-all duration-200 font-semibold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed';
 
   const sizes = {
     xs: 'px-2 py-1 text-xs rounded-lg',

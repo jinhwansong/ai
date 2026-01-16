@@ -7,7 +7,6 @@ import { RefreshCw } from 'lucide-react';
 
 interface PullToRefreshProps {
   children: React.ReactNode;
-  onRefresh: () => Promise<void>;
 }
 
 const PULL_THRESHOLD = 40; // px
@@ -40,9 +39,13 @@ function PTRIndicator({
   );
 }
 
-export default function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
+export default function PullToRefresh({ children }: PullToRefreshProps) {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [indicatorTop, setIndicatorTop] = useState(0);
+  
+  const onRefresh = async () => {
+    window.location.reload();
+  };
 
   useEffect(() => {
     // 모바일/태블릿(터치 기기) 여부 확인

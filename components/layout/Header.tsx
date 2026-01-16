@@ -2,10 +2,10 @@
 
 import { Search, X, History, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import ThemeToggle from './ThemeToggle';
+import ThemeToggle from '../common/ThemeToggle';
 import { useSearchStore } from '@/stores/useSearchStore';
 
 const navItems: { name: string; target: string }[] = [
@@ -19,13 +19,6 @@ export default function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
-
-  // 하이드레이션 오류 방지를 위한 mounted 상태 확인
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
 
   const { recentSearches, addSearch, removeSearch, clearHistory } = useSearchStore();
 
@@ -46,11 +39,9 @@ export default function Header() {
     setIsSearchExpanded(false);
     setSearchQuery('');
   };
-
   return (
     <header className="glass-header sticky top-0 z-50 w-full px-4 py-3 md:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        {/* Logo */}
         <Link
           href="/"
           aria-label="오늘의 시그널 홈으로 이동"
@@ -64,7 +55,6 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Desktop Navigation & Search */}
         <div className="flex flex-1 items-center justify-center gap-4">
           <AnimatePresence mode="wait">
             {!isSearchExpanded ? (
@@ -94,7 +84,10 @@ export default function Header() {
                       onClick={() => {
                         const el = document.getElementById(item.target);
                         if (el) {
-                          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          el.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          });
                         }
                       }}
                       className="inline-flex items-center justify-center rounded-full px-5 py-2 min-h-12 text-sm font-semibold transition-all text-(--text-muted) hover:bg-(--hover-surface) hover:text-(--text-body)"
@@ -130,7 +123,7 @@ export default function Header() {
                     aria-label="검색어"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-(--text-muted) text-(--text-body)"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setIsSearchExpanded(false)}
                     aria-label="검색 닫기"
@@ -140,9 +133,8 @@ export default function Header() {
                   </button>
                 </motion.form>
 
-                {/* 최근 검색어 레이어 */}
                 <AnimatePresence>
-                  {mounted && isSearchExpanded && recentSearches.length > 0 && (
+                  {isSearchExpanded && recentSearches.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -154,7 +146,7 @@ export default function Header() {
                           <History size={12} />
                           최근 검색어
                         </div>
-                        <button 
+                        <button
                           onClick={clearHistory}
                           className="text-[10px] font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1"
                         >
@@ -164,7 +156,7 @@ export default function Header() {
                       </div>
                       <div className="max-h-64 overflow-y-auto py-1">
                         {recentSearches.map((query) => (
-                          <div 
+                          <div
                             key={query}
                             className="group flex items-center justify-between px-4 py-2 hover:bg-(--hover-surface) cursor-pointer"
                           >
@@ -198,7 +190,7 @@ export default function Header() {
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
           {!isSearchExpanded && (
-            <button 
+            <button
               onClick={() => setIsSearchExpanded(true)}
               aria-label="검색 열기"
               className="flex h-12 w-12 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"

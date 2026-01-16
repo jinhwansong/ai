@@ -1,5 +1,6 @@
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { ko } from 'date-fns/locale';
 
 const TIMEZONE = 'Asia/Seoul';
 
@@ -21,3 +22,11 @@ if (hour >= 18) {
   };
 }
 
+
+
+export function formatPublishedAt(publishedAt: string) {
+  return formatDistanceToNow(new Date(publishedAt), {
+    addSuffix: true,
+    locale: ko,
+  });
+}

@@ -3,17 +3,16 @@
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useSyncExternalStore } from 'react';
+import { useMountedStore } from '@/stores/useMountedStore';
+import { useEffect } from 'react';
 
 export default function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
+  const { mounted, setMounted } = useMountedStore();
 
-  // 하이드레이션 오류 방지를 위해 mounted 상태 확인
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
+ useEffect(() => {
+   setMounted(true);
+ }, [setMounted]);
 
   const isDark = resolvedTheme === 'dark';
 

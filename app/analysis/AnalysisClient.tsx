@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -21,15 +20,16 @@ import { useAnimatedScore } from '@/hooks/useAnimatedScore';
 import { useToastStore } from '@/stores/useToastStore';
 import SmartParagraphs from '@/components/common/SmartParagraphs';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import { useMountedStore } from '@/stores/useMountedStore';
+import { useEffect } from 'react';
 
 export default function AnalysisClient() {
   const router = useRouter();
   const { showToast } = useToastStore();
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
+    const { mounted, setMounted } = useMountedStore();
+ useEffect(() => {
+   setMounted(true);
+ }, [setMounted]);
 
   const { data, isLoading } = useSignalDetail();
   const animatedScore = useAnimatedScore({ value: data?.sentimentScore || 0 });

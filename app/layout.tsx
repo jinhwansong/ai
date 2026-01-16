@@ -4,6 +4,8 @@ import Providers from './providers';
 import GlobalToast from '@/components/common/GlobalToast';
 import MicrosoftClarity from '@/components/common/MicrosoftClarity';
 import { SentryWebVitals } from '@/components/common/SentryWebVitals';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
@@ -58,10 +60,12 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="bg-(--background) text-(--foreground)">
         <Providers>
-          <MicrosoftClarity/>
+          <MicrosoftClarity />
           <SentryWebVitals />
+          <Header />
           {children}
           <GlobalToast />
+          <Footer />
         </Providers>
       </body>
     </html>
