@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import AnalysisClient from './AnalysisClient';
 import { supabase } from '@/lib/supabase';
 
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const { data } = await supabase
@@ -15,7 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
     const analysis = data.data.main?.signal;
     const title = analysis?.focus || 'AI 심층 마켓 분석';
-    const description = analysis?.description || '실시간 글로벌 뉴스 기반 AI 시장 분석 리포트';
+    const description =
+      analysis?.description || '실시간 글로벌 뉴스 기반 AI 시장 분석 리포트';
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-red-mu.vercel.app';
+    const ogImageUrl = `${baseUrl}/api/og?title=${encodeURIComponent(title)}`;
 
     return {
       title: `${title} | 오늘의 시그널`,
@@ -24,13 +30,19 @@ export async function generateMetadata(): Promise<Metadata> {
         title,
         description,
         type: 'article',
-        // 배포 후 실제 도메인 이미지 경로를 넣으면 카톡에 사진도 나옵니다.
-        // images: [{ url: 'https://your-domain.com/og-image.png' }], 
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+          },
+        ],
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
+        images: [ogImageUrl],
       },
     };
   } catch {

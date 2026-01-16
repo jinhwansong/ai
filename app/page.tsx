@@ -33,10 +33,7 @@ export default function Home() {
   };
 
   const handleRefresh = async () => {
-    // PTR에서는 "백그라운드 refetch"가 아니라, 스켈레톤이 다시 보이도록
-    // 쿼리 상태를 초기화(reset) 후 재요청하는 UX로 처리
     await queryClient.resetQueries({ type: 'active' });
-    // 애니메이션 시인성을 위한 최소 대기 시간
     await new Promise(resolve => setTimeout(resolve, 800));
   };
 

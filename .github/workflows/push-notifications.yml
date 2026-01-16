@@ -1,0 +1,22 @@
+name: Send Push Notifications
+
+on:
+  # 수동 실행 가능
+  workflow_dispatch:
+
+  # 한국 시간 기준 08:30, 12:00, 18:00에 자동 실행
+  schedule:
+    - cron: '30 23 * * *' # KST 08:30 (UTC 23:30 - 전날)
+    - cron: '0 3 * * *'   # KST 12:00 (UTC 03:00)
+    - cron: '0 9 * * *'   # KST 18:00 (UTC 09:00)
+
+jobs:
+  send-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Push Notifications
+        run: |
+          curl -X POST "${{ secrets.CRON_ENDPOINT }}/api/internal/send-push-notifications" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d '{}'

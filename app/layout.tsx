@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     siteName: 'AI Market Briefing',
     locale: 'ko_KR',
     type: 'website',
+    images: [
+      {
+        url: '/og-main.png',
+        width: 1200,
+        height: 630,
+        alt: '오늘의 시그널 메인 이미지',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
