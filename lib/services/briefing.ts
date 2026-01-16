@@ -35,27 +35,9 @@ class AIResponseTooLongError extends Error {
 
 // 공통 인터페이스 정의
 export interface BriefingInquiry {
-  /**
-   * 기존 방식(호환 유지): 전체 분석을 하나의 모델로 실행
-   * - 기본값: 'gemini'
-   */
   modelType?: AIModelType;
-
-  /**
-   * 분리 방식: 분석 영역별로 모델 지정
-   * - 지정하지 않은 영역은 modelType(기본 'gemini')를 따릅니다.
-   *
-   * 예)
-   * { news: 'gemini', impact: 'gpt', insight: 'gpt' }
-   */
   modelPlan?: Partial<Record<AnalysisTask, AIModelType>>;
-
-  /**
-   * 1차 모델이 실패했을 때 1회 리트라이할 fallback 모델
-   * - 미지정이면 "반대 모델"로 1회 리트라이합니다.
-   */
   fallbackModel?: AIModelType;
-
   userKeywords: string[];
   marketData: {
     globalIndices: MarketIndexData[];
