@@ -52,6 +52,12 @@ export interface ObservationItem {
   reason: string;
   tags: string[];
   momentum: 'Strong' | 'Moderate' | 'Building';
+  relatedNews?: {
+    title:string;
+    source:string;
+    url:string;
+    time:string;
+  }[]
 }
 
 export interface ObservationResponse {

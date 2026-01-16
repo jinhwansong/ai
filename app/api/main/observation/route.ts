@@ -24,7 +24,7 @@ export async function GET() {
 
     const dashboard = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
     const observations: ObservationItem[] = dashboard.observations
-
+    console.log(observations[0].relatedNews);
     return NextResponse.json(observations);
   } catch (error) {
     console.error('Observation API Error:', error);
