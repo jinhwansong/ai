@@ -6,6 +6,7 @@ import MicrosoftClarity from '@/components/common/MicrosoftClarity';
 import { SentryWebVitals } from '@/components/common/SentryWebVitals';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import Head from 'next/head';
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
@@ -58,6 +59,11 @@ export default function RootLayout({
   
   return (
     <html lang="ko" suppressHydrationWarning>
+      <Head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </Head>
       <body className="bg-(--background) text-(--foreground)">
         <Providers>
           <MicrosoftClarity />

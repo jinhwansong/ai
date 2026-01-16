@@ -1,12 +1,14 @@
 'use client';
 
-import { Search, X, History, Trash2 } from 'lucide-react';
+import { Search, X, History, Trash2, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '../common/ThemeToggle';
 import { useSearchStore } from '@/stores/useSearchStore';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { useToastStore } from '@/stores/useToastStore';
 
 const navItems: { name: string; target: string }[] = [
   { name: '시그널', target: 'section-signal' },
@@ -39,6 +41,19 @@ export default function Header() {
     setIsSearchExpanded(false);
     setSearchQuery('');
   };
+
+  const { isInstallable, isInstalled, install } = usePWAInstall();
+  const { showToast } = useToastStore();
+
+  const handleInstall = async () => {
+    const result = await install();
+    if (result.success) {
+      showToast('앱이 설치되었습니다! 🎉');
+    } else if (result.outcome === 'dismissed') {
+      showToast('설치가 취소되었습니다.', 'error');
+    }
+  };
+  
   return (
     <header className="glass-header sticky top-0 z-50 w-full px-4 py-3 md:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
@@ -196,6 +211,17 @@ export default function Header() {
               className="flex h-12 w-12 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body)"
             >
               <Search size={20} />
+            </button>
+          )}
+          
+          {isInstallable && !isInstalled && (
+            <button
+              onClick={handleInstall}
+              aria-label="앱 설치"
+              className="flex h-12 w-12 items-center justify-center rounded-full text-(--text-muted) transition-colors hover:bg-(--hover-surface) hover:text-(--text-body) relative"
+              title="앱 설치하기"
+            >
+              <Download size={20} />
             </button>
           )}
           <ThemeToggle />

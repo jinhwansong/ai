@@ -17,5 +17,22 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "시장 브리핑",
+      "short_name": "브리핑",
+      "description": "오늘의 시장 분석 확인",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "뉴스",
+      "short_name": "뉴스",
+      "description": "최신 뉴스 보기",
+      "url": "/news",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
   ]
 }
