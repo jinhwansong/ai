@@ -20,16 +20,13 @@ import { useAnimatedScore } from '@/hooks/useAnimatedScore';
 import { useToastStore } from '@/stores/useToastStore';
 import SmartParagraphs from '@/components/common/SmartParagraphs';
 import ThemeToggle from '@/components/common/ThemeToggle';
-import { useMountedStore } from '@/stores/useMountedStore';
-import { useEffect } from 'react';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 export default function AnalysisClient() {
   const router = useRouter();
   const { showToast } = useToastStore();
-    const { mounted, setMounted } = useMountedStore();
- useEffect(() => {
-   setMounted(true);
- }, [setMounted]);
+    const mounted = useIsMounted();
+
 
   const { data, isLoading } = useSignalDetail();
   const animatedScore = useAnimatedScore({ value: data?.sentimentScore || 0 });

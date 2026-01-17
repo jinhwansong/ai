@@ -31,8 +31,12 @@ export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  // 초기 상태를 함수로 계산하여 설정
-  const [isInstalled, setIsInstalled] = useState(getInitialInstalledState);
+  // 서버와 클라이언트에서 동일한 초기 상태를 보장 (Hydration mismatch 방지)
+  // 클라이언트에서만 실제 상태를 확인하도록 lazy initialization 사용
+  const [isInstalled, setIsInstalled] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return getInitialInstalledState();
+  });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

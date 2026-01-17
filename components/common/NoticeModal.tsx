@@ -2,9 +2,9 @@
 
 import { usePushNotification } from '@/hooks/usePushNotification';
 import { useShowNotice } from '@/stores/useShowNotice';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import Button from './Button';
-import { useMountedStore } from '@/stores/useMountedStore';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 type NoticeModalProps = {
   title?: string;
@@ -16,13 +16,8 @@ export default function NoticeModal({
   children,
 }: NoticeModalProps) {
   const { isDismissed, onClose } = useShowNotice();
-  const { mounted, setMounted } = useMountedStore();
-  
+  const mounted = useIsMounted();
   const { isSubscribed, subscribe, isLoading } = usePushNotification();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSubscribeAndClose = async () => {
     await subscribe(); 

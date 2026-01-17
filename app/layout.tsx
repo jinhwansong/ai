@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import '@/style/globals.css';
+import { pretendard } from '@/lib/fonts';
 import Providers from './providers';
 import GlobalToast from '@/components/common/GlobalToast';
 import MicrosoftClarity from '@/components/common/MicrosoftClarity';
@@ -58,13 +59,13 @@ export default function RootLayout({
 }>) {
   
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
       <Head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </Head>
-      <body className="bg-(--background) text-(--foreground)">
+      <body className={`${pretendard.className} bg-(--background) text-(--foreground)`}>
         <Providers>
           <MicrosoftClarity />
           <SentryWebVitals />
