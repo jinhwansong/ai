@@ -19,7 +19,7 @@ export const GET = verifyCronAuth(async () => {
       published_at: string | null;
       content: string | null;
     }> = [];
-    const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
     const formattedDate = threeDaysAgo.toISOString().split('T')[0];
     // 섹터별로 순차 수집 (Rate Limit 방지: 2초 간격)
     for (const sector of THE_NEWS_SECTORS) {
@@ -27,7 +27,7 @@ export const GET = verifyCronAuth(async () => {
         console.log(`📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`);
         const items = await fetchTheNewsApiLatestBySearch({
           search: sector.search,
-          limit: 3,
+          limit: 5,
           language: 'en',
           sort: 'published_at',
           published_after: formattedDate,

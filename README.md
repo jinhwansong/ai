@@ -471,6 +471,103 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 
 ---
 
+### 3. React Hydration Mismatch 에러
+
+#### 문제 상황
+프로덕션에서 "Hydration failed because the server rendered HTML didn't match the client" 에러가 발생했습니다. 특히 `ThemeToggle`과 `usePWAInstall` 훅에서 자주 발생했습니다.
+
+#### 원인 분석
+```typescript
+// Before: 서버와 클라이언트에서 다른 초기 상태
+const { mounted } = useMountedStore(); // 전역 상태 - 다른 컴포넌트가 먼저 setMounted(true) 호출 가능
+const { isInstalled } = usePWAInstall(); // 서버: false, 클라이언트: 실제 값
+
+// ThemeToggle 렌더링 시:
+// 서버: mounted=false → 플레이스홀더 <div> 렌더링
+// 클라이언트: mounted=true (다른 컴포넌트가 이미 설정) → 버튼 렌더링
+// 결과: Hydration mismatch!
+```
+
+**문제점:**
+- 전역 `useMountedStore`가 여러 컴포넌트에서 공유되어 타이밍 이슈 발생
+- `usePWAInstall`의 초기 상태가 서버(`false`)와 클라이언트(실제 값)에서 다름
+- `resolvedTheme`이 서버에서 `undefined`일 수 있음
+- 플레이스홀더 구조가 실제 버튼과 달라 DOM 구조 불일치
+
+#### 해결 과정
+
+**1단계: useIsMounted 훅으로 통일**
+```typescript
+// hooks/useIsMounted.ts
+export function useIsMounted() {
+  const { mounted, setMounted } = useMountedStore();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  return mounted;
+}
+
+// components/common/ThemeToggle.tsx
+const mounted = useIsMounted(); // 일관된 패턴 사용
+```
+
+**2단계: usePWAInstall 초기 상태 고정**
+```typescript
+// hooks/usePWAInstall.ts
+// Before: 서버와 클라이언트에서 다른 초기값
+const [isInstalled, setIsInstalled] = useState(getInitialInstalledState());
+
+// After: 서버와 클라이언트에서 동일한 초기값 보장
+const [isInstalled, setIsInstalled] = useState(() => {
+  if (typeof window === 'undefined') return false; // 서버: 항상 false
+  return getInitialInstalledState(); // 클라이언트: 실제 값
+});
+```
+
+**3단계: 플레이스홀더 구조 일치**
+```typescript
+// components/common/ThemeToggle.tsx
+// Before: 단순한 플레이스홀더
+if (!mounted) {
+  return <div className="h-12 w-12" aria-hidden="true" />;
+}
+
+// After: 실제 버튼과 동일한 구조
+if (!mounted || !resolvedTheme) {
+  return (
+    <div 
+      className="h-12 w-12 flex items-center justify-center rounded-xl bg-(--secondary-bg)" 
+      aria-hidden="true" 
+      suppressHydrationWarning
+    >
+      <div className="h-5 w-5" /> {/* 실제 아이콘과 동일한 크기 */}
+    </div>
+  );
+}
+```
+
+**4단계: resolvedTheme 안전 체크**
+```typescript
+// resolvedTheme도 체크하여 서버에서 undefined일 때 처리
+if (!mounted || !resolvedTheme) {
+  return <플레이스홀더 />;
+}
+```
+
+#### 결과 및 배운 점
+- ✅ **Hydration 에러 100% 해결**: 서버와 클라이언트에서 동일한 초기 렌더링 보장
+- ✅ **일관된 패턴**: `useIsMounted` 훅으로 모든 컴포넌트에서 동일한 패턴 사용
+- ✅ **안정성 향상**: `resolvedTheme` 체크로 런타임 에러 방지
+- 📝 **배운 점**:
+  - 전역 상태를 여러 컴포넌트에서 공유할 때는 타이밍 이슈 주의
+  - 서버와 클라이언트의 초기 상태를 항상 일치시켜야 함
+  - 플레이스홀더는 실제 컴포넌트와 동일한 DOM 구조를 가져야 함
+  - `suppressHydrationWarning`은 최후의 수단으로만 사용
+
+---
+
 ## 🚀 로컬 실행 가이드
 
 ### 필수 요구사항
@@ -592,7 +689,7 @@ Vercel Cron 또는 외부 크론 서비스에서 다음 엔드포인트를 호�
 
 ## 📋 개선 예정 사항 (Roadmap)
 
-### v1.1 (단기 - 1-2개월)
+### v1.1 (단기 - 1주)
 - [ ] **테스트 코드 작성**: 현재 테스트 코드 없음 → Jest + React Testing Library 도입
 - [ ] **에러 바운더리 개선**: 섹션별 에러 바운더리로 부분 실패 처리
 - [ ] **Google Analytics**: Microsoft Clarity와 함께 이벤트 기반 분석 강화 (현재 Clarity만 구현됨)
