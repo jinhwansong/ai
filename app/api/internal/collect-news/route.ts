@@ -27,7 +27,7 @@ export const GET = verifyCronAuth(async () => {
         console.log(`📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`);
         const items = await fetchTheNewsApiLatestBySearch({
           search: sector.search,
-          limit: 5,
+          limit: 10,
           language: 'en',
           sort: 'published_at',
           published_after: formattedDate,
