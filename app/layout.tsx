@@ -16,6 +16,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  verification: {
+google: 'OvtOage0P7fVxwz_mXb0IuckkKDXvi4ZEDGXImXh_dw',
+},
   title: '오늘의 시그널',
   description: 'AI가 분석하는 실시간 글로벌 경제 뉴스 기반 시장 브리핑 리포트',
   manifest: '/manifest.json',
@@ -64,7 +67,6 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="google-site-verification" content="OvtOage0P7fVxwz_mXb0IuckkKDXvi4ZEDGXImXh_dw" />
       </Head>
       <body className={`${pretendard.className} bg-(--background) text-(--foreground)`}>
         <Providers>
