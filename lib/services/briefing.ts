@@ -68,7 +68,7 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
     const primary = getModelForTask(task);
     // 복잡한 분석 작업들은 훨씬 더 큰 토큰 제한 필요
     const needsMoreTokens = ['impact', 'observation', 'insight'].includes(task);
-    const opts = needsMoreTokens ? { maxTokens: 4000 } : { maxTokens: 2000 };
+    const opts = needsMoreTokens ? { maxTokens: 3000 } : { maxTokens: 1500 }; // 비용 절감: 4000→3000, 2000→1500
 
     try {
       const result = await runJSON(primary, prompt, opts);

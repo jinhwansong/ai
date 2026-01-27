@@ -70,18 +70,6 @@
 
 ## ⚡ 성능 최적화 지표
 
-### Before → After 비교
-
-| 최적화 항목 | Before | After | 개선율 |
-|------------|--------|-------|--------|
-| **API 호출 횟수** | 즉시 재요청 (staleTime: 0) | 5분 캐시 유지 | **60-70% ↓** |
-| **초기 렌더링 시간** | 모든 아이템 DOM 렌더링 | 가상 리스트 (5-10개만) | **80-90% ↓** |
-| **DOM 노드 수** | 100개 아이템 = 100개 노드 | 화면에 보이는 5-10개만 | **90% ↓** |
-| **이미지 로딩 시간** | 캐시 없음 (매번 네트워크) | Service Worker 캐싱 | **90% ↓** (PWA 아이콘, OG 이미지 등) |
-| **초기 번들 크기** | 전체 코드 포함 | 코드 스플리팅 | **20-30% ↓** |
-| **네트워크 트래픽** | 높음 | 캐싱 + 페이지네이션 | **50-70% ↓** |
-| **메모리 사용량** | 높음 (전체 데이터 유지) | 가상화 + Infinite Query | **70-80% ↓** |
-
 ### 주요 최적화 기법
 
 #### 1. TanStack Query 캐싱 전략
@@ -103,26 +91,6 @@ refetchOnWindowFocus: false // 창 포커스 시 재요청 방지
 />
 ```
 **효과**: 100개 아이템 → 5-10개만 렌더링, 초기 렌더링 시간 80-90% 감소
-
-#### 3. Infinite Query + 페이지네이션
-```typescript
-// 첫 10개만 로드, 스크롤 시 추가 로드
-useInfiniteQuery({
-  queryFn: ({ pageParam = 1 }) => fetchNewsList({ page: pageParam, limit: 10 }),
-  getNextPageParam: (lastPage) => lastPage.pagination.hasNext ? lastPage.page + 1 : undefined
-});
-```
-**효과**: 초기 로딩 시간 80-90% 감소, 네트워크 트래픽 90% 감소
-
-#### 4. Service Worker 이미지 캐싱
-```javascript
-// public/sw.js - 이미지 캐시 전략 (향후 뉴스 썸네일 등 추가 시 활용)
-if (request.destination === 'image') {
-  event.respondWith(imageCache(request)); // 캐시 우선, 없으면 네트워크
-}
-```
-**효과**: 향후 이미지 추가 시 로딩 시간 90% 감소 (캐시 히트 시)
-**참고**: 현재는 화면에 표시되는 이미지가 없으나, PWA 아이콘 및 OG 이미지 캐싱에 활용
 
 ### Lighthouse 점수
 
@@ -203,48 +171,6 @@ if (request.destination === 'image') {
    - 외부 API 래퍼
 
 ---
-
-## 📁 폴더 구조
-
-```
-e:\code\ai\
-├── app/                    # Next.js App Router
-│   ├── api/                # API 엔드포인트
-│   │   ├── main/          # 공개 API (클라이언트 호출)
-│   │   ├── internal/      # 내부 API (크론 작업)
-│   │   └── push/          # 푸시 알림 API
-│   ├── news/              # 뉴스 페이지
-│   ├── analysis/          # AI 분석 페이지
-│   └── search/            # 검색 페이지
-│
-├── components/            # React 컴포넌트
-│   ├── common/           # 공통 컴포넌트 (Button, Modal 등)
-│   ├── layout/           # 레이아웃 컴포넌트 (Header, Footer)
-│   ├── main/             # 메인 페이지 전용 컴포넌트
-│   └── skeleton/         # 로딩 스켈레톤 컴포넌트
-│
-├── lib/                   # 비즈니스 로직 및 인프라
-│   ├── ai/               # AI 모델 통합 (Gemini, OpenAI)
-│   │   └── prompts/      # 프롬프트 빌더 (도메인별 분리)
-│   ├── core/             # 핵심 인프라 (DB, Redis, Sentry)
-│   ├── database/         # 데이터 접근 로직 (Repository 패턴)
-│   ├── external/         # 외부 API 통합 (The News API, Yahoo Finance)
-│   ├── services/         # 서비스 레이어 (API 호출 추상화)
-│   ├── push/             # 웹 푸시 알림
-│   └── utils/            # 유틸리티 함수
-│
-├── hooks/                 # Custom Hooks
-│   └── useMain.ts        # React Query 훅 (데이터 페칭)
-│
-├── stores/                # Zustand 전역 상태
-│   └── useSearchStore.ts # 검색 히스토리 등
-│
-├── types/                 # TypeScript 타입 정의
-│   └── *.ts              # 도메인별 타입 분리
-│
-└── constants/            # 상수 정의
-    └── keyword.ts        # AI 분석 키워드
-```
 
 ### 구조화 원칙
 
@@ -565,126 +491,7 @@ if (!mounted || !resolvedTheme) {
   - 서버와 클라이언트의 초기 상태를 항상 일치시켜야 함
   - 플레이스홀더는 실제 컴포넌트와 동일한 DOM 구조를 가져야 함
   - `suppressHydrationWarning`은 최후의 수단으로만 사용
-
----
-
-## 🚀 로컬 실행 가이드
-
-### 필수 요구사항
-- Node.js >= 22.0.0
-- npm >= 11.7.0
-- PostgreSQL (Supabase 사용 시 불필요)
-- Redis (선택사항, 캐싱 없이도 동작)
-
-### 1. 저장소 클론
-```bash
-git clone <repository-url>
-cd ai
-```
-
-### 2. 의존성 설치
-```bash
-npm install
-```
-
-### 3. 환경 변수 설정
-`.env.local` 파일을 생성하고 다음 변수들을 설정하세요:
-
-```env
-# 데이터베이스
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# Redis (선택사항)
-REDIS_URL=redis://localhost:6379
-
-# AI 모델
-GEMINI_API_KEY=your_gemini_api_key
-OPENAI_API_KEY=your_openai_api_key  # 선택사항
-
-# 외부 API
-THE_NEWS_API_KEY=your_news_api_key
-
-# Sentry (선택사항)
-SENTRY_DSN=your_sentry_dsn
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-# 크론 작업 인증
-CRON_SECRET=your_cron_secret
-```
-
-### 4. 데이터베이스 설정
-Supabase에서 다음 테이블을 생성하세요:
-
-```sql
--- 뉴스 기사 테이블
-CREATE TABLE news_articles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  summary TEXT,
-  content TEXT,
-  tags TEXT[],
-  checkpoints TEXT[],
-  related_sectors TEXT[],
-  impact TEXT,
-  source TEXT,
-  url TEXT,
-  published_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(title, published_at)
-);
-
--- 브리핑 히스토리 테이블
-CREATE TABLE briefing_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  data JSONB NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 원본 뉴스 테이블 (수집용)
-CREATE TABLE raw_news (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  content TEXT,
-  published_at TIMESTAMPTZ,
-  source TEXT,
-  url TEXT,
-  image_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### 5. 개발 서버 실행
-```bash
-npm run dev
-```
-
-브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
-
-### 6. 빌드 및 프로덕션 실행
-```bash
-npm run build
-npm start
-```
-
-### 7. 크론 작업 설정 (선택사항)
-Vercel Cron 또는 외부 크론 서비스에서 다음 엔드포인트를 호출하세요:
-
-- `/api/internal/run-pipeline` - 전체 파이프라인 실행 (뉴스 수집 → 브리핑 생성)
-
-**예시 (Vercel Cron):**
-```json
-{
-  "crons": [
-    {
-      "path": "/api/internal/run-pipeline",
-      "schedule": "0 9,12,18 * * *"
-    }
-  ]
-}
-```
-
+  
 ---
 
 ## 📋 개선 예정 사항 (Roadmap)

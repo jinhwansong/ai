@@ -40,21 +40,36 @@ function compactNewsForPrompt(rows: RawNewsRow[]) {
   return rows.map((r) => ({
     uuid: r.uuid ?? null,
     published_at: r.published_at ?? null,
-    source: truncateText(r.source, 80),
-    title: truncateText(r.title, 180),
-    description: truncateText(r.description ?? r.content, 320),
+    source: truncateText(r.source, 50), // 80 → 50
+    title: truncateText(r.title, 150), // 180 → 150
+    description: truncateText(r.description ?? r.content, 200), // 320 → 200
     url: r.url ?? null,
   }));
 }
 
 export const GET = verifyCronAuth(async () => {
   try {
-    // 뉴스 데이터 가져오기
+    // 최근 2시간 이내에 추가된 새 뉴스만 가져오기 (비용 절감)
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+    
     const { data: rawNews } = await supabase
       .from('raw_news')
       .select('uuid,title,description,content,source,url,published_at')
+      .gte('created_at', twoHoursAgo) // 최근 2시간 이내 추가된 뉴스만
       .order('published_at', { ascending: false })
-      .limit(30);
+      .limit(20); // 30 → 20 (비용 절감)
+
+    // 새 뉴스가 없으면 스킵
+    if (!rawNews || rawNews.length === 0) {
+      console.log('⚠️ [Generate Strategy] No new news found in the last 2 hours. Skipping.');
+      return NextResponse.json({
+        success: true,
+        message: 'No new news to analyze (skipped)',
+        skipped: true,
+      });
+    }
+
+    console.log(`📊 [Generate Strategy] Analyzing ${rawNews.length} new news items`);
 
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
@@ -72,7 +87,7 @@ export const GET = verifyCronAuth(async () => {
 
     const run = async (model: StrategyModel) =>
       model === 'gpt'
-        ? runGPTJSON(prompt, { maxTokens: 2000, tag: 'generate-strategy' })
+        ? runGPTJSON(prompt, { maxTokens: 1500, tag: 'generate-strategy' }) // 2000 → 1500
         : runGeminiJSON(prompt);
 
     const canUseOpenAI = Boolean(process.env.OPENAI_API_KEY);

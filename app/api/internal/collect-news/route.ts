@@ -27,7 +27,7 @@ export const GET = verifyCronAuth(async () => {
         console.log(`📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`);
         const items = await fetchTheNewsApiLatestBySearch({
           search: sector.search,
-          limit: 10,
+          limit: 3,
           language: 'en',
           sort: 'published_at',
           published_after: formattedDate,
@@ -76,6 +76,16 @@ export const GET = verifyCronAuth(async () => {
       new Map(allItems.map((item) => [item.uuid, item])).values()
     );
 
+    // 기존 뉴스 확인 (새로 추가된 뉴스만 카운트)
+    const { data: existingNews } = await supabase
+      .from('raw_news')
+      .select('uuid')
+      .in('uuid', uniqueNews.map((n) => n.uuid));
+
+    const existingUuids = new Set((existingNews || []).map((n) => n.uuid));
+    const newNews = uniqueNews.filter((n) => !existingUuids.has(n.uuid));
+    const newNewsCount = newNews.length;
+
     const { error } = await supabase
       .from('raw_news')
       .upsert(uniqueNews, { onConflict: 'uuid' });
@@ -86,6 +96,7 @@ export const GET = verifyCronAuth(async () => {
       success: true,
       message: 'News collected and upserted successfully',
       count: uniqueNews.length,
+      newNewsCount, // 새로 추가된 뉴스 개수
       sectors_processed: THE_NEWS_SECTORS.length,
     });
   } catch (error: unknown) {

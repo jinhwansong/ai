@@ -16,25 +16,59 @@ function getStringProp(obj: unknown, key: string): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+function truncateText(input: unknown, maxLen: number): string | null {
+  if (typeof input !== 'string') return null;
+  const s = input.trim();
+  if (!s) return null;
+  if (s.length <= maxLen) return s;
+  return `${s.slice(0, Math.max(0, maxLen - 1))}…`;
+}
+
+function compactNewsForPrompt(newsList: Array<Record<string, unknown>>) {
+  return newsList.map((n) => ({
+    uuid: n.uuid ?? null,
+    published_at: n.published_at ?? null,
+    source: truncateText(n.source, 50),
+    title: truncateText(n.title, 150),
+    description: truncateText(n.description ?? n.content, 200),
+    url: n.url ?? null,
+  }));
+}
+
 export const GET = verifyCronAuth(async () => {
   let progressKey: string | null = null;
 
   try {
-    // 1. raw_news 테이블에서 최신 뉴스 가져오기
+    // 최근 2시간 이내에 추가된 새 뉴스만 가져오기 (비용 절감)
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+    
     const { data: rawNews, error: newsError } = await supabase
       .from('raw_news')
       .select('*')
+      .gte('created_at', twoHoursAgo) // 최근 2시간 이내 추가된 뉴스만
       .order('published_at', { ascending: false })
-      .limit(36);
+      .limit(24); // 36 → 24 (비용 절감)
 
     if (newsError) throw newsError;
 
-    if (!rawNews || rawNews.length < 3) {
+    // 새 뉴스가 없으면 스킵
+    if (!rawNews || rawNews.length === 0) {
+      console.log('⚠️ [Generate Briefing] No new news found in the last 2 hours. Skipping.');
+      return NextResponse.json({
+        success: true,
+        message: 'No new news to analyze (skipped)',
+        skipped: true,
+      });
+    }
+
+    if (rawNews.length < 3) {
       return NextResponse.json({
         success: false,
         message: '데이터 부족 (최소 3개 이상의 뉴스가 필요합니다)',
       });
     }
+
+    console.log(`📊 [Generate Briefing] Analyzing ${rawNews.length} new news items`);
     
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
@@ -54,6 +88,9 @@ export const GET = verifyCronAuth(async () => {
       hasOpenAI,
     }), 'EX', 3600); // 1시간 유지
 
+    // 뉴스 데이터 압축 (비용 절감)
+    const compactNews = compactNewsForPrompt(rawNews as Array<Record<string, unknown>>);
+
     const analysisResult = await performAIAnalysis({
       modelType: 'gemini',
       modelPlan: hasOpenAI
@@ -67,7 +104,7 @@ export const GET = verifyCronAuth(async () => {
         : undefined,
       userKeywords: ANALYSIS_KEYWORDS,
       marketData,
-      newsList: rawNews,
+      newsList: compactNews, // 압축된 뉴스 사용
     });
 
     // 성공 시 진행 상태 업데이트

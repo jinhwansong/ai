@@ -3,7 +3,6 @@ import { addBreadcrumb, reportError } from '@/lib/core/sentry';
 import { NextRequest, NextResponse } from 'next/server';
 
 async function readSafeBody(res: Response) {
-  // Avoid throwing on invalid JSON and avoid leaking large bodies.
   const text = await res.text();
   const trimmed = text.slice(0, 2000);
   try {
@@ -57,7 +56,6 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
           path,
           status: res.status,
           statusText: res.statusText,
-          // keep response small; never include secrets
           responseBody: body.raw,
         });
 
@@ -73,11 +71,27 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
 
     // 1. 뉴스 수집
     console.log('--- Step 1: Collecting News ---');
-    const collectData = await callStep<{ success: boolean; message?: string }>(
-      'collectNews',
-      '/api/internal/collect-news'
-    );
+    const collectData = await callStep<{ 
+      success: boolean; 
+      message?: string;
+      newNewsCount?: number; 
+    }>('collectNews', '/api/internal/collect-news');
     results.collectNews = collectData;
+
+    // 새 뉴스가 없으면 AI 분석 단계 스킵 (비용 절감)
+    const newNewsCount = collectData.newNewsCount ?? 0;
+    if (newNewsCount === 0) {
+      console.log('⚠️ [Pipeline] No new news found. Skipping AI analysis steps to save costs.');
+      return NextResponse.json({
+        success: true,
+        message: 'Pipeline completed (no new news, AI analysis skipped)',
+        results: {
+          ...results,
+          generateStrategy: { success: true, skipped: true, reason: 'No new news' },
+          generateBriefing: { success: true, skipped: true, reason: 'No new news' },
+        },
+      });
+    }
 
     // 2. 섹터 전략 생성
     console.log('--- Step 2: Generating Strategy ---');
