@@ -34,8 +34,10 @@ export async function fetchTheNewsApiLatestBySearch(opts: {
     url.searchParams.set('published_after', opts.published_after);
   }
 
+  // 디버깅을 위한 로그 (인코딩된 URL 확인)
+  const encodedSearch = url.searchParams.get('search');
   console.log(
-    `🔍 [TheNewsAPI] Searching: "${opts.search}" (limit: ${opts.limit})`
+    `🔍 [TheNewsAPI] Searching: "${opts.search}" → "${encodedSearch}" (limit: ${opts.limit}, language: ${opts.language ?? 'en'})`
   );
   const res = await fetch(url.toString(), { cache: 'no-store' });
 

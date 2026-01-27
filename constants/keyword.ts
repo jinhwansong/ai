@@ -4,6 +4,20 @@
  * - 언어: en / 정렬: published_at (최신 우선) / 검색어는 중복 사용 가능
  */
 
+function normalizeSearchQuery(query: string): string {
+  return query
+    .split('|')
+    .map((keyword) => {
+      const trimmed = keyword.trim();
+      // 두 단어 이상인 키워드는 큰따옴표로 감싸기
+      if (trimmed.includes(' ')) {
+        return `"${trimmed}"`;
+      }
+      return trimmed;
+    })
+    .join(' OR ');
+}
+
 export const THE_NEWS_SECTORS: Array<{
   id: string;
   name: string;
@@ -12,62 +26,62 @@ export const THE_NEWS_SECTORS: Array<{
   {
     id: 'macro',
     name: '거시경제',
-    search: 'Federal Reserve | Inflation | GDP',
+    search: normalizeSearchQuery('Federal Reserve | Inflation | GDP'),
   },
   {
     id: 'ai_semis',
     name: 'AI/반도체',
-    search: 'Nvidia | TSMC | AI Chip',
+    search: normalizeSearchQuery('Nvidia | TSMC | AI Chip'),
   },
   {
     id: 'bigtech',
     name: '빅테크',
-    search: 'Microsoft | Apple | Google | Meta | Amazon',
+    search: normalizeSearchQuery('Microsoft | Apple | Google | Meta | Amazon'),
   },
   {
     id: 'energy_infra',
     name: '에너지/전력',
-    search: 'Nuclear | SMR | Data Center Power',
+    search: normalizeSearchQuery('Nuclear | SMR | Data Center Power'),
   },
   {
     id: 'robotics',
     name: '로보틱스',
-    search: 'Humanoid | Tesla Bot | Automation | Robot',
+    search: normalizeSearchQuery('Humanoid | Tesla Bot | Automation | Robot'),
   },
   {
     id: 'bio_health',
     name: '바이오/헬스',
-    search: 'GLP-1 | Novo Nordisk | Eli Lilly | FDA',
+    search: normalizeSearchQuery('GLP-1 | Novo Nordisk | Eli Lilly | FDA'),
   },
   {
     id: 'finance_crypto',
     name: '금융/가상자산',
-    search: 'Bitcoin | Crypto | Fintech | Bank',
+    search: normalizeSearchQuery('Bitcoin | Crypto | Fintech | Bank'),
   },
   {
     id: 'geopolitics',
     name: '지정학/무역',
-    search: 'Tariff | Trade War | China US | Export Control',
+    search: normalizeSearchQuery('Tariff | Trade War | China US | Export Control'),
   },
   {
     id: 'space_defense',
     name: '우주/방산',
-    search: 'SpaceX | Satellite | Defense Tech | Drone',
+    search: normalizeSearchQuery('SpaceX | Satellite | Defense Tech | Drone'),
   },
   {
     id: 'software_cyber',
     name: 'SW/보안',
-    search: 'Cybersecurity | SaaS | Cloud | AI Security',
+    search: normalizeSearchQuery('Cybersecurity | SaaS | Cloud | AI Security'),
   },
   {
     id: 'real_estate',
     name: '부동산',
-    search: 'Housing Market | REITs | Mortgage | Commercial Property',
+    search: normalizeSearchQuery('Housing Market | REITs | Mortgage | Commercial Property'),
   },
   {
     id: 'luxury_consumer',
     name: '소비재/사치품',
-    search: 'Luxury Goods | LVMH | Brand Trend',
+    search: normalizeSearchQuery('Luxury Goods | LVMH | Brand Trend'),
   },
 ];
 
