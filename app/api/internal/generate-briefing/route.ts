@@ -97,9 +97,9 @@ export const GET = verifyCronAuth(async () => {
         ? {
             news: 'gemini',
             sector: 'gemini',
-            impact: 'gpt',
-            observation: 'gpt',
-            insight: 'gpt',
+            impact: 'gemini',      
+            observation: 'gpt',   
+            insight: 'gemini',   
           }
         : undefined,
       userKeywords: ANALYSIS_KEYWORDS,
