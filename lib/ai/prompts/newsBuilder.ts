@@ -1,8 +1,7 @@
 import { THE_NEWS_SECTORS } from "@/constants/keyword";
 
-export const buildNewsPrompt = (newsList: unknown[]) => {
+export const buildNewsPrompt = (keywords: string[], newsList: unknown[]) => {
   const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);
-  const today = new Date().toISOString().split('T')[0];
   const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
@@ -25,7 +24,8 @@ export const buildNewsPrompt = (newsList: unknown[]) => {
   }]
 }
 
-규칙: ${threeDaysAgo} 이후, 한국어 번역, relatedSectors는 ${allowedSectors.join(',')} 중에서만, JSON만.
+규칙: ${threeDaysAgo} 이후, 한국어 번역, relatedSectors는 ${allowedSectors.join(',')} 중에서만, tags는 ${keywords.join(',')} 중에서만 선택, JSON만.
 
+키워드: ${keywords.join(', ')}
 뉴스: ${JSON.stringify(newsList)}`;
 };

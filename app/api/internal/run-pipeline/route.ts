@@ -1,4 +1,5 @@
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { warmCacheFromLatestBriefing } from '@/lib/utils/warmCache';
 import { addBreadcrumb, reportError } from '@/lib/core/sentry';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -82,6 +83,8 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     const newNewsCount = collectData.newNewsCount ?? 0;
     if (newNewsCount === 0) {
       console.log('⚠️ [Pipeline] No new news found. Skipping AI analysis steps to save costs.');
+      // 스킵 시에도 Redis에 마지막 브리핑으로 워밍 → 대시보드에 데이터 유지
+      const warmed = await warmCacheFromLatestBriefing();
       return NextResponse.json({
         success: true,
         message: 'Pipeline completed (no new news, AI analysis skipped)',
@@ -89,6 +92,7 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
           ...results,
           generateStrategy: { success: true, skipped: true, reason: 'No new news' },
           generateBriefing: { success: true, skipped: true, reason: 'No new news' },
+          warmCache: { success: warmed },
         },
       });
     }

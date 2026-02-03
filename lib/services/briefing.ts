@@ -94,7 +94,7 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
   const sectorRes = await runTask<SectorResponse>('sector', buildSectorPrompt(userKeywords, marketData, newsList));
   console.log('✅ [Briefing] Sector analysis completed');
 
-  const newsRes = await runTask<NewsResponse>('news', buildNewsPrompt(newsList));
+  const newsRes = await runTask<NewsResponse>('news', buildNewsPrompt(userKeywords, newsList));
   console.log('✅ [Briefing] News analysis completed');
 
   const impactRes = await runTask<MarketImpactResponse>('impact', buildMarketImpactPrompt(marketData, newsList));
