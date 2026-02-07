@@ -7,17 +7,14 @@ import { ObservationItem } from '@/types/main';
 import SectionHeader from '@/components/common/SectionHeader';
 import Tags from '../common/Tags';
 import { useMainObservation } from '@/hooks/useMain';
-import ObservationSkeleton from '@/components/skeleton/ObservationSkeleton';
 import Modal from '@/components/common/Modal';
 import ObservationDetail from './ObservationDetail';
 
 export default function ObservationSection() {
-  const { data, isLoading } = useMainObservation();
+  const { data } = useMainObservation();
   const [selectedItem, setSelectedItem] = useState<ObservationItem | null>(null);
   
   const items = (data || []) as ObservationItem[];
-  
-  if (isLoading) return <ObservationSkeleton />;
   if (!items || items.length === 0) return null;
 
   return (

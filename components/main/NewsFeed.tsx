@@ -7,14 +7,11 @@ import Button from '../common/Button';
 import SectionHeader from '@/components/common/SectionHeader';
 import Tags from '../common/Tags';
 import { useMainNews } from '@/hooks/useMain';
-import NewsFeedSkeleton from '@/components/skeleton/NewsFeedSkeleton';
 import Link from 'next/link';
 
 export default function NewsFeed() {
-  const { data, isLoading } = useMainNews();
+  const { data } = useMainNews();
   const news = data?.news || [];
-
-  if (isLoading) return <NewsFeedSkeleton />;
   return (
     <section className="space-y-6">
       <SectionHeader

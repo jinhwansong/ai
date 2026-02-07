@@ -4,12 +4,34 @@ type FetcherOptions = RequestInit & {
   json?: boolean;
 };
 
+function getAbsoluteUrl(url: string | URL): string {
+  if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
+    return url;
+  }
+  
+  if (url instanceof URL) {
+    return url.toString();
+  }
+  
+  if (typeof window === 'undefined') {
+    const baseUrl = process.env.VERCEL_URL || 'http://localhost:3000';
+    return `${baseUrl}${url}`;
+  }
+  
+  // 클라이언트 사이드는 상대 경로 그대로 사용
+  return url;
+}
+
 export async function Fetcher<T>(
   input: RequestInfo,
   options?: FetcherOptions
 ): Promise<T> {
   try {
-    const res = await fetch(input, {
+    const url = typeof input === 'string' ? getAbsoluteUrl(input) : 
+                input instanceof URL ? getAbsoluteUrl(input) :
+                getAbsoluteUrl(input.url);
+    
+    const res = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',

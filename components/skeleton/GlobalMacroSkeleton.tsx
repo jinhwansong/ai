@@ -15,7 +15,7 @@ export default function GlobalMacroSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="kakao-card group flex flex-col p-5 border border-slate-100 dark:border-slate-800"
+            className="kakao-card group flex flex-col p-5"
           >
             <div className="flex items-center justify-between mb-3">
               <Skeleton className="h-3 w-10" />

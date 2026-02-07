@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   fetchMainBriefing,
   fetchMainMacro,
@@ -12,62 +12,70 @@ import {
 } from '@/lib/services/mainApi';
 import { withQueryDefaults } from './withQueryDefaults';
 import { fetchNewsDetail, fetchNewsList } from '@/lib/services/newsApi';
+import { GlobalMacroItem } from '@/types/main';
 
 export const useMainSignal = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-signal'],
-      queryFn: fetchMainSignal,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-signal'],
+    queryFn: fetchMainSignal,
+    staleTime: 1000 * 60 * 5, // 5분
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainBriefing = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-briefing'],
-      queryFn: fetchMainBriefing,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-briefing'],
+    queryFn: fetchMainBriefing,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainMacro = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-macro'],
-      queryFn: fetchMainMacro,
-    })
-  );
+  useSuspenseQuery<GlobalMacroItem[]>({
+    queryKey: ['main-macro'],
+    queryFn: fetchMainMacro,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainSector = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-sector'],
-      queryFn: fetchMainSector,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-sector'],
+    queryFn: fetchMainSector,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainNews = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-news'],
-      queryFn: fetchMainNews,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-news'],
+    queryFn: fetchMainNews,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainObservation = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-observation'],
-      queryFn: fetchMainObservation,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-observation'],
+    queryFn: fetchMainObservation,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useMainInsight = () =>
-  useQuery(
-    withQueryDefaults({
-      queryKey: ['main-insight'],
-      queryFn: fetchMainInsight,
-    })
-  );
+  useSuspenseQuery({
+    queryKey: ['main-insight'],
+    queryFn: fetchMainInsight,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useSignalDetail = () =>
   useQuery(

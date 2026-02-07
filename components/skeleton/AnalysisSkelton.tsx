@@ -4,7 +4,7 @@ import Skeleton from '../common/Skeleton';
 export default function AnalysisSkelton() {
   return (
     <div className="min-h-screen bg-(--background)">
-      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-(--border) bg-white/80 px-4 backdrop-blur-md dark:bg-(--background)/80">
+      <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-(--border) px-4 backdrop-blur-md ">
         <Skeleton className="h-8 w-8 rounded-full" />
         <div className="flex items-center gap-2">
           <Skeleton className="h-8 w-24 rounded-full" />

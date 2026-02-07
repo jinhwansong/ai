@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { Globe, AlertCircle, CheckCircle2, HelpCircle, XCircle } from 'lucide-react';
 import SectionHeader from '@/components/common/SectionHeader';
 import { useMainMacro } from '@/hooks/useMain';
-import { GlobalMacroItem } from '@/types/main';
-import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
 
 const statusConfig = {
   positive: {
@@ -31,10 +29,8 @@ const statusConfig = {
 };
 
 export default function GlobalMacro() {
-  const { data, isLoading } = useMainMacro();
-  const items = (data || []) as GlobalMacroItem[];
-
-  if (isLoading) return <GlobalMacroSkeleton />;
+  const { data } = useMainMacro();
+  const items = data || [];
 
   return (
     <section className="space-y-6">

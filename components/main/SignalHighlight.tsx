@@ -8,11 +8,9 @@ import { MainSignal } from '@/types/main';
 import { getDailyBriefingMeta } from '@/lib/utils/times';
 import Tags from '../common/Tags';
 import { useMainSignal } from '@/hooks/useMain';
-import SignalHighlightSkeleton from '@/components/skeleton/SignalHighlightSkeleton';
 
-// 섹션 내부에서 데이터를 직접 fetch하여 Suspense fallback을 활용하는 예시
 export default function SignalHighlight() {
-  const { data: signal, isLoading } = useMainSignal();
+  const { data: signal } = useMainSignal();
   const {
     focus = '시장 데이터 집계 중',
     description = '시장 데이터 집계 중',
@@ -20,8 +18,6 @@ export default function SignalHighlight() {
     tags = [],
     updatedAt,
   } = (signal || {}) as MainSignal;
-
-  if (isLoading) return <SignalHighlightSkeleton />;
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}

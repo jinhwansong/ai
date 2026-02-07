@@ -6,13 +6,10 @@ import { motion } from 'framer-motion';
 import { Compass } from 'lucide-react';
 import SectionHeader from '@/components/common/SectionHeader';
 import { useMainSector } from '@/hooks/useMain';
-import SectorStrategySkeleton from '@/components/skeleton/SectorStrategySkeleton';
 
 export default function SectorStrategy() {
-  const { data, isLoading } = useMainSector();
+  const { data } = useMainSector();
   const items = (data?.items || []) as MainSectorStrategy['items'];
-
-  if (isLoading) return <SectorStrategySkeleton />;
   return (
     <section className="space-y-6">
       <SectionHeader

@@ -6,6 +6,13 @@ import ObservationSection from '@/components/main/ObservationSection';
 import InsightSection from '@/components/main/InsightSection';
 import NoticeModal from '@/components/common/NoticeModal';
 import PullToRefresh from '@/components/common/PullToRefresh';
+import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
+import SignalHighlightSkeleton from '@/components/skeleton/SignalHighlightSkeleton';
+import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
+import SectorStrategySkeleton from '@/components/skeleton/SectorStrategySkeleton';
+import NewsFeedSkeleton from '@/components/skeleton/NewsFeedSkeleton';
+import ObservationSkeleton from '@/components/skeleton/ObservationSkeleton';
+import InsightSectionSkeleton from '@/components/skeleton/InsightSectionSkeleton';
 
 export default function Home() {
 
@@ -16,28 +23,58 @@ export default function Home() {
         <main className="flex-1 px-4 py-8 md:px-8 md:pb-8 relative">
           <div className="mx-auto max-w-7xl space-y-10">
             <div id="section-signal">
-              <SignalHighlight />
+              <SectionWrapper
+                sectionName="시그널 하이라이트"
+                fallback={<SignalHighlightSkeleton />}
+              >
+                <SignalHighlight />
+              </SectionWrapper>
             </div>
 
             <div id="section-macro">
-              <GlobalMacro />
+              <SectionWrapper
+                sectionName="글로벌 시장 요약"
+                fallback={<GlobalMacroSkeleton />}
+              >
+                <GlobalMacro />
+              </SectionWrapper>
             </div>
 
             <div
               id="section-news"
               className="grid gap-8 lg:grid-cols-[2fr_1fr]"
             >
-              <NewsFeed />
-              <SectorStrategy />
+              <SectionWrapper
+                sectionName="오늘의 핵심 뉴스"
+                fallback={<NewsFeedSkeleton />}
+              >
+                <NewsFeed />
+              </SectionWrapper>
+              <SectionWrapper
+                sectionName="오늘의 섹터 전략"
+                fallback={<SectorStrategySkeleton />}
+              >
+                <SectorStrategy />
+              </SectionWrapper>
             </div>
             <div id="section-observation">
-              <ObservationSection />
+              <SectionWrapper
+                sectionName="관찰 포인트"
+                fallback={<ObservationSkeleton />}
+              >
+                <ObservationSection />
+              </SectionWrapper>
             </div>
           </div>
         </main>
       </PullToRefresh>
 
-      <InsightSection />
+      <SectionWrapper
+        sectionName="시장 인사이트"
+        fallback={<InsightSectionSkeleton />}
+      >
+        <InsightSection />
+      </SectionWrapper>
     
       <NoticeModal>
         <ul className="list-disc space-y-2 pl-5">

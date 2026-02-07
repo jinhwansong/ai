@@ -2,13 +2,10 @@
 import { Sparkles } from 'lucide-react';
 import { InsightItem } from '@/types/main';
 import { useMainInsight } from '@/hooks/useMain';
-import InsightSectionSkeleton from '@/components/skeleton/InsightSectionSkeleton';
 
 export default function InsightSection() {
-  const { data, isLoading } = useMainInsight();
+  const { data } = useMainInsight();
   const insight = data as InsightItem | undefined;
-
-  if (isLoading) return <InsightSectionSkeleton />;
   return (
     <div className="sticky bottom-0 left-0 right-0 z-40 px-4 md:px-8 pointer-events-none">
       <div className="mx-auto max-w-7xl pointer-events-auto">

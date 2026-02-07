@@ -19,9 +19,9 @@ export default function Skeleton({
   return (
     <div
       className={clsx(
-        'relative overflow-hidden bg-slate-200 dark:bg-slate-800',
+        'relative overflow-hidden bg-slate-200 dark:bg-slate-900/90',
         circle ? 'rounded-full' : 'rounded-2xl',
-        className
+        className,
       )}
       style={{ width, height }}
     >
