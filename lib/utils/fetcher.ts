@@ -14,8 +14,8 @@ function getAbsoluteUrl(url: string | URL): string {
   }
   
   if (typeof window === 'undefined') {
-    const baseUrl = process.env.VERCEL_URL || 'http://localhost:3000';
-    return `${baseUrl}${url}`;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    return `${baseUrl}/${url}`;
   }
   
   // 클라이언트 사이드는 상대 경로 그대로 사용
