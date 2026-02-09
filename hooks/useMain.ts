@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useSuspenseQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import {
   fetchMainBriefing,
   fetchMainMacro,
@@ -85,15 +85,34 @@ export const useSignalDetail = () =>
     })
   );
 
-export const useInfiniteNewsList = (params: { 
-  sort: string; 
-  category: string; 
-  period: string; 
-}) => {
-  return useInfiniteQuery({
-    queryKey: ['news-list', params],
-    queryFn: ({ pageParam = 1 }) => 
-      fetchNewsList({ ...params, page: pageParam as number, limit: 10 }),
+export const useSuspenseSignalDetail = () =>
+  useSuspenseQuery({
+    queryKey: ['signal-detail'],
+    queryFn: fetchSignalDetail,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+export type UseInfiniteNewsListParams = {
+  sort: string;
+  category: string;
+  period: string;
+  enabled?: boolean;
+};
+
+export const useInfiniteNewsList = ({
+  enabled = true,
+  ...filters
+}: UseInfiniteNewsListParams) =>
+  useInfiniteQuery({
+    queryKey: ['news-list', filters],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchNewsList({
+        ...filters,
+        page: pageParam as number,
+        limit: 10,
+      }),
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.hasNext) {
         return lastPage.pagination.page + 1;
@@ -101,8 +120,31 @@ export const useInfiniteNewsList = (params: {
       return undefined;
     },
     initialPageParam: 1,
+    enabled,
   });
-};
+
+export const useSuspenseInfiniteNewsList = ({
+  ...filters
+}: Omit<UseInfiniteNewsListParams, 'enabled'>) =>
+  useSuspenseInfiniteQuery({
+    queryKey: ['news-list', filters],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchNewsList({
+        ...filters,
+        page: pageParam as number,
+        limit: 10,
+      }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.hasNext) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
 
 export const useNewsDetail = (id: string) =>
   useQuery(
@@ -113,6 +155,15 @@ export const useNewsDetail = (id: string) =>
     })
   );
 
+export const useSuspenseNewsDetail = (id: string) =>
+  useSuspenseQuery({
+    queryKey: ['news-detail', id],
+    queryFn: () => fetchNewsDetail(id),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
 export const useSearch = (query: string) =>
   useQuery(
     withQueryDefaults({
@@ -121,3 +172,12 @@ export const useSearch = (query: string) =>
       enabled: !!query,
     })
   );
+
+export const useSuspenseSearch = (query: string) =>
+  useSuspenseQuery({
+    queryKey: ['search', query],
+    queryFn: () => fetchSearchResults(query),
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });

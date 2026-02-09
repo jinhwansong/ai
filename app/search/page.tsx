@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { useSearch } from '@/hooks/useMain';
+import { useSuspenseSearch } from '@/hooks/useMain';
 import { motion } from 'framer-motion';
 import { Search as SearchIcon, Newspaper, Eye, TrendingUp, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
 import Tags from '@/components/common/Tags';
@@ -17,11 +17,9 @@ function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const router = useRouter();
-  const { data, isLoading } = useSearch(query);
+  const { data } = useSuspenseSearch(query);
   const [selectedObservation, setSelectedObservation] =
     useState<ObservationItem | null>(null);
-
-  if (isLoading) return <SearchSkeleton />;
 
   const hasResults =
     (data?.news?.length ?? 0) > 0 || (data?.observations?.length ?? 0) > 0;
@@ -183,7 +181,7 @@ export default function SearchPage() {
   return (
     <main className="flex-1 px-4 py-8 md:px-8">
       <div className="mx-auto max-w-4xl space-y-8">
-        <Suspense fallback={<div>검색 중...</div>}>
+        <Suspense fallback={<SearchSkeleton />}>
           <SearchResults />
         </Suspense>
       </div>

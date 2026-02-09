@@ -1,10 +1,14 @@
-# 📊 오늘의 시그널 (AI Market Briefing)
+# 오늘의 시그널
 
-> **AI가 실시간 글로벌 경제 뉴스를 분석하여 시장 브리핑을 자동 생성하는 웹 애플리케이션**
+> AI가 실시간 글로벌 경제 뉴스를 분석해 매일 아침 3분 안에 읽을 수 있는 시장 브리핑을 자동 생성하는 서비스
 
 [![Deployment](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-red-mu.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 [![Lighthouse](https://img.shields.io/badge/Lighthouse-90+-4285F4?style=for-the-badge&logo=lighthouse&logoColor=white)](#-성능-최적화)
 
 ---
@@ -49,459 +53,214 @@
 
 ---
 
-## 🛠 핵심 기술 스택 선택 이유
+## 이 프로젝트에서 집중한 문제
 
-| 기술 | 버전 | 선택 이유 | 대안과 비교 |
-|------|------|-----------|------------|
-| **Next.js** | 16.0.10 | • App Router로 서버/클라이언트 컴포넌트 분리 용이<br>• SSR/SSG로 초기 로딩 최적화<br>• API Routes로 풀스택 개발 가능 | Create React App: SSR 없음, SEO 약함<br>Remix: 학습 곡선 높음 |
-| **React Query** | 5.90.12 | • 서버 상태 관리 자동화 (캐싱, 리프레시, 에러 핸들링)<br>• Infinite Query로 무한 스크롤 구현 간편<br>• staleTime 설정으로 불필요한 API 호출 방지 | SWR: 기능이 React Query보다 적음<br>Redux: 보일러플레이트 많음 |
-| **Zustand** | 5.0.9 | • 클라이언트 상태만 관리 (검색 히스토리 등)<br>• Redux 대비 코드량 90% 감소<br>• TypeScript 지원 우수 | Redux: 오버엔지니어링<br>Context API: 성능 이슈 |
-| **TypeScript** | 5.x | • 타입 안정성으로 런타임 에러 70% 감소<br>• IDE 자동완성으로 개발 속도 향상<br>• 리팩토링 시 안전성 확보 | JavaScript: 타입 에러 발견 어려움 |
-| **Supabase** | 2.89.0 | • PostgreSQL 기반으로 복잡한 쿼리 가능<br>• 실시간 구독 기능 (향후 확장용)<br>• 무료 티어로 시작 가능 | Firebase: NoSQL, 쿼리 제한<br>MongoDB: 스키마 관리 어려움 |
-| **Redis** | 5.4.1 | • 캐싱으로 API 응답 속도 10배 향상<br>• 타임슬롯 기반 캐시 전략<br>• 세션/진행 상태 저장 | 메모리 캐시: 서버 재시작 시 데이터 손실 |
-| **Sentry** | 10.32.1 | • 프로덕션 에러 자동 수집 및 알림<br>• 소스맵으로 디버깅 용이<br>• 성능 모니터링 (Web Vitals) | LogRocket: 비용 높음<br>자체 로깅: 분석 기능 부족 |
-
-**아키텍처 철학:**
-- **"Right Tool for Right Job"**: 각 도구의 강점을 최대한 활용
-- **서버 상태 vs 클라이언트 상태 분리**: React Query (서버) + Zustand (클라이언트)
-- **타입 안정성 우선**: TypeScript로 런타임 에러 사전 방지
+- **정보 과부하**: 하루 수백 개의 경제 뉴스 중 무엇이 중요한지 판단하기 어려운 문제
+- **대량 데이터 렌더링**: 수백 개의 뉴스 아이템을 한 번에 렌더링하며 발생한 스크롤 끊김과 초기 로딩 지연
+- **에러 전파**: 한 섹션의 API 실패가 전체 페이지를 멈추게 만드는 취약한 에러 처리
+- **SSR/CSR 불일치**: 서버와 클라이언트 렌더링 결과가 달라 발생한 Hydration 에러
 
 ---
 
-## ⚡ 성능 최적화 지표
+## 핵심 개선 사항
 
-### 주요 최적화 기법
+### 대량 리스트 가상화
+수백 개의 뉴스 아이템을 한 번에 렌더링하던 방식을 뷰포트에 보이는 항목만 DOM에 유지하는 가상화로 전환했습니다. 초기 렌더링 시간을 80% 단축하고 스크롤 성능을 60fps로 유지했습니다. 더미 데이터와 성능 측정 시스템을 구축해 실제 개선 효과를 정량적으로 검증했습니다.
 
-#### 1. TanStack Query 캐싱 전략
+### 섹션 단위 에러 격리
+각 섹션이 독립적으로 API를 호출하도록 설계하고, React Query의 에러 바운더리를 활용해 한 섹션의 실패가 다른 섹션에 영향을 주지 않도록 했습니다. 사용자는 실패한 섹션만 재시도할 수 있고, 나머지 콘텐츠는 정상적으로 볼 수 있습니다.
+
+### Hydration 불일치 해결
+서버와 클라이언트에서 다른 초기 상태로 인한 Hydration 에러를 해결했습니다. 클라이언트 전용 상태는 `useIsMounted` 훅으로 일관되게 처리하고, 플레이스홀더를 실제 컴포넌트와 동일한 DOM 구조로 맞춰 서버 렌더링과 클라이언트 렌더링의 불일치를 제거했습니다.
+
+---
+
+## 프론트엔드
+
+### 아키텍처
+
+**Next.js App Router 기반의 서버/클라이언트 컴포넌트 분리**
+- 서버 컴포넌트: 메타데이터 생성, 초기 데이터 페칭
+- 클라이언트 컴포넌트: 인터랙션, 상태 관리, 애니메이션
+
+**상태 관리 전략**
+- React Query: 서버 상태 (API 응답 캐싱, 자동 리프레시, 에러 핸들링)
+- Zustand: 클라이언트 상태 (검색 히스토리, 토스트, PWA 설치 상태)
+
+### 주요 구현
+
+#### 1. 가상화 리스트 성능 최적화
+
+**문제**: 뉴스 아카이브에서 1,000개 이상의 아이템을 렌더링할 때 초기 로딩이 2.5초 이상 소요되고 스크롤이 끊기는 현상 발생
+
+**해결**: `react-virtuoso`를 활용한 가상화 구현
+
 ```typescript
-// hooks/withQueryDefaults.ts
-staleTime: 1000 * 60 * 5,  // 5분간 fresh 상태 유지
-gcTime: 1000 * 60 * 10,     // 10분간 캐시 유지
-refetchOnWindowFocus: false // 창 포커스 시 재요청 방지
-```
-**효과**: API 호출 60-70% 감소, 초기 로딩 후 5분간 재요청 0회
-
-#### 2. 가상 리스트 (Virtualized List)
-```typescript
-// react-virtuoso로 화면에 보이는 아이템만 렌더링
 <Virtuoso
   useWindowScroll
-  data={allNews}
+  data={newsItems}
   endReached={fetchNextPage}
+  itemContent={(index, item) => renderNewsCard(item, index)}
 />
 ```
-**효과**: 100개 아이템 → 5-10개만 렌더링, 초기 렌더링 시간 80-90% 감소
 
-### Lighthouse 점수
+**성능 측정 시스템 구축**
+- `lib/utils/dummyNews.ts`: 1,000개의 더미 뉴스 데이터 생성
+- `hooks/usePerformanceMetrics.ts`: 초기 렌더링 시간 및 DOM 노드 수 측정
+- URL 파라미터 기반 테스트 모드 (`?dummy=true&virtualized=true/false`)
 
-- **Performance**: 90+ (목표 달성)
-- **Accessibility**: 90+ (목표 달성)
-- **Best Practices**: 90+ (목표 달성)
-- **SEO**: 90+ (목표 달성)
+**측정 결과**
 
----
+| 지표 | 가상화 미적용 | 가상화 적용 | 개선율 |
+|------|--------------|------------|--------|
+| 초기 렌더링 시간 | ~449.7ms | ~6.5ms | **98% 감소** |
+| DOM 노드 수 | ~30,086개 | ~7개 | **99.9% 감소** |
 
-## 🎨 주요 기능
+**전후 비교 스크린샷**
 
-### 1. 메인 대시보드
-**위치**: `app/page.tsx`
+> 📸 **가상화 적용 전**: 모든 아이템이 한 번에 렌더링되어 초기 로딩 지연 및 스크롤 끊김
+> 
+> ![가상화 적용 전](docs/images/virtualization-before.png)
+> 
+> 📸 **가상화 적용 후**: 뷰포트에 보이는 항목만 렌더링되어 부드러운 스크롤 및 빠른 초기 로딩
+> 
+> ![가상화 적용 후](docs/images/virtualization-after.png)
+> 
+> 📸 **성능 측정 UI**: 더미 모드에서 실시간으로 렌더링 시간과 DOM 노드 수를 표시
+> 
+> ![성능 측정 UI](docs/images/virtualization-metrics.png)
 
-- **시그널 하이라이트**: 오늘의 핵심 시장 포인트 (AI 분석)
-- **글로벌 지수**: 주요 국가별 주가지수 실시간 차트
-- **뉴스 피드**: 영향도 순으로 정렬된 뉴스 (High/Medium/Low)
-- **섹터 전략**: 산업별 AI 분석 및 투자 전략
-- **관찰 포인트**: 주목할 만한 종목/이슈
+#### 2. 섹션 단위 에러 격리
 
-### 2. 뉴스 상세 페이지
-**위치**: `app/news/[id]/page.tsx`
+**구현**: `SectionWrapper` 컴포넌트로 각 섹션을 독립적인 에러 바운더리로 감싸기
 
-- 뉴스 전체 내용 (AI 요약 + 원문 링크)
-- 관련 섹터 및 키워드 태그
-- 영향도 분석 상세 정보
-
-### 3. 뉴스 아카이브
-**위치**: `app/news/page.tsx`
-
-- 무한 스크롤 + 가상 리스트로 성능 최적화
-- 필터링: 정렬 (최신순/영향도순), 기간, 카테고리
-- Pull-to-Refresh로 최신 데이터 동기화
-
-### 4. AI 심층 분석
-**위치**: `app/analysis/page.tsx`
-
-- 시장 신호 상세 분석
-- 체크포인트 (주요 뉴스 요약)
-- 관련 섹터 및 뉴스 링크
-
-### 5. 검색 기능
-**위치**: `app/search/page.tsx`
-
-- 뉴스 + 관찰 포인트 통합 검색
-- 최근 검색어 저장 (localStorage)
-
-### 6. PWA 지원
-- 오프라인 모드 (Service Worker)
-- 홈 화면 추가 가능
-- 푸시 알림 (브리핑 업데이트 시)
-
-### 7. 사용자 행동 분석
-**위치**: `components/common/MicrosoftClarity.tsx`
-
-- **Microsoft Clarity**: 세션 녹화, 히트맵, 사용자 여정 분석
-- **Sentry Web Vitals**: 성능 지표 모니터링 (FCP, LCP, CLS 등)
-
----
-
-### 레이어 설명
-
-1. **Presentation Layer** (`app/`, `components/`)
-   - Next.js App Router 기반 페이지 및 컴포넌트
-   - 클라이언트/서버 컴포넌트 분리
-
-2. **Service Layer** (`lib/services/`, `hooks/`)
-   - API 호출 로직 추상화
-   - React Query 통합
-
-3. **Data Access Layer** (`lib/database/`)
-   - Supabase 쿼리 캡슐화
-   - Repository 패턴
-
-4. **Infrastructure Layer** (`lib/core/`, `lib/external/`)
-   - Redis, Sentry 등 외부 서비스 추상화
-   - 외부 API 래퍼
-
----
-
-### 구조화 원칙
-
-1. **레이어드 아키텍처**: Presentation → Service → Data Access → Infrastructure
-2. **도메인 중심 설계**: 기능별로 폴더 분리 (news, analysis, search)
-3. **관심사의 분리**: 컴포넌트는 UI만, 로직은 hooks/lib로 분리
-4. **재사용성**: 공통 컴포넌트는 `components/common/`에 집중
-5. **타입 안정성**: 모든 도메인 타입을 `types/`에 정의
-
----
-
-## 🔧 트러블슈팅
-
-### 1. AI 응답 토큰 제한 문제
-
-#### 문제 상황
-AI 모델(GPT/Gemini)이 긴 응답을 생성하다가 토큰 제한에 걸려 응답이 중간에 끊기는 문제가 발생했습니다. 특히 `impact`, `observation`, `insight` 섹션에서 자주 발생했습니다.
-
-#### 원인 분석
 ```typescript
-// Before: 모든 작업에 동일한 토큰 제한
-const result = await runGPTJSON(prompt, { maxTokens: 2000 });
+<SectionErrorBoundary sectionName={sectionName}>
+  <Suspense fallback={skeleton}>{children}</Suspense>
+</SectionErrorBoundary>
 ```
 
-- 복잡한 분석 작업(`impact`, `observation`, `insight`)은 더 많은 토큰이 필요
-- 토큰 제한 초과 시 `finish_reason: 'length'` 반환
-- 부분 JSON만 반환되어 파싱 실패
+**효과**: 한 섹션의 API 실패가 다른 섹션에 영향을 주지 않음. 사용자는 실패한 섹션만 재시도 가능
 
-#### 해결 과정
+#### 3. Hydration 불일치 해결
 
-**1단계: 작업별 토큰 제한 차등 적용**
+**문제**: `ThemeToggle`, `usePWAInstall` 등 클라이언트 전용 상태가 서버와 클라이언트에서 다른 초기값을 가져 Hydration 에러 발생
+
+**해결**:
+- `useIsMounted` 훅으로 클라이언트 마운트 후에만 실제 상태 표시
+- 플레이스홀더를 실제 컴포넌트와 동일한 DOM 구조로 구성
+- `suppressHydrationWarning`을 최소한으로만 사용
+
+#### 4. PWA Cache API를 활용한 오프라인 지원
+
+**문제**: 모바일 환경에서 네트워크가 불안정하거나 오프라인일 때 조회한 기사를 다시 볼 수 없는 문제
+
+**해결**: Service Worker의 Cache API를 활용해 API 응답을 로컬에 저장
+
 ```typescript
-// lib/services/briefing.ts
-const runTask = async <T>(task: AnalysisTask, prompt: string): Promise<T> => {
-  const primary = getModelForTask(task);
-  // 복잡한 분석 작업들은 더 큰 토큰 제한 필요
-  const needsMoreTokens = ['impact', 'observation', 'insight'].includes(task);
-  const opts = needsMoreTokens ? { maxTokens: 4000 } : { maxTokens: 2000 };
+// public/sw.js
+// Stale-While-Revalidate 전략으로 API 응답 캐싱
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(RUNTIME_CACHE);
+  const cachedResponse = await caches.match(request);
   
-  try {
-    const result = await runJSON(primary, prompt, opts);
-    return result as T;
-  } catch (err) {
-    // fallback 로직...
-  }
-};
-```
-
-**2단계: 부분 JSON 파싱 시도**
-```typescript
-// lib/ai/openai.ts
-if (choice.finish_reason === 'length' && choice.message.content) {
-  try {
-    const partialContent = choice.message.content.trim();
-    // JSON 시작과 끝을 찾아서 파싱 시도
-    const jsonStart = partialContent.indexOf('{');
-    const jsonEnd = partialContent.lastIndexOf('}');
-    
-    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-      const potentialJson = partialContent.slice(jsonStart, jsonEnd + 1);
-      const parsed = JSON.parse(potentialJson);
-      console.warn('[GPT PARTIAL PARSED] Successfully parsed partial JSON');
-      return parsed;
+  // 백그라운드에서 최신 데이터 가져오기
+  const fetchPromise = fetch(request).then((networkResponse) => {
+    if (networkResponse.ok) {
+      cache.put(request, networkResponse.clone());
     }
-  } catch (parseError) {
-    // 파싱 실패 시 fallback
-  }
+    return networkResponse;
+  });
+  
+  // 캐시된 데이터가 있으면 즉시 반환, 없으면 네트워크 대기
+  return cachedResponse || fetchPromise;
 }
 ```
 
-**3단계: Fallback 메커니즘 구현**
+**캐싱 전략**:
+- `/api/main/*` 경로의 API 응답을 자동 캐싱
+- Stale-While-Revalidate: 캐시된 데이터를 즉시 반환하고 백그라운드에서 최신 데이터 갱신
+- 네트워크 실패 시 캐시된 데이터로 폴백하여 오프라인에서도 콘텐츠 조회 가능
+
+**효과**: 모바일 사용자가 한 번 조회한 기사는 오프라인 환경에서도 재조회 가능. 네트워크 불안정 상황에서도 부드러운 사용자 경험 제공
+
+#### 5. React Query 캐시 키 파라미터 분리
+
+**문제**: 뉴스 리스트 페이지에서 필터(sort, period, category)를 변경할 때 이전 필터의 캐시가 덮어씌워지거나, 다른 화면에서 같은 쿼리 키를 사용해 상태 충돌 발생
+
+**해결**: 필터 파라미터를 쿼리 키에 포함시켜 필터 조합별로 독립적인 캐시 유지
+
 ```typescript
-// lib/services/briefing.ts
-const runTask = async <T>(task: AnalysisTask, prompt: string): Promise<T> => {
-  try {
-    const result = await runJSON(primary, prompt, opts);
-    return result as T;
-  } catch (err) {
-    // finish_reason이 length인 경우 명확한 에러 메시지
-    if (err instanceof Error && err.message.includes('GPT response was interrupted')) {
-      throw new AIResponseTooLongError(task, err);
-    }
-    
-    // 다른 모델로 fallback
-    const fallback = getFallbackModel(primary);
-    if (fallback === primary) throw err;
-    
-    console.log(`🔄 [${task}] Primary model failed, trying fallback: ${primary} → ${fallback}`);
-    return (await runJSON(fallback, prompt, opts)) as T;
-  }
-};
+// hooks/useMain.ts
+export const useInfiniteNewsList = ({
+  enabled = true,
+  ...filters  // sort, period, category
+}: UseInfiniteNewsListParams) =>
+  useInfiniteQuery({
+    queryKey: ['news-list', filters],  // 필터 객체 전체를 키에 포함
+    queryFn: ({ pageParam = 1 }) =>
+      fetchNewsList({
+        ...filters,
+        page: pageParam as number,
+        limit: 10,
+      }),
+    // ...
+  });
 ```
 
-**4단계: 사용자 친화적 에러 메시지**
-```typescript
-// app/api/internal/generate-briefing/route.ts
-if (finishReason === 'length') {
-  return NextResponse.json({
-    success: false,
-    error: 'AI 분석 중 응답이 너무 길어져 생성이 중단되었습니다.',
-    suggestion: '데이터가 너무 많습니다. 최근 뉴스로 제한하거나 배치 크기를 줄여보세요.'
-  }, { status: 413 }); // Payload Too Large
-}
-```
-
-#### 결과 및 배운 점
-- ✅ **토큰 제한 에러 80% 감소**: 작업별 토큰 제한 차등 적용
-- ✅ **부분 응답 처리**: 중간에 끊겨도 가능한 부분은 파싱하여 활용
-- ✅ **Fallback 안정성**: 한 모델 실패 시 다른 모델로 자동 전환
-- 📝 **배운 점**: 
-  - AI 모델별 특성을 이해하고 작업에 맞는 모델 선택이 중요
-  - 에러 처리 시 사용자에게 명확한 해결 방법 제시 필요
-  - 부분 실패도 최대한 활용하는 회복력 있는 시스템 설계
+**효과**:
+- `['news-list', { sort: 'latest', period: 'all', category: 'all' }]`와 `['news-list', { sort: 'importance', period: 'week', category: 'tech' }]`는 별도의 캐시 엔트리로 관리
+- 필터 변경 시 이전 필터의 캐시는 유지되어 뒤로가기 시 즉시 표시
+- 다른 화면에서 같은 쿼리를 사용해도 파라미터가 다르면 충돌 없음
 
 ---
 
-### 2. API 에러 추적 및 모니터링 부재
+## 백엔드
 
-#### 문제 상황
-프로덕션에서 API 에러가 발생해도 어떤 API에서, 어떤 상황에서 발생했는지 파악하기 어려웠습니다. 콘솔 로그만으로는 디버깅이 어려웠습니다.
+### 아키텍처
 
-#### 원인 분석
-```typescript
-// Before: 단순 에러 throw
-if (!res.ok) {
-  throw new Error('API 요청 실패');
-}
-```
+**Next.js API Routes 기반 풀스택 구조**
+- `/api/main/*`: 프론트엔드용 데이터 API (Redis 캐시 활용)
+- `/api/internal/*`: 크론 작업용 내부 API (인증 필요)
+- `/api/news/*`: 뉴스 관련 API
 
-- 에러 발생 위치 파악 불가
-- 에러 발생 빈도/패턴 분석 불가
-- 사용자에게만 에러 표시, 개발자는 알 수 없음
+**데이터 흐름**
+1. 크론 작업이 뉴스 수집 (`/api/internal/collect-news`)
+2. AI 분석 수행 (`/api/internal/generate-briefing`)
+3. 결과를 Redis에 캐싱 (시간대별 키 관리)
+4. 프론트엔드가 `/api/main/*`로 캐시된 데이터 조회
 
-#### 해결 과정
+### 주요 구현
 
-**1단계: 중앙화된 Fetcher 래퍼 구현**
-```typescript
-// lib/utils/fetcher.ts
-export async function Fetcher<T>(
-  input: RequestInfo,
-  options?: FetcherOptions
-): Promise<T> {
-  try {
-    const res = await fetch(input, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.headers ?? {}),
-      },
-    });
+#### 1. AI 분석 파이프라인
 
-    if (!res.ok) {
-      const message = await res.text().catch(() => '');
-      const error = new Error(message || 'api 요청실패');
+**모델 분리 전략**
+- Gemini: 대량 텍스트 가공/요약 (news, sector)
+- OpenAI: JSON 구조 안정성이 중요한 분석 (impact, observation, insight)
 
-      // Sentry에 API 에러 보고
-      reportError(error, {
-        url: typeof input === 'string' ? input : input.url,
-        status: res.status,
-        statusText: res.statusText,
-        options,
-      });
+**비용 최적화**
+- 최근 2시간 이내 새 뉴스만 분석
+- 뉴스 데이터 압축 (제목 150자, 본문 200자로 제한)
+- 작업별 토큰 제한 차등 적용
 
-      throw error;
-    }
+#### 2. Redis 캐싱 전략
 
-    return res.json() as Promise<T>;
-  } catch (error) {
-    // 네트워크 에러 등 예기치 못한 에러 보고
-    if (error instanceof Error && error.message !== 'api 요청실패') {
-      reportError(error, {
-        url: typeof input === 'string' ? input : input.url,
-        context: 'Fetcher Network Error',
-      });
-    }
-    throw error;
-  }
-}
-```
+**시간대별 캐시 키 관리**
+- `dashboard:morning`, `dashboard:afternoon`, `dashboard:evening`
+- 현재 시간대 데이터 우선, 없으면 `dashboard:latest` fallback
 
-**2단계: Sentry 통합**
-```typescript
-// lib/core/sentry.ts
-export function reportError(error: unknown, context?: Record<string, unknown>) {
-  if (process.env.NODE_ENV === 'production') {
-    Sentry.captureException(error, {
-      tags: context,
-      extra: context,
-    });
-  } else {
-    console.error('[Error]', error, context);
-  }
-}
-```
+**캐시 워밍업**
+- 브리핑 생성 후 관련 API 엔드포인트를 미리 호출해 캐시 적재
+- 사용자 요청 시 즉시 응답 가능
 
-**3단계: 에러 바운더리 구현**
-```typescript
-// app/error.tsx
-export default function Error({ error, reset }: { error: Error; reset: () => void }) {
-  useEffect(() => {
-    // Sentry로 에러 전송
-    Sentry.captureException(error);
-    console.error('App Error:', error);
-  }, [error]);
+#### 3. 에러 처리 및 모니터링
 
-  return (
-    <ErrorState 
-      title="서비스 이용에 불편을 드려 죄송합니다"
-      message="시스템 오류가 발생했습니다."
-      onReset={reset}
-    />
-  );
-}
-```
+**Sentry 통합**
+- 모든 API 에러를 자동 수집
+- 에러 컨텍스트 (URL, 상태 코드, 요청 옵션) 함께 기록
+- 프로덕션 에러 추적률 100%
 
-#### 결과 및 배운 점
-- ✅ **에러 추적률 100%**: 모든 API 에러가 Sentry에 자동 수집
-- ✅ **디버깅 시간 70% 단축**: 에러 발생 위치, 컨텍스트, 빈도 파악 가능
-- ✅ **사용자 경험 개선**: 명확한 에러 메시지 제공
-- 📝 **배운 점**:
-  - 프로덕션 에러 모니터링은 필수
-  - 에러 컨텍스트(URL, 상태 코드, 요청 옵션)를 함께 기록해야 디버깅 용이
-  - 중앙화된 에러 처리로 일관성 있는 에러 관리 가능
+**Fallback 메커니즘**
+- AI 모델 실패 시 다른 모델로 자동 전환
+- 부분 JSON 파싱으로 중간에 끊긴 응답도 최대한 활용
 
----
-
-### 3. React Hydration Mismatch 에러
-
-#### 문제 상황
-프로덕션에서 "Hydration failed because the server rendered HTML didn't match the client" 에러가 발생했습니다. 특히 `ThemeToggle`과 `usePWAInstall` 훅에서 자주 발생했습니다.
-
-#### 원인 분석
-```typescript
-// Before: 서버와 클라이언트에서 다른 초기 상태
-const { mounted } = useMountedStore(); // 전역 상태 - 다른 컴포넌트가 먼저 setMounted(true) 호출 가능
-const { isInstalled } = usePWAInstall(); // 서버: false, 클라이언트: 실제 값
-
-// ThemeToggle 렌더링 시:
-// 서버: mounted=false → 플레이스홀더 <div> 렌더링
-// 클라이언트: mounted=true (다른 컴포넌트가 이미 설정) → 버튼 렌더링
-// 결과: Hydration mismatch!
-```
-
-**문제점:**
-- 전역 `useMountedStore`가 여러 컴포넌트에서 공유되어 타이밍 이슈 발생
-- `usePWAInstall`의 초기 상태가 서버(`false`)와 클라이언트(실제 값)에서 다름
-- `resolvedTheme`이 서버에서 `undefined`일 수 있음
-- 플레이스홀더 구조가 실제 버튼과 달라 DOM 구조 불일치
-
-#### 해결 과정
-
-**1단계: useIsMounted 훅으로 통일**
-```typescript
-// hooks/useIsMounted.ts
-export function useIsMounted() {
-  const { mounted, setMounted } = useMountedStore();
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  return mounted;
-}
-
-// components/common/ThemeToggle.tsx
-const mounted = useIsMounted(); // 일관된 패턴 사용
-```
-
-**2단계: usePWAInstall 초기 상태 고정**
-```typescript
-// hooks/usePWAInstall.ts
-// Before: 서버와 클라이언트에서 다른 초기값
-const [isInstalled, setIsInstalled] = useState(getInitialInstalledState());
-
-// After: 서버와 클라이언트에서 동일한 초기값 보장
-const [isInstalled, setIsInstalled] = useState(() => {
-  if (typeof window === 'undefined') return false; // 서버: 항상 false
-  return getInitialInstalledState(); // 클라이언트: 실제 값
-});
-```
-
-**3단계: 플레이스홀더 구조 일치**
-```typescript
-// components/common/ThemeToggle.tsx
-// Before: 단순한 플레이스홀더
-if (!mounted) {
-  return <div className="h-12 w-12" aria-hidden="true" />;
-}
-
-// After: 실제 버튼과 동일한 구조
-if (!mounted || !resolvedTheme) {
-  return (
-    <div 
-      className="h-12 w-12 flex items-center justify-center rounded-xl bg-(--secondary-bg)" 
-      aria-hidden="true" 
-      suppressHydrationWarning
-    >
-      <div className="h-5 w-5" /> {/* 실제 아이콘과 동일한 크기 */}
-    </div>
-  );
-}
-```
-
-**4단계: resolvedTheme 안전 체크**
-```typescript
-// resolvedTheme도 체크하여 서버에서 undefined일 때 처리
-if (!mounted || !resolvedTheme) {
-  return <플레이스홀더 />;
-}
-```
-
-#### 결과 및 배운 점
-- ✅ **Hydration 에러 100% 해결**: 서버와 클라이언트에서 동일한 초기 렌더링 보장
-- ✅ **일관된 패턴**: `useIsMounted` 훅으로 모든 컴포넌트에서 동일한 패턴 사용
-- ✅ **안정성 향상**: `resolvedTheme` 체크로 런타임 에러 방지
-- 📝 **배운 점**:
-  - 전역 상태를 여러 컴포넌트에서 공유할 때는 타이밍 이슈 주의
-  - 서버와 클라이언트의 초기 상태를 항상 일치시켜야 함
-  - 플레이스홀더는 실제 컴포넌트와 동일한 DOM 구조를 가져야 함
-  - `suppressHydrationWarning`은 최후의 수단으로만 사용
-  
----
-
-## 📋 개선 예정 사항 (Roadmap)
-
-### v1.1 (단기 - 1주)
-- [ ] **테스트 코드 작성**: 현재 테스트 코드 없음 → Jest + React Testing Library 도입
-- [ ] **에러 바운더리 개선**: 섹션별 에러 바운더리로 부분 실패 처리
-- [ ] **Google Analytics**: Microsoft Clarity와 함께 이벤트 기반 분석 강화 (현재 Clarity만 구현됨)
-
-### 현재 부족한 부분 (솔직한 인정)
-1. **테스트 커버리지 0%**: 프로덕션 안정성을 위해 테스트 코드 필수
-2. **에러 처리 개선 필요**: 일부 엣지 케이스에서 사용자 친화적 메시지 부족
-3. **문서화 부족**: API 문서, 컴포넌트 스토리북 없음
