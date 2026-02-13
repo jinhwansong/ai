@@ -9,10 +9,7 @@ function normalizeSearchQuery(query: string): string {
     .split('|')
     .map((keyword) => {
       const trimmed = keyword.trim();
-      // 두 단어 이상인 키워드는 큰따옴표로 감싸기
-      if (trimmed.includes(' ')) {
-        return `"${trimmed}"`;
-      }
+      // Note: keep multi-word terms unquoted; let the API tokenize naturally.
       return trimmed;
     })
     .join(' OR ');
@@ -26,62 +23,86 @@ export const THE_NEWS_SECTORS: Array<{
   {
     id: 'macro',
     name: '거시경제',
-    search: normalizeSearchQuery('Federal Reserve | Inflation | GDP'),
+    search: normalizeSearchQuery(
+      'Federal Reserve | Fed | FOMC | CPI | inflation | GDP | jobs report | unemployment | Treasury yield'
+    ),
   },
   {
     id: 'ai_semis',
     name: 'AI/반도체',
-    search: normalizeSearchQuery('Nvidia | TSMC | AI Chip'),
+    search: normalizeSearchQuery(
+      'Nvidia | NVDA | GPU | accelerator | AI chip | H100 | Blackwell | TSMC | foundry | HBM'
+    ),
   },
   {
     id: 'bigtech',
     name: '빅테크',
-    search: normalizeSearchQuery('Microsoft | Apple | Google | Meta | Amazon'),
+    search: normalizeSearchQuery(
+      'Microsoft | MSFT | Apple | AAPL | Google | Alphabet | GOOGL | Meta | META | Amazon | AMZN | antitrust'
+    ),
   },
   {
     id: 'energy_infra',
     name: '에너지/전력',
-    search: normalizeSearchQuery('Nuclear | SMR | Data Center Power'),
+    search: normalizeSearchQuery(
+      'data center | power grid | utility | electricity | nuclear | SMR | gas turbine | LNG'
+    ),
   },
   {
     id: 'robotics',
     name: '로보틱스',
-    search: normalizeSearchQuery('Humanoid | Tesla Bot | Automation | Robot'),
+    search: normalizeSearchQuery(
+      'humanoid | robotics | robot | automation | warehouse robot | Tesla Optimus'
+    ),
   },
   {
     id: 'bio_health',
     name: '바이오/헬스',
-    search: normalizeSearchQuery('GLP-1 | Novo Nordisk | Eli Lilly | FDA'),
+    search: normalizeSearchQuery(
+      'GLP-1 | Novo Nordisk | NVO | Eli Lilly | LLY | FDA | clinical trial | drug approval'
+    ),
   },
   {
     id: 'finance_crypto',
     name: '금융/가상자산',
-    search: normalizeSearchQuery('Bitcoin | Crypto | Fintech | Bank'),
+    search: normalizeSearchQuery(
+      'Bitcoin | BTC | crypto | Ethereum | ETF | stablecoin | fintech | bank earnings'
+    ),
   },
   {
     id: 'geopolitics',
     name: '지정학/무역',
-    search: normalizeSearchQuery('Tariff | Trade War | China US | Export Control'),
+    search: normalizeSearchQuery(
+      'tariff | sanctions | export control | chip ban | trade | China US | Middle East'
+    ),
   },
   {
     id: 'space_defense',
     name: '우주/방산',
-    search: normalizeSearchQuery('SpaceX | Satellite | Defense Tech | Drone'),
+    search: normalizeSearchQuery(
+      'SpaceX | satellite | launch | defense tech | drone | Pentagon | NATO'
+    ),
   },
   {
     id: 'software_cyber',
     name: 'SW/보안',
-    search: normalizeSearchQuery('Cybersecurity | SaaS | Cloud | AI Security'),
+    search: normalizeSearchQuery(
+      'cybersecurity | data breach | ransomware | zero trust | cloud security | SaaS | AI security'
+    ),
   },
   {
     id: 'real_estate',
     name: '부동산',
-    search: normalizeSearchQuery('Housing Market | REITs | Mortgage | Commercial Property'),
+    search: normalizeSearchQuery(
+      'housing market | mortgage rates | commercial real estate | CRE | REIT | office vacancy'
+    ),
   },
   {
     id: 'luxury_consumer',
     name: '소비재/사치품',
-    search: normalizeSearchQuery('Luxury Goods | LVMH | Brand Trend'),
+    search: normalizeSearchQuery(
+      'luxury | luxury goods | LVMH | Hermes | Gucci | Prada | consumer spending'
+    ),
   },
 ];
 
@@ -91,18 +112,184 @@ export const THE_NEWS_SECTORS: Array<{
  *   카테고리(섹터명) 선택 시 결과가 나오도록 overlaps 필터에 사용합니다.
  */
 export const NEWS_SECTOR_ALIASES: Record<string, string[]> = {
-  '거시경제': ['거시경제', '매크로', '인플레이션', '연준'],
-  'AI/반도체': ['AI', '반도체', '엔비디아', 'TSMC', '삼성전자'],
-  '빅테크': ['빅테크', '클라우드', '애플', '구글', '메타'],
-  '에너지/전력': ['에너지', '전력', '원전', 'SMR'],
-  '로보틱스': ['로봇', '로보틱스', '휴머노이드', '자동화'],
-  '바이오/헬스': ['바이오', '헬스케어', '제약', 'GLP-1'],
-  '금융/가상자산': ['금융', '가상자산', '비트코인', 'ETF'],
-  '지정학/무역': ['지정학', '무역', '관세', '미중'],
-  '우주/방산': ['우주', '방산', '위성', 'SpaceX'],
-  'SW/보안': ['SW', '보안', 'SaaS', '사이버보안'],
-  '부동산': ['부동산', 'REIT', '주택'],
-  '소비재/사치품': ['소비재', '사치품', 'LVMH'],
+  '거시경제': [
+    '거시경제',
+    '매크로',
+    '연준',
+    'FOMC',
+    'Fed',
+    '금리',
+    '채권',
+    'CPI',
+    '인플레이션',
+    'GDP',
+    '고용',
+    '실업률',
+    'Treasury',
+    'yield',
+  ],
+  'AI/반도체': [
+    'AI',
+    '반도체',
+    '칩',
+    'chip',
+    'Nvidia',
+    '엔비디아',
+    'NVDA',
+    'GPU',
+    'accelerator',
+    'H100',
+    'Blackwell',
+    'HBM',
+    'TSMC',
+    'foundry',
+    '삼성전자',
+  ],
+  '빅테크': [
+    '빅테크',
+    '클라우드',
+    'Microsoft',
+    'MSFT',
+    'Apple',
+    'AAPL',
+    'Google',
+    'Alphabet',
+    'GOOGL',
+    'Meta',
+    'META',
+    'Amazon',
+    'AMZN',
+    'antitrust',
+    '반독점',
+  ],
+  '에너지/전력': [
+    '에너지',
+    '전력',
+    '전력망',
+    'grid',
+    'utility',
+    '전기',
+    '원전',
+    'nuclear',
+    'SMR',
+    'LNG',
+    '가스터빈',
+    'gas turbine',
+    '데이터센터 전력',
+    'data center power',
+  ],
+  '로보틱스': [
+    '로봇',
+    '로보틱스',
+    'robot',
+    'robotics',
+    '휴머노이드',
+    'humanoid',
+    '자동화',
+    'automation',
+    'Optimus',
+    'Tesla Optimus',
+    '물류 로봇',
+    'warehouse robot',
+  ],
+  '바이오/헬스': [
+    '바이오',
+    '헬스',
+    '헬스케어',
+    '제약',
+    'GLP-1',
+    'Novo Nordisk',
+    'NVO',
+    'Eli Lilly',
+    'LLY',
+    'FDA',
+    '임상',
+    'clinical trial',
+    '승인',
+    'drug approval',
+  ],
+  '금융/가상자산': [
+    '금융',
+    '가상자산',
+    'fintech',
+    '비트코인',
+    'Bitcoin',
+    'BTC',
+    'Ethereum',
+    'stablecoin',
+    'ETF',
+    '은행',
+    'bank earnings',
+  ],
+  '지정학/무역': [
+    '지정학',
+    '무역',
+    '관세',
+    'tariff',
+    '제재',
+    'sanctions',
+    'export control',
+    '수출통제',
+    'chip ban',
+    '미중',
+    'China',
+    'US',
+    '중동',
+    'Middle East',
+  ],
+  '우주/방산': [
+    '우주',
+    '방산',
+    '위성',
+    'satellite',
+    '발사',
+    'launch',
+    'SpaceX',
+    '드론',
+    'drone',
+    'Pentagon',
+    'NATO',
+    'defense tech',
+  ],
+  'SW/보안': [
+    'SW',
+    '소프트웨어',
+    '보안',
+    '사이버보안',
+    'cybersecurity',
+    'data breach',
+    '해킹',
+    'ransomware',
+    'zero trust',
+    '클라우드 보안',
+    'cloud security',
+    'SaaS',
+    'AI security',
+  ],
+  '부동산': [
+    '부동산',
+    '주택',
+    'housing market',
+    'mortgage rates',
+    '금리',
+    'REIT',
+    'CRE',
+    'commercial real estate',
+    '오피스 공실',
+    'office vacancy',
+  ],
+  '소비재/사치품': [
+    '소비재',
+    '사치품',
+    'luxury',
+    'luxury goods',
+    'LVMH',
+    'Hermes',
+    'Gucci',
+    'Prada',
+    'consumer spending',
+    '소비',
+  ],
 };
 
 /**

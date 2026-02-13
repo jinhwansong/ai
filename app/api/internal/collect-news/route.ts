@@ -19,12 +19,14 @@ export const GET = verifyCronAuth(async () => {
       published_at: string | null;
       content: string | null;
     }> = [];
-    const threeDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
     const formattedDate = threeDaysAgo.toISOString().split('T')[0];
     // 섹터별로 순차 수집 (Rate Limit 방지: 2초 간격)
     for (const sector of THE_NEWS_SECTORS) {
       try {
-        console.log(`📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`);
+        console.log(
+          `📊 [Collect News] Processing sector: ${sector.name} (${sector.id})`,
+        );
         const items = await fetchTheNewsApiLatestBySearch({
           search: sector.search,
           limit: 3,
@@ -52,7 +54,9 @@ export const GET = verifyCronAuth(async () => {
           validItems++;
         }
 
-        console.log(`✅ [Collect News] ${sector.name}: ${validItems}/${items.length} items collected`);
+        console.log(
+          `✅ [Collect News] ${sector.name}: ${validItems}/${items.length} items collected`,
+        );
       } catch (err) {
         console.error(`❌ [Collect News] Failed for ${sector.name}:`, err);
       }
@@ -69,22 +73,27 @@ export const GET = verifyCronAuth(async () => {
     console.log('  - Unique URLs:', new Set(allItems.map((i) => i.url)).size);
     console.log(
       '  - Unique titles:',
-      new Set(allItems.map((i) => i.title)).size
+      new Set(allItems.map((i) => i.title)).size,
     );
     // uuid 기준 중복 제거
     const uniqueNews = Array.from(
-      new Map(allItems.map((item) => [item.uuid, item])).values()
+      new Map(allItems.map((item) => [item.uuid, item])).values(),
     );
+    console.log('  - Unique items (by UUID, this run):', uniqueNews.length);
 
     // 기존 뉴스 확인 (새로 추가된 뉴스만 카운트)
     const { data: existingNews } = await supabase
       .from('raw_news')
       .select('uuid')
-      .in('uuid', uniqueNews.map((n) => n.uuid));
+      .in(
+        'uuid',
+        uniqueNews.map((n) => n.uuid),
+      );
 
     const existingUuids = new Set((existingNews || []).map((n) => n.uuid));
     const newNews = uniqueNews.filter((n) => !existingUuids.has(n.uuid));
     const newNewsCount = newNews.length;
+    console.log('  - New items (not in DB):', newNewsCount);
 
     const { error } = await supabase
       .from('raw_news')
@@ -106,7 +115,7 @@ export const GET = verifyCronAuth(async () => {
     reportError(error, { route: '/api/internal/collect-news' });
     return NextResponse.json(
       { success: false, error: errorMessage },
-      { status: 500 }
+      { status: 500 },
     );
   }
 });

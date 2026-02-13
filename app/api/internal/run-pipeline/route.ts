@@ -75,6 +75,7 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     const collectData = await callStep<{ 
       success: boolean; 
       message?: string;
+      count?: number;
       newNewsCount?: number; 
     }>('collectNews', '/api/internal/collect-news');
     results.collectNews = collectData;
@@ -82,7 +83,9 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     // 새 뉴스가 없으면 AI 분석 단계 스킵 (비용 절감)
     const newNewsCount = collectData.newNewsCount ?? 0;
     if (newNewsCount === 0) {
-      console.log('⚠️ [Pipeline] No new news found. Skipping AI analysis steps to save costs.');
+      console.log(
+        `⚠️ [Pipeline] No new news found (uniqueCollected=${collectData.count ?? 'n/a'}). Skipping AI analysis steps to save costs.`
+      );
       // 스킵 시에도 Redis에 마지막 브리핑으로 워밍 → 대시보드에 데이터 유지
       const warmed = await warmCacheFromLatestBriefing();
       return NextResponse.json({
