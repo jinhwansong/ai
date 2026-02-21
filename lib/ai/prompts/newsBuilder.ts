@@ -2,7 +2,7 @@ import { THE_NEWS_SECTORS } from "@/constants/keyword";
 
 export const buildNewsPrompt = (keywords: string[], newsList: unknown[]) => {
   const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);
-  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+  const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
