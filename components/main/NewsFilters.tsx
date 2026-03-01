@@ -1,6 +1,6 @@
 'use client';
 
-import { THE_NEWS_SECTORS } from '@/constants/keyword';
+import { THE_NEWS_SECTORS } from '@/constants';
 
 const SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },

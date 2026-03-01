@@ -15,7 +15,7 @@ import {
 import Tags from '@/components/common/Tags';
 import { getDailyBriefingMeta } from '@/lib/utils/times';
 import AnalysisSkelton from '@/components/skeleton/AnalysisSkelton';
-import { useSuspenseSignalDetail } from '@/hooks/useMain';
+import { useSuspenseSignalDetail } from '@/hooks/query';
 import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
 import { useAnimatedScore } from '@/hooks/useAnimatedScore';
 import { useToastStore } from '@/stores/useToastStore';

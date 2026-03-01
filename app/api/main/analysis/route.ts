@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 
 export async function GET() {
   try {
@@ -13,11 +14,11 @@ export async function GET() {
 
     if (error) {
       console.error('Failed to fetch briefing history:', error);
-      return NextResponse.json({ error: '데이터를 불러오는데 실패했습니다.' }, { status: 500 });
+      return apiError('데이터를 불러오는데 실패했습니다.', 500);
     }
 
     if (!data) {
-      return NextResponse.json({ error: '브리핑 내역이 없습니다.' }, { status: 404 });
+      return apiError('브리핑 내역이 없습니다.', 404, 'NOT_FOUND');
     }
 
     const briefingData = data.data;
@@ -69,7 +70,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Analysis API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return apiError('Internal Server Error', 500);
   }
 }
 

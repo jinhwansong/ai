@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/core/redis';
 import { performAIAnalysis } from '@/lib/services/briefing';
 import { ObservationItem, SectorItem } from '@/types/services';
-import { ANALYSIS_KEYWORDS } from '@/constants/keyword';
+import { ANALYSIS_KEYWORDS } from '@/constants';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
 import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
@@ -234,17 +235,15 @@ export const GET = verifyCronAuth(async () => {
     console.error('❌ [Generate Briefing] Analysis failed:', error);
     reportError(error, { route: '/api/internal/generate-briefing', finishReason });
 
-    // finish_reason이 length인 경우 사용자에게 더 명확한 메시지 제공
     if (finishReason === 'length') {
-      const userFriendlyMessage = 'AI 분석 중 응답이 너무 길어져 생성이 중단되었습니다. 뉴스 데이터 양을 줄이거나 잠시 후 다시 시도해주세요.';
-      return NextResponse.json({
-        success: false,
-        error: userFriendlyMessage,
-        details: errorMessage,
-        suggestion: '데이터가 너무 많습니다. 최근 뉴스로 제한하거나 배치 크기를 줄여보세요.'
-      }, { status: 413 }); // Payload Too Large
+      const userFriendlyMessage =
+        'AI 분석 중 응답이 너무 길어져 생성이 중단되었습니다. 뉴스 데이터 양을 줄이거나 잠시 후 다시 시도해주세요.';
+      return apiError(userFriendlyMessage, 413, 'PAYLOAD_TOO_LARGE', {
+        originalError: errorMessage,
+        suggestion: '데이터가 너무 많습니다. 최근 뉴스로 제한하거나 배치 크기를 줄여보세요.',
+      });
     }
 
-    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
+    return apiError(errorMessage, 500);
   }
 });

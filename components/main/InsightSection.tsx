@@ -1,7 +1,7 @@
 'use client';
 import { Sparkles } from 'lucide-react';
 import { InsightItem } from '@/types/main';
-import { useMainInsight } from '@/hooks/useMain';
+import { useMainInsight } from '@/hooks/query';
 
 export default function InsightSection() {
   const { data } = useMainInsight();

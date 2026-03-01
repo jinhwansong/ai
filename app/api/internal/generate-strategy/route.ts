@@ -2,7 +2,8 @@ import { runGeminiJSON } from '@/lib/ai/gemini';
 import { runGPTJSON } from '@/lib/ai/openai';
 import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
 import { redis } from '@/lib/core/redis';
-import { ANALYSIS_KEYWORDS } from '@/constants/keyword';
+import { apiError } from '@/lib/errors/apiResponse';
+import { ANALYSIS_KEYWORDS } from '@/constants';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
 import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
 import { reportError } from '@/lib/core/sentry';
@@ -113,10 +114,7 @@ export const GET = verifyCronAuth(async () => {
       error instanceof Error ? error.message : 'Unknown error';
     console.error('Generate Strategy Error:', error);
     reportError(error, { route: '/api/internal/generate-strategy' });
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return apiError(errorMessage, 500);
   }
 }); 
 

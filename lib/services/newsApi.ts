@@ -1,21 +1,20 @@
 import { NewsListResponse, NewsArticle } from '@/types/main';
-import { Fetcher } from "@/lib/utils/fetcher";
+import { apiClient } from '../api';
 
-export const fetchNewsList = (params: {
-  sort: string;
-  category: string;
-  period: string;
-  page: number;
-  limit: number;
-}) => {
-  const query = new URLSearchParams({
-    sort: params.sort,
-    category: params.category,
-    period: params.period,
-    page: params.page.toString(),
-    limit: params.limit.toString(),
-  });
-  return Fetcher<NewsListResponse>(`/api/news/list?${query.toString()}`);
+export const createNewsApi = {
+  list: (params: {
+    sort: string;
+    category: string;
+    period: string;
+    page: number;
+    limit: number;
+  }) =>
+    apiClient.get<NewsListResponse>('/api/news/list', {
+      sort: params.sort,
+      category: params.category,
+      period: params.period,
+      page: params.page,
+      limit: params.limit,
+    }),
+  detail: (id: string) => apiClient.get<NewsArticle>(`/api/news/${id}`),
 };
-
-export const fetchNewsDetail = (id: string) => Fetcher<NewsArticle>(`/api/news/${id}`);

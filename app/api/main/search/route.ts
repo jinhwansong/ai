@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -37,9 +38,6 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Search API Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return apiError(errorMessage, 500);
   }
 }

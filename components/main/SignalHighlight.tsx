@@ -7,7 +7,7 @@ import Button from '../common/Button';
 import { MainSignal } from '@/types/main';
 import { getDailyBriefingMeta } from '@/lib/utils/times';
 import Tags from '../common/Tags';
-import { useMainSignal } from '@/hooks/useMain';
+import { useMainSignal } from '@/hooks/query';
 
 export default function SignalHighlight() {
   const { data: signal } = useMainSignal();

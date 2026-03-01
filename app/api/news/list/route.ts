@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
 import { subDays, subMonths, startOfDay } from 'date-fns';
-import { NEWS_SECTOR_ALIASES } from '@/constants/keyword';
+import { NEWS_SECTOR_ALIASES } from '@/constants';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +16,10 @@ export async function GET(request: Request) {
   const offset = (page - 1) * limit;
 
   try {
-    let query = supabase.from('news_articles').select('*', { count: 'exact' });
+    const listFields = 'id,title,summary,tags,published_at,source,impact';
+    let query = supabase
+      .from('news_articles')
+      .select(listFields, { count: 'exact' });
 
     // 1. 기간 필터 (Period)
     const now = new Date();
@@ -79,10 +83,6 @@ export async function GET(request: Request) {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Internal Server Error';
-
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return apiError(errorMessage, 500);
   }
 }

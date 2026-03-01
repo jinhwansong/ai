@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { useSuspenseSearch } from '@/hooks/useMain';
+import { useSuspenseSearch } from '@/hooks/query';
 import { motion } from 'framer-motion';
 import { Search as SearchIcon, Newspaper, Eye, TrendingUp, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
 import Tags from '@/components/common/Tags';

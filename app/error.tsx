@@ -19,9 +19,10 @@ export default function Error({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-(--background)">
-      <ErrorState 
+      <ErrorState
         title="서비스 이용에 불편을 드려 죄송합니다"
         message="시스템 오류가 발생했습니다. 아래 버튼을 눌러 다시 시도하거나 홈으로 이동해주세요."
+        error={error}
         onReset={reset}
       />
       {error.digest && (

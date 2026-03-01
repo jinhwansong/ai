@@ -6,7 +6,7 @@ import { Clock, Newspaper } from 'lucide-react';
 import Button from '../common/Button';
 import SectionHeader from '@/components/common/SectionHeader';
 import Tags from '../common/Tags';
-import { useMainNews } from '@/hooks/useMain';
+import { useMainNews } from '@/hooks/query';
 import Link from 'next/link';
 
 export default function NewsFeed() {

@@ -13,11 +13,15 @@ async function readSafeBody(res: Response) {
   }
 }
 
-function getStringField(obj: unknown, key: string): string | undefined {
-  if (!obj || typeof obj !== 'object') return undefined;
-  const record = obj as Record<string, unknown>;
-  const value = record[key];
-  return typeof value === 'string' ? value : undefined;
+function getStepErrorMessage(data: unknown): string {
+  if (!data || typeof data !== 'object') return 'Step failed';
+  const r = data as Record<string, unknown>;
+  const err = r.error;
+  if (typeof err === 'string') return err;
+  if (err && typeof err === 'object' && 'message' in err)
+    return (err as { message: string }).message;
+  if (typeof r.message === 'string') return r.message;
+  return 'Step failed';
 }
 
 export const POST = verifyCronAuth(async (req: NextRequest) => {
@@ -45,10 +49,7 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
       const ok = res.ok && (data?.success ?? true) === true;
 
       if (!ok) {
-        const msg =
-          getStringField(data, 'error') ??
-          getStringField(data, 'message') ??
-          `Step ${step} failed`;
+        const msg = getStepErrorMessage(data);
 
         const err = new Error(msg);
         reportError(err, {
@@ -129,14 +130,13 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
     console.error('Pipeline Error:', error);
-    // If the error wasn't already captured as a step failure, capture here with whatever we have.
     reportError(error, {
       kind: 'pipeline_failed',
       route: '/api/internal/run-pipeline',
       resultsSoFar: results,
     });
     return NextResponse.json(
-      { success: false, error: errorMessage, results },
+      { success: false, error: { code: 'PIPELINE_FAILED', message: errorMessage }, results },
       { status: 500 }
     );
   }

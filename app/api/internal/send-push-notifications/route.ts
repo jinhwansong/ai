@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
 import { sendNotificationToAll } from '@/lib/push/webPush';
 import { redis } from '@/lib/core/redis';
@@ -66,13 +67,7 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('❌ [Send Push Notifications] Failed:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: errorMessage,
-      },
-      { status: 500 }
-    );
+    return apiError(errorMessage, 500);
   }
 });
 

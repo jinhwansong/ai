@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Globe, AlertCircle, CheckCircle2, HelpCircle, XCircle } from 'lucide-react';
 import SectionHeader from '@/components/common/SectionHeader';
-import { useMainMacro } from '@/hooks/useMain';
+import { useMainMacro } from '@/hooks/query';
 
 const statusConfig = {
   positive: {

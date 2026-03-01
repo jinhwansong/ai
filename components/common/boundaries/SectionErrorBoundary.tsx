@@ -54,6 +54,7 @@ export class SectionErrorBoundary extends React.Component<
           <ErrorState
             title={`${this.props.sectionName} 섹션 로딩 실패`}
             message="이 섹션을 불러오는 중 오류가 발생했습니다. 다른 섹션은 정상적으로 작동합니다."
+            error={this.state.error}
             onReset={() => this.setState({ hasError: false, error: null })}
             showHome={false}
           />

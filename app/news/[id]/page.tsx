@@ -3,7 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, Share2, ExternalLink, Layout, TrendingUp } from 'lucide-react';
-import { useSuspenseNewsDetail } from '@/hooks/useMain';
+import { useSuspenseNewsDetail } from '@/hooks/query';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Tags from '@/components/common/Tags';

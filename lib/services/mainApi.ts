@@ -1,30 +1,17 @@
-import { Fetcher } from '@/lib/utils/fetcher';
-import { MainBriefing, MainSectorStrategy, MainNewsResponse,  MainSignal, ObservationItem, InsightItem, NewsItem, GlobalMacroItem } from '@/types/main';
+import { MainSectorStrategy, MainNewsResponse, MainSignal, ObservationItem, InsightItem, NewsItem, GlobalMacroItem } from '@/types/main';
 import { AnalysisData } from '@/types/news';
+import { apiClient } from '../api';
 
-export const fetchMainSignal = () =>
-  Fetcher<MainSignal>('/api/main/signal');
+type MainSearchResponse = { news: NewsItem[]; observations: ObservationItem[] };
 
-export const fetchMainBriefing = () =>
-  Fetcher<MainBriefing>('/api/main/briefing');
-
-export const fetchMainMacro = () =>
-  Fetcher<GlobalMacroItem[]>('/api/main/macro');
-
-export const fetchMainSector = () =>
-  Fetcher<MainSectorStrategy>('/api/main/sector');
-
-export const fetchMainNews = () =>
-  Fetcher<MainNewsResponse>('/api/main/news');
-
-export const fetchMainObservation = () =>
-  Fetcher<ObservationItem[]>('/api/main/observation');
-
-export const fetchMainInsight = () =>
-  Fetcher<InsightItem>('/api/main/insight');
-
-
-export const fetchSignalDetail = () => Fetcher<AnalysisData>('/api/main/analysis');
-
-export const fetchSearchResults = (query: string) => 
-  Fetcher<{ news: NewsItem[]; observations: ObservationItem[] }>(`/api/main/search?q=${encodeURIComponent(query)}`);
+export const createMainApi = {
+  signal: () => apiClient.get<MainSignal>('/api/main/signal'),
+  macro: () => apiClient.get<GlobalMacroItem[]>('/api/main/macro'),
+  sector: () => apiClient.get<MainSectorStrategy>('/api/main/sector'),
+  news: () => apiClient.get<MainNewsResponse>('/api/main/news'),
+  observation: () => apiClient.get<ObservationItem[]>('/api/main/observation'),
+  insight: () => apiClient.get<InsightItem>('/api/main/insight'),
+  signalDetail: () => apiClient.get<AnalysisData>('/api/main/analysis'),
+  search: (query: string) =>
+    apiClient.get<MainSearchResponse>('/api/main/search', { q: query }),
+};

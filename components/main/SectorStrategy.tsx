@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { Compass } from 'lucide-react';
 import SectionHeader from '@/components/common/SectionHeader';
-import { useMainSector } from '@/hooks/useMain';
+import { useMainSector } from '@/hooks/query';
 
 export default function SectorStrategy() {
   const { data } = useMainSector();

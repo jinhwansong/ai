@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
-import { THE_NEWS_SECTORS } from '@/constants/keyword';
+import { THE_NEWS_SECTORS } from '@/constants';
 import { reportError } from '@/lib/core/sentry';
 import {
   fetchAllRSSFeeds,
@@ -189,9 +190,6 @@ export const GET = verifyCronAuth(async () => {
       error instanceof Error ? error.message : 'Unknown error';
     console.error('Collect News Error:', error);
     reportError(error, { route: '/api/internal/collect-news' });
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 },
-    );
+    return apiError(errorMessage, 500);
   }
 });

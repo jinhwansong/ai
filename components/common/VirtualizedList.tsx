@@ -8,6 +8,8 @@ interface BaseVirtualizedListProps<T> {
   data: T[];
   /** 각 아이템 렌더 함수 */
   renderItem: (item: T, index: number) => ReactNode;
+  /** 아이템 key 계산 (가상화에서 remount 방지) */
+  computeItemKey?: (index: number, item: T) => React.Key;
   /** className */
   className?: string;
   /** 로딩 상태 */
@@ -54,6 +56,7 @@ export default function VirtualizedList<T>(props: VirtualizedListProps<T>) {
   const {
     data,
     renderItem,
+    computeItemKey,
     className = '',
     loading = false,
     error,
@@ -95,6 +98,7 @@ export default function VirtualizedList<T>(props: VirtualizedListProps<T>) {
       <Virtuoso
         useWindowScroll
         data={data}
+        computeItemKey={computeItemKey}
         style={{ height }}
         endReached={() => {
           if (hasMore && loadMore && !loading) {

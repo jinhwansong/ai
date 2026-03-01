@@ -6,7 +6,7 @@ import { Eye, TrendingUp } from 'lucide-react';
 import { ObservationItem } from '@/types/main';
 import SectionHeader from '@/components/common/SectionHeader';
 import Tags from '../common/Tags';
-import { useMainObservation } from '@/hooks/useMain';
+import { useMainObservation } from '@/hooks/query';
 import Modal from '@/components/common/Modal';
 import ObservationDetail from './ObservationDetail';
 

@@ -25,7 +25,8 @@
     "start": "next start",
     "lint": "eslint",
     "lhci": "lhci collect && lhci assert",
-    "test": "echo \"No tests specified\" && exit 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepare": "husky",
     "commit": "cz"
   },
@@ -66,6 +67,8 @@
     "@commitlint/config-conventional": "^20.2.0",
     "@lhci/cli": "^0.15.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
@@ -74,16 +77,18 @@
     "baseline-browser-mapping": "^2.9.19",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^10.0.1",
+    "eslint": "^9.39.3",
     "eslint-config-next": "^16.1.6",
     "husky": "^9.1.7",
     "i": "^0.3.7",
+    "jsdom": "^28.1.0",
     "lint-staged": "^16.2.7",
     "npm": "^11.7.0",
     "postcss": "^8.5.6",
     "sass": "^1.97.2",
     "tailwindcss": "^4.1.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   },
   "config": {
     "commitizen": {

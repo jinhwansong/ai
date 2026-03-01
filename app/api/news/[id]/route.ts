@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
 
 export async function GET(
@@ -8,18 +9,17 @@ export async function GET(
   const { id } = await params;
 
   try {
+    const detailFields =
+      'id,title,summary,content,tags,published_at,source,impact,url,checkpoints,related_sectors';
     const { data, error } = await supabase
       .from('news_articles')
-      .select('*')
+      .select(detailFields)
       .eq('id', id)
       .single();
 
     if (error) throw error;
     if (!data) {
-      return NextResponse.json(
-        { success: false, error: 'News not found' },
-        { status: 404 }
-      );
+      return apiError('News not found', 404, 'NOT_FOUND');
     }
 
     return NextResponse.json({
@@ -37,9 +37,6 @@ export async function GET(
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(
-      { success: false, error: errorMessage },
-      { status: 500 }
-    );
+    return apiError(errorMessage, 500);
   }
 }

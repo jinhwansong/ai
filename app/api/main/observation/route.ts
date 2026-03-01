@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { ObservationItem } from '@/types/services';
 import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
@@ -16,21 +17,15 @@ export async function GET() {
     }
 
     if (!cachedData) {
-      return NextResponse.json(
-        { error: 'No observation data found in Redis' },
-        { status: 404 }
-      );
+      return apiError('No observation data found in Redis', 404, 'NOT_FOUND');
     }
 
     const dashboard = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
-    const observations: ObservationItem[] = dashboard.observations
+    const observations: ObservationItem[] = dashboard.observations || [];
     return NextResponse.json(observations);
   } catch (error) {
     console.error('Observation API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError('Internal Server Error', 500);
   }
 }
 

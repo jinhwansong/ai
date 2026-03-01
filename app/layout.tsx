@@ -4,10 +4,10 @@ import { pretendard } from '@/lib/fonts';
 import Providers from './providers';
 import GlobalToast from '@/components/common/GlobalToast';
 import MicrosoftClarity from '@/components/common/MicrosoftClarity';
+import NetworkBanner from '@/components/common/NetworkBanner';
 import { SentryWebVitals } from '@/components/common/SentryWebVitals';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
-import Head from 'next/head';
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
@@ -17,17 +17,18 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   verification: {
-google: 'OvtOage0P7fVxwz_mXb0IuckkKDXvi4ZEDGXImXh_dw',
-},
+    google: 'OvtOage0P7fVxwz_mXb0IuckkKDXvi4ZEDGXImXh_dw',
+  },
   title: '오늘의 시그널',
   description: 'AI가 분석하는 실시간 글로벌 경제 뉴스 기반 시장 브리핑 리포트',
   manifest: '/manifest.json',
   icons: {
     icon: '/icons/favicon.ico',
+    apple: '/icons/icon-192x192.png',
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: '오늘의 시그널',
   },
   openGraph: {
@@ -63,15 +64,11 @@ export default function RootLayout({
   
   return (
     <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
-      <Head>
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-      </Head>
       <body className={`${pretendard.className} bg-(--background) text-(--foreground)`}>
         <Providers>
           <MicrosoftClarity />
           <SentryWebVitals />
+          <NetworkBanner />
           <Header />
           {children}
           <GlobalToast />

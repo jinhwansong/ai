@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { SectorItem } from '@/types/services';
 import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
@@ -16,10 +17,7 @@ export async function GET() {
     }
 
     if (!cachedData) {
-      return NextResponse.json(
-        { error: 'No briefing data found in Redis' },
-        { status: 404 }
-      );
+      return apiError('No briefing data found in Redis', 404, 'NOT_FOUND');
     }
 
     const dashboard = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
@@ -72,10 +70,7 @@ export async function GET() {
     return NextResponse.json(formattedData);
   } catch (error) {
     console.error('Sector Strategy API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError('Internal Server Error', 500);
   }
 }
 

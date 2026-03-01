@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { fetchGlobalIndices, MarketIndexData } from '@/lib/external/yahooFinance';
 import { MacroItem } from '@/types/services';
@@ -44,9 +45,6 @@ export async function GET() {
     return NextResponse.json(macroData);
   } catch (error) {
     console.error('Global Macro API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return apiError('Internal Server Error', 500);
   }
 }
