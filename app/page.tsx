@@ -5,7 +5,6 @@ import NewsFeed from '@/components/main/NewsFeed';
 import ObservationSection from '@/components/main/ObservationSection';
 import InsightSection from '@/components/main/InsightSection';
 import NoticeModal from '@/components/common/NoticeModal';
-import PullToRefresh from '@/components/common/PullToRefresh';
 import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
 import SignalHighlightSkeleton from '@/components/skeleton/SignalHighlightSkeleton';
 import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
@@ -19,8 +18,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       
-      <PullToRefresh>
-        <main className="flex-1 px-4 py-8 md:px-8 md:pb-8 relative">
+      <main className="flex-1 px-4 py-8 md:px-8 md:pb-8 relative">
           <div className="mx-auto max-w-7xl space-y-10">
             <div id="section-signal">
               <SectionWrapper
@@ -67,7 +65,6 @@ export default function Home() {
             </div>
           </div>
         </main>
-      </PullToRefresh>
 
       <SectionWrapper
         sectionName="시장 인사이트"

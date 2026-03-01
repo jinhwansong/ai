@@ -6,14 +6,14 @@ import { SectionErrorBoundary } from './SectionErrorBoundary';
 interface SectionWrapperProps {
   children: ReactNode;
   sectionName: string;
-  fallback: ReactNode;
+  fallback?: ReactNode;
   errorFallback?: ReactNode;
 }
 
 export default function SectionWrapper({
   children,
   sectionName,
-  fallback,
+  fallback = null,
   errorFallback,
 }: SectionWrapperProps) {
   return (
