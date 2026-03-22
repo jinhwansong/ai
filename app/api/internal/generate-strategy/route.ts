@@ -1,5 +1,4 @@
 import { runGeminiJSON } from '@/lib/ai/gemini';
-import { runGPTJSON } from '@/lib/ai/openai';
 import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
 import { redis } from '@/lib/core/redis';
 import { apiError } from '@/lib/errors/apiResponse';
@@ -9,15 +8,6 @@ import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
 import { reportError } from '@/lib/core/sentry';
 import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
-
-type StrategyModel = 'gemini' | 'gpt';
-
-function normalizeStrategyModel(value: string | undefined): StrategyModel | undefined {
-  if (!value) return undefined;
-  const v = value.trim().toLowerCase();
-  if (v === 'gemini' || v === 'gpt') return v;
-  return undefined;
-}
 
 type RawNewsRow = {
   uuid?: string | null;
@@ -75,32 +65,13 @@ export const GET = verifyCronAuth(async () => {
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
 
-    const preferred = normalizeStrategyModel(process.env.AI_STRATEGY_MODEL) ?? 'gemini';
-    const fallback =
-      normalizeStrategyModel(process.env.AI_STRATEGY_FALLBACK_MODEL) ??
-      (preferred === 'gpt' ? 'gemini' : 'gpt');
-
     const prompt = buildSectorPrompt(
       ANALYSIS_KEYWORDS,
       marketData,
       compactNewsForPrompt((rawNews || []) as RawNewsRow[])
     );
 
-    const run = async (model: StrategyModel) =>
-      model === 'gpt'
-        ? runGPTJSON(prompt, { maxTokens: 1500, tag: 'generate-strategy' }) // 2000 → 1500
-        : runGeminiJSON(prompt);
-
-    const canUseOpenAI = Boolean(process.env.OPENAI_API_KEY);
-    const primaryModel: StrategyModel =
-      preferred === 'gpt' && !canUseOpenAI ? 'gemini' : preferred;
-
-    const sectorRes = await run(primaryModel).catch(async (err) => {
-      const fb: StrategyModel =
-        fallback === 'gpt' && !canUseOpenAI ? 'gemini' : fallback;
-      if (fb === primaryModel) throw err;
-      return await run(fb);
-    });
+    const sectorRes = await runGeminiJSON(prompt);
 
     await redis.set('strategy:latest', JSON.stringify(sectorRes.sectors));
 

@@ -1,4 +1,3 @@
-import { runGPTJSON } from '@/lib/ai/openai';
 import { runGeminiJSON } from '@/lib/ai/gemini';
 import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
 import { buildNewsPrompt } from '@/lib/ai/prompts/newsBuilder';
@@ -14,7 +13,6 @@ import {
 } from '@/types/services';
 import { MarketIndexData } from '@/lib/external/yahooFinance';
 
-export type AIModelType = 'gpt' | 'gemini';
 export type AnalysisTask = 'sector' | 'news' | 'impact' | 'observation' | 'insight';
 
 class AIResponseTooLongError extends Error {
@@ -35,9 +33,6 @@ class AIResponseTooLongError extends Error {
 
 // 공통 인터페이스 정의
 export interface BriefingInquiry {
-  modelType?: AIModelType;
-  modelPlan?: Partial<Record<AnalysisTask, AIModelType>>;
-  fallbackModel?: AIModelType;
   userKeywords: string[];
   marketData: {
     globalIndices: MarketIndexData[];
@@ -46,45 +41,21 @@ export interface BriefingInquiry {
 }
 
 export async function performAIAnalysis(inquiry: BriefingInquiry) {
-  const {
-    modelType = 'gemini',
-    modelPlan,
-    fallbackModel,
-    userKeywords,
-    marketData,
-    newsList,
-  } = inquiry;
-
-  const runJSON = (model: AIModelType, prompt: string, opts?: { maxTokens?: number }) =>
-    model === 'gpt' ? runGPTJSON(prompt, { maxTokens: opts?.maxTokens }) : runGeminiJSON(prompt);
-
-  const getModelForTask = (task: AnalysisTask): AIModelType =>
-    modelPlan?.[task] ?? modelType;
-
-  const getFallbackModel = (primary: AIModelType): AIModelType =>
-    fallbackModel ?? (primary === 'gpt' ? 'gemini' : 'gpt');
+  const { userKeywords, marketData, newsList } = inquiry;
 
   const runTask = async <T>(task: AnalysisTask, prompt: string): Promise<T> => {
-    const primary = getModelForTask(task);
-    // 복잡한 분석 작업들은 훨씬 더 큰 토큰 제한 필요
-    const needsMoreTokens = ['impact', 'observation', 'insight'].includes(task);
-    const opts = needsMoreTokens ? { maxTokens: 3000 } : { maxTokens: 1500 }; // 비용 절감: 4000→3000, 2000→1500
-
     try {
-      const result = await runJSON(primary, prompt, opts);
+      const result = await runGeminiJSON(prompt);
       return result as T;
     } catch (err) {
-      // finish_reason이 length인 경우 더 명확한 에러 메시지
-      if (err instanceof Error && err.message.includes('GPT response was interrupted')) {
+      // 응답이 토큰 제한 등으로 중단된 경우
+      if (
+        err instanceof Error &&
+        (err.message.includes('interrupted') || err.message.includes('length'))
+      ) {
         throw new AIResponseTooLongError(task, err);
       }
-
-      const fallback = getFallbackModel(primary);
-      // 같은 모델로의 fallback은 의미 없으니 그대로 throw
-      if (fallback === primary) throw err;
-
-      console.log(`🔄 [${task}] Primary model failed, trying fallback: ${primary} → ${fallback}`);
-      return (await runJSON(fallback, prompt, opts)) as T;
+      throw err;
     }
   };
 

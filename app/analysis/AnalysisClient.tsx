@@ -258,7 +258,7 @@ function AnalysisContent() {
                 분석 모델
               </span>
               <p className="text-xs font-black text-(--text-title)">
-                gemini-2.0-flash-lite / GPT-4o
+                gemini-2.5-flash-lite
               </p>
             </div>
             <div className="space-y-1 text-right">

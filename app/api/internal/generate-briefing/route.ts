@@ -74,35 +74,18 @@ export const GET = verifyCronAuth(async () => {
     const globalIndices = await fetchGlobalIndices();
     const marketData = { globalIndices };
 
-    // 영역별 모델 분리:
-    // - Gemini: news/sector (대량 텍스트 가공/요약)
-    // - OpenAI: impact/observation/insight (JSON 구조 안정성)
-    // 단, OPENAI_API_KEY가 없으면 안전하게 전체 Gemini로 동작
-    const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
-
     // 분석 진행 상태를 Redis에 저장 (중간 결과 추적 및 타임아웃 복구용)
     progressKey = `briefing:progress:${Date.now()}`;
     await redis.set(progressKey, JSON.stringify({
       status: 'started',
       timestamp: new Date().toISOString(),
       newsCount: rawNews?.length || 0,
-      hasOpenAI,
     }), 'EX', 3600); // 1시간 유지
 
     // 뉴스 데이터 압축 (비용 절감)
     const compactNews = compactNewsForPrompt(rawNews as Array<Record<string, unknown>>);
 
     const analysisResult = await performAIAnalysis({
-      modelType: 'gemini',
-      modelPlan: hasOpenAI
-        ? {
-            news: 'gemini',
-            sector: 'gemini',
-            impact: 'gemini',      
-            observation: 'gpt',   
-            insight: 'gemini',   
-          }
-        : undefined,
       userKeywords: ANALYSIS_KEYWORDS,
       marketData,
       newsList: compactNews, // 압축된 뉴스 사용
