@@ -26,11 +26,11 @@ const EXCLUDE_PATTERNS = [
 
 // 설치 이벤트 - 프리캐싱
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...');
+  // console.log('[SW] Installing service worker...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[SW] Precaching assets');
+        // console.log('[SW] Precaching assets');
         return cache.addAll(PRECACHE_ASSETS.map(url => new Request(url, { cache: 'reload' })));
       })
       .catch((error) => {
@@ -43,7 +43,7 @@ self.addEventListener('install', (event) => {
 
 // 활성화 이벤트 - 오래된 캐시 정리
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...');
+  // console.log('[SW] Activating service worker...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(

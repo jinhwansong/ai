@@ -20,7 +20,7 @@ export function SentryWebVitals() {
     });
 
     // 콘솔에서 확인하고 싶다면 추가 (배포 시엔 삭제 권장)
-    console.log('Web Vital:', metric);
+    // console.log('Web Vital:', metric);
   });
 
   return null;
