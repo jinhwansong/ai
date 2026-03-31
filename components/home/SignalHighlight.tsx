@@ -20,7 +20,7 @@ export default function SignalHighlight() {
   } = (signal || {}) as MainSignal;
   return (
     <motion.section
-      initial={{ opacity: 0, y: 30 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       className="kakao-card relative overflow-hidden p-6 md:p-10"
     >
