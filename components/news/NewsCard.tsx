@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
-import Tags from '@/components/common/Tags';
+import { impactLevelDotClass } from '@/components/ui/cardUiStyles';
+import Tags from '@/components/ui/Tags';
 import { formatPublishedAt } from '@/lib/utils/times';
 import type { NewsItem } from '@/types/main';
 
@@ -15,13 +16,7 @@ export default function NewsCard({ item }: NewsCardProps) {
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
             <span
-              className={`h-2 w-2 rounded-full ${
-                item.impact === 'High'
-                  ? 'bg-rose-500'
-                  : item.impact === 'Medium'
-                    ? 'bg-amber-500'
-                    : 'bg-emerald-500'
-              }`}
+              className={`h-2 w-2 rounded-full ${impactLevelDotClass(item.impact)}`}
             />
             <div className="flex items-center gap-1 text-[11px] font-bold text-(--text-muted)">
               <Clock size={12} />

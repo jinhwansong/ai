@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import ThemeToggle from '../common/ThemeToggle';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { useToastStore } from '@/stores/useToastStore';

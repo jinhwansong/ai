@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { Globe } from 'lucide-react';
-import { MacroStatusGlyph } from '@/components/common/MacroStatusGlyph';
-import SectionHeader from '@/components/common/SectionHeader';
+import { MacroStatusGlyph } from '@/components/ui/MacroStatusGlyph';
+import { SectionIconBadge } from '@/components/ui/SectionIconBadge';
+import SectionHeader from '@/components/ui/SectionHeader';
 import { getMacroStatusMeta } from '@/constants/macroStatus';
 import { useMainMacro } from '@/hooks/query';
 
@@ -14,11 +15,7 @@ export default function GlobalMacro() {
   return (
     <section className="space-y-6">
       <SectionHeader
-        icon={
-          <div className="flex h-8 w-8 items-center  justify-center rounded-lg bg-indigo-500 shadow-lg shadow-indigo-500/20">
-            <Globe className="h-5 w-5 text-white" />
-          </div>
-        }
+        icon={<SectionIconBadge icon={Globe} tone="indigo" />}
         title="글로벌 시장 요약"
         subtitle="주요 국가지수 실시간 현황"
         className="px-0"
@@ -32,7 +29,7 @@ export default function GlobalMacro() {
           return (
             <motion.article
               key={item.indexName}
-              initial={false}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               className="kakao-card group flex flex-col p-5 hover:shadow-lg transition-shadow border "

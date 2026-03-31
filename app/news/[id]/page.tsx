@@ -6,11 +6,11 @@ import { ArrowLeft, Clock, Share2, ExternalLink, Layout, TrendingUp } from 'luci
 import { useSuspenseNewsDetail } from '@/hooks/query';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import Tags from '@/components/common/Tags';
-import NewsDetailSkeleton from '@/components/skeleton/NewsDetailSkeleton';
+import Tags from '@/components/ui/Tags';
+import NewsDetailSkeleton from '@/components/loading/NewsDetailSkeleton';
 import { useToastStore } from '@/stores/useToastStore';
-import SmartParagraphs from '@/components/common/SmartParagraphs';
-import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
+import SmartParagraphs from '@/components/ui/SmartParagraphs';
+import SectionWrapper from '@/components/boundaries/SectionWrapper';
 
 function NewsDetailContent() {
   const { id } = useParams();

@@ -1,5 +1,5 @@
 import { THE_NEWS_SECTORS } from '@/constants';
-import Skeleton from '../common/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
 const SORT_COUNT = 3;
 const PERIOD_COUNT = 4;

@@ -1,7 +1,7 @@
 import React from 'react';
-import Skeleton from '../common/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
-export default function AnalysisSkelton() {
+export default function AnalysisSkeleton() {
   return (
     <div className="min-h-screen bg-(--background)">
       <header className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-(--border) px-4 backdrop-blur-md ">

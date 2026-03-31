@@ -1,16 +1,16 @@
 'use client';
 
 import React, { Suspense, useCallback } from 'react';
-import SectionHeader from '@/components/common/SectionHeader';
-import NewsFilters from '@/components/main/NewsFilters';
-import NewsCard from '@/components/main/NewsCard';
-import NewsFeedSkeleton from '@/components/skeleton/NewsFeedSkeleton';
-import NewsFiltersSkeleton from '@/components/skeleton/NewsFiltersSkeleton';
-import VirtualizedList from '@/components/common/VirtualizedList';
+import SectionHeader from '@/components/ui/SectionHeader';
+import NewsFilters from '@/components/news/NewsFilters';
+import NewsCard from '@/components/news/NewsCard';
+import NewsFeedSkeleton from '@/components/loading/NewsFeedSkeleton';
+import NewsFiltersSkeleton from '@/components/loading/NewsFiltersSkeleton';
+import VirtualizedList from '@/components/ui/VirtualizedList';
 import { Newspaper } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSuspenseInfiniteNewsList } from '@/hooks/query';
-import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
+import SectionWrapper from '@/components/boundaries/SectionWrapper';
 
 const EMPTY_TEXT = '해당 조건에 맞는 뉴스가 없습니다.';
 

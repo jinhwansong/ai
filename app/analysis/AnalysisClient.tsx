@@ -12,14 +12,14 @@ import {
   ExternalLink,
   Search,
 } from 'lucide-react';
-import Tags from '@/components/common/Tags';
+import Tags from '@/components/ui/Tags';
 import { getDailyBriefingMeta } from '@/lib/utils/times';
-import AnalysisSkelton from '@/components/skeleton/AnalysisSkelton';
+import AnalysisSkeleton from '@/components/loading/AnalysisSkeleton';
 import { useSuspenseSignalDetail } from '@/hooks/query';
-import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
+import SectionWrapper from '@/components/boundaries/SectionWrapper';
 import { useAnimatedScore } from '@/hooks/useAnimatedScore';
 import { useToastStore } from '@/stores/useToastStore';
-import SmartParagraphs from '@/components/common/SmartParagraphs';
+import SmartParagraphs from '@/components/ui/SmartParagraphs';
 import { useIsMounted } from '@/hooks/useIsMounted';
 
 function AnalysisContent() {
@@ -296,7 +296,7 @@ export default function AnalysisClient() {
       <main className="mx-auto max-w-2xl px-5 py-8 bg-(--background)">
         <SectionWrapper
           sectionName="AI 분석"
-          fallback={<AnalysisSkelton />}
+          fallback={<AnalysisSkeleton />}
         >
           <AnalysisContent />
         </SectionWrapper>

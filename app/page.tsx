@@ -1,17 +1,17 @@
-import SignalHighlight from '@/components/main/SignalHighlight';
-import GlobalMacro from '@/components/main/GlobalMacro';
-import SectorStrategy from '@/components/main/SectorStrategy';
-import NewsFeed from '@/components/main/NewsFeed';
-import ObservationSection from '@/components/main/ObservationSection';
-import InsightSection from '@/components/main/InsightSection';
-import NoticeModal from '@/components/common/NoticeModal';
-import SectionWrapper from '@/components/common/boundaries/SectionWrapper';
-import SignalHighlightSkeleton from '@/components/skeleton/SignalHighlightSkeleton';
-import GlobalMacroSkeleton from '@/components/skeleton/GlobalMacroSkeleton';
-import SectorStrategySkeleton from '@/components/skeleton/SectorStrategySkeleton';
-import NewsFeedSkeleton from '@/components/skeleton/NewsFeedSkeleton';
-import ObservationSkeleton from '@/components/skeleton/ObservationSkeleton';
-import InsightSectionSkeleton from '@/components/skeleton/InsightSectionSkeleton';
+import SignalHighlight from '@/components/home/SignalHighlight';
+import GlobalMacro from '@/components/home/GlobalMacro';
+import SectorStrategy from '@/components/home/SectorStrategy';
+import NewsFeed from '@/components/home/NewsFeed';
+import ObservationSection from '@/components/home/ObservationSection';
+import InsightSection from '@/components/home/InsightSection';
+import NoticeModal from '@/components/ui/NoticeModal';
+import SectionWrapper from '@/components/boundaries/SectionWrapper';
+import SignalHighlightSkeleton from '@/components/loading/SignalHighlightSkeleton';
+import GlobalMacroSkeleton from '@/components/loading/GlobalMacroSkeleton';
+import SectorStrategySkeleton from '@/components/loading/SectorStrategySkeleton';
+import NewsFeedSkeleton from '@/components/loading/NewsFeedSkeleton';
+import ObservationSkeleton from '@/components/loading/ObservationSkeleton';
+import InsightSectionSkeleton from '@/components/loading/InsightSectionSkeleton';
 
 export default function Home() {
 

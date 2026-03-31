@@ -5,12 +5,12 @@ import { Suspense, useState } from 'react';
 import { useSuspenseSearch } from '@/hooks/query';
 import { motion } from 'framer-motion';
 import { Search as SearchIcon, Newspaper, Eye, TrendingUp, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
-import Tags from '@/components/common/Tags';
+import Tags from '@/components/ui/Tags';
 import Link from 'next/link';
-import Modal from '@/components/common/Modal';
-import ObservationDetail from '@/components/main/ObservationDetail';
+import Modal from '@/components/ui/Modal';
+import ObservationDetail from '@/components/home/ObservationDetail';
 import { ObservationItem } from '@/types/main';
-import SearchSkeleton from '@/components/skeleton/SearchSkeleton';
+import SearchSkeleton from '@/components/loading/SearchSkeleton';
 import { formatPublishedAt } from '@/lib/utils/times';
 
 function SearchResults() {

@@ -2,7 +2,7 @@
 
 import { ObservationItem } from '@/types/main';
 import { TrendingUp, BadgeCheck, Info, Newspaper, ChevronRight } from 'lucide-react';
-import Tags from '../common/Tags';
+import Tags from '@/components/ui/Tags';
 import { motion } from 'framer-motion';
 
 type ObservationDetailProps = {

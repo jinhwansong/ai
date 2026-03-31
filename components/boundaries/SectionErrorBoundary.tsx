@@ -2,7 +2,7 @@
 
 import React from 'react';
 import * as Sentry from '@sentry/nextjs';
-import ErrorState from '../ErrorState';
+import ErrorState from '@/components/ui/ErrorState';
 
 interface SectionErrorBoundaryProps {
   children: React.ReactNode;

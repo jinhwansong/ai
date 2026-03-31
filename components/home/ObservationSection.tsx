@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, TrendingUp } from 'lucide-react';
 import { ObservationItem } from '@/types/main';
-import SectionHeader from '@/components/common/SectionHeader';
-import Tags from '../common/Tags';
+import { observationMomentumPillClass } from '@/components/ui/cardUiStyles';
+import Modal from '@/components/ui/Modal';
+import { SectionIconBadge } from '@/components/ui/SectionIconBadge';
+import SectionHeader from '@/components/ui/SectionHeader';
+import Tags from '@/components/ui/Tags';
 import { useMainObservation } from '@/hooks/query';
-import Modal from '@/components/common/Modal';
 import ObservationDetail from './ObservationDetail';
 
 export default function ObservationSection() {
@@ -20,11 +22,7 @@ export default function ObservationSection() {
   return (
     <section className="space-y-6">
       <SectionHeader
-        icon={
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 shadow-lg shadow-amber-500/20">
-            <Eye className="h-5 w-5 text-white" />
-          </div>
-        }
+        icon={<SectionIconBadge icon={Eye} tone="amber" />}
         title="오늘의 관찰 대상"
         subtitle="AI가 주목한 주식 및 ETF 리포트"
         className="px-0"
@@ -53,15 +51,7 @@ export default function ObservationSection() {
                   {item.symbol}
                 </span>
               </div>
-              <div
-                className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black ${
-                  item.momentum === 'Strong'
-                    ? 'bg-(--bg-rose) text-(--text-rose)'
-                    : item.momentum === 'Moderate'
-                    ? 'bg-(--bg-amber) text-(--text-amber)'
-                    : 'bg-(--bg-blue) text-(--text-blue)'
-                }`}
-              >
+              <div className={observationMomentumPillClass(item.momentum)}>
                 <TrendingUp size={10} strokeWidth={3} />
                 <span>{item.momentum}</span>
               </div>

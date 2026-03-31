@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import ErrorState from '@/components/common/ErrorState';
+import ErrorState from '@/components/ui/ErrorState';
 
 export default function Error({
   error,

@@ -1,10 +1,11 @@
 'use client';
 
 import { MainSectorStrategy } from '@/types/main';
-import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { Compass } from 'lucide-react';
-import SectionHeader from '@/components/common/SectionHeader';
+import { sectorStanceDotClass } from '@/components/ui/cardUiStyles';
+import { SectionIconBadge } from '@/components/ui/SectionIconBadge';
+import SectionHeader from '@/components/ui/SectionHeader';
 import { useMainSector } from '@/hooks/query';
 
 export default function SectorStrategy() {
@@ -13,11 +14,7 @@ export default function SectorStrategy() {
   return (
     <section className="space-y-6">
       <SectionHeader
-        icon={
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-lg shadow-emerald-500/20">
-            <Compass className="h-5 w-5 text-white" />
-          </div>
-        }
+        icon={<SectionIconBadge icon={Compass} tone="emerald" />}
         title="오늘의 섹터 전략"
         subtitle="AI 감지 모멘텀 요약"
         className="px-0"
@@ -35,15 +32,7 @@ export default function SectorStrategy() {
           >
             <div className="flex items-start justify-between">
               <h4 className="text-base font-bold text-(--text-title) flex items-center gap-2">
-                <span
-                  className={clsx(
-                    'h-2 w-2 rounded-full block',
-                    sector.stance === 'POSITIVE' && 'bg-(--text-rose)',
-                    sector.stance === 'NEUTRAL' && 'bg-(--text-green)',
-                    sector.stance === 'NEGATIVE' && 'bg-slate-500',
-                    sector.stance === 'WATCHING' && 'bg-(--text-amber)'
-                  )}
-                />
+                <span className={sectorStanceDotClass(sector.stance)} />
                 {sector.name}
               </h4>
               <div className="flex flex-col items-end">

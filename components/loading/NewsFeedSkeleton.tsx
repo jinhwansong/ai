@@ -1,4 +1,4 @@
-import Skeleton from '../common/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
 export default function NewsFeedSkeleton({ list = false }: { list?: boolean }) {
   return (

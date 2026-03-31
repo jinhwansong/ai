@@ -3,9 +3,11 @@
 import { getDailyBriefingMeta } from '@/lib/utils/times';
 import { motion } from 'framer-motion';
 import { Clock, Newspaper } from 'lucide-react';
-import Button from '../common/Button';
-import SectionHeader from '@/components/common/SectionHeader';
-import Tags from '../common/Tags';
+import { impactLevelDotClass } from '@/components/ui/cardUiStyles';
+import Button from '@/components/ui/Button';
+import SectionHeader from '@/components/ui/SectionHeader';
+import { SectionIconBadge } from '@/components/ui/SectionIconBadge';
+import Tags from '@/components/ui/Tags';
 import { useMainNews } from '@/hooks/query';
 import Link from 'next/link';
 
@@ -15,11 +17,7 @@ export default function NewsFeed() {
   return (
     <section className="space-y-6">
       <SectionHeader
-        icon={
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 shadow-lg shadow-rose-500/20">
-            <Newspaper className="h-5 w-5 text-white" />
-          </div>
-        }
+        icon={<SectionIconBadge icon={Newspaper} tone="rose" />}
         title="오늘의 핵심 뉴스"
         subtitle="AI가 분석한 시장 영향력 기준 뉴스"
         tooltip="오늘 시장에 영향이 큰 뉴스와 관련 섹터를 요약합니다."
@@ -46,13 +44,7 @@ export default function NewsFeed() {
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`h-2 w-2 rounded-full ${
-                      item.impact === 'High'
-                        ? 'bg-(--text-rose)'
-                        : item.impact === 'Medium'
-                        ? 'bg-(--text-amber)'
-                        : 'bg-(--text-green)'
-                    }`}
+                    className={`h-2 w-2 rounded-full ${impactLevelDotClass(item.impact)}`}
                   />
                   <div className="flex items-center gap-1 text-[10px] font-bold text-(--text-muted)">
                     <Clock size={12} />

@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, Clock, Map } from 'lucide-react';
 import Link from 'next/link';
-import Button from '../common/Button';
+import Button from '@/components/ui/Button';
+import Tags from '@/components/ui/Tags';
 import { MainSignal } from '@/types/main';
 import { getDailyBriefingMeta } from '@/lib/utils/times';
-import Tags from '../common/Tags';
 import { useMainSignal } from '@/hooks/query';
 
 export default function SignalHighlight() {
@@ -20,7 +20,7 @@ export default function SignalHighlight() {
   } = (signal || {}) as MainSignal;
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       className="kakao-card relative overflow-hidden p-6 md:p-10"
     >

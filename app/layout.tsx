@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import '@/style/globals.css';
 import { pretendard } from '@/lib/fonts';
 import Providers from './providers';
-import GlobalToast from '@/components/common/GlobalToast';
-import MicrosoftClarity from '@/components/common/MicrosoftClarity';
-import NetworkBanner from '@/components/common/NetworkBanner';
-import { SentryWebVitals } from '@/components/common/SentryWebVitals';
+import GlobalToast from '@/components/ui/GlobalToast';
+import MicrosoftClarity from '@/components/ui/MicrosoftClarity';
+import NetworkBanner from '@/components/ui/NetworkBanner';
+import { SentryWebVitals } from '@/components/ui/SentryWebVitals';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 
