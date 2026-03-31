@@ -1,270 +1,66 @@
-# 오늘의 시그널
+# 오늘의 시그널 · AI Market Briefing
 
-> AI가 실시간 글로벌 경제 뉴스를 분석해 매일 아침 3분 안에 읽을 수 있는 시장 브리핑을 자동 생성하는 서비스
+> 글로벌 경제 뉴스를 모아 AI가 요약·분석한 시장 브리핑 웹앱 (Next.js / React)
 
-[![Deployment](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-red-mu.vercel.app/)
-[![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Live Demo](https://img.shields.io/badge/live-ai--red--mu.vercel.app-000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-red-mu.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
-[![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)](https://tanstack.com/query)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 
----
+## Overview
 
-## 🎯 프로젝트 한 줄 요약
+RSS·외부 소스로 수집한 뉴스를 바탕으로 **시그널, 글로벌 지수, 섹터 전략, 뉴스 피드, 관찰 포인트, 인사이트** 등을 한 화면에 모아 보여 줍니다.  
+AI 분석·캐시·스케줄 작업은 API Route와 Redis/Supabase를 통해 동작합니다.
 
-**"매일 아침, AI가 전 세계 경제 뉴스를 분석해 3분 안에 읽을 수 있는 시장 브리핑을 자동으로 만들어주는 서비스"**
+> 본 서비스는 투자 권유가 아닌 **정보 정리·참고용**입니다.
 
-- 📰 **실시간 뉴스 수집**: Bloomberg·Reuters·BBC·Google News 등 **다중 RSS**로 글로벌 뉴스를 모은 뒤, **섹터별 키워드**(경제·정치·규제·원자재 등 **16개 축**)로 필터링
-- 🤖 **AI 분석**: Gemini로 뉴스 요약, 섹터 분석, 시장 영향도 평가
-- 📊 **시각화**: 지수 차트, 섹터 전략, 관찰 포인트를 한눈에
-- 🔔 **푸시 알림**: **GitHub Actions**로 하루 **6회** (`.github/workflows/push-notifications.yml` — 파이프라인보다 약 30~40분 늦게 실행해 갱신 반영 후 알림)
+## Data & Sources
 
----
+| 유형 | 내용 |
+|------|------|
+| **뉴스 수집** | 다중 **RSS** (Bloomberg·Reuters·FT·WSJ·CNBC·BBC·MarketWatch·NPR·Economist·Politico·AP 등 + Google News 기반 소스 검색) |
+| **피드 메타** | 각 피드에 `finance` / `markets` / `business` / `world` / `politics` / `economy` 등 **category** 라벨 |
+| **시장 지표** | **Yahoo Finance** — 코스피·나스닥·닛케이·유로 Stoxx 50 등 **지역별 대표 지수** 실시간에 가까운 시세 |
+| **저장소** | 수집 원문·가공 데이터는 **Supabase**, 대시보드·캐시는 **Redis** |
 
-## 💡 문제 정의 & 해결 방법
+크론/내부 API로 주기적으로 수집·브리핑 파이프라인이 돌아가며, 프론트는 `/api/main/*` 등으로 캐시된 결과를 조회합니다.
 
-### 문제 상황
+## Categories & Thematic Sectors
 
-**투자자들이 겪는 3가지 문제:**
+뉴스는 **16개 테마 섹터**로 나뉘어 검색·필터링됩니다. 각 섹터는 영문 키워드(연산자 `OR`)로 정의되어 있어, 예를 들어 *AI/반도체*는 `Nvidia`, `TSMC`, `HBM` 등이 한 축으로 묶입니다.
 
-1. **정보 과부하**: 하루에 수백 개의 경제 뉴스가 쏟아지는데, 무엇이 중요한지 판단하기 어려움
-2. **시간 부족**: 모든 뉴스를 읽고 분석하는 데 시간이 너무 많이 걸림
-3. **주관적 편향**: 사람이 뉴스를 선별하면 본인의 관점에 치우칠 수 있음
+| ID | 한글 이름 |
+|----|-----------|
+| `macro` | 거시경제 |
+| `ai_semis` | AI/반도체 |
+| `bigtech` | 빅테크 |
+| `energy_infra` | 에너지/전력 |
+| `robotics` | 로보틱스 |
+| `bio_health` | 바이오/헬스 |
+| `finance_crypto` | 금융/가상자산 |
+| `geopolitics` | 지정학/무역 |
+| `space_defense` | 우주/방산 |
+| `software_cyber` | SW/보안 |
+| `real_estate` | 부동산 |
+| `luxury_consumer` | 소비재/사치품 |
+| `politics_policy` | 정치/입법 |
+| `regulatory` | 규제/반독점 |
+| `commodities` | 원자재/상품 |
+| `climate_esg` | 기후/ESG |
 
-### 해결 방법
+**분석 키워드**는 위 섹터 **이름**을 베이스로 두고(`constants/sectors.ts` ↔ `analysis.ts`), 여기에 금리·인플레·지정학·데이터센터 등 **세부 축**을 더해 브리핑 프롬프트에 넣습니다. → **수집 축과 AI 요약 축이 같은 언어로 맞춰져** 일관된 인사이트를 내기 쉽게 설계했습니다.
 
-**AI 기반 자동화 시스템 구축:**
+## Features
 
-1. **자동 뉴스 수집 & 필터링**: 경제/금융 키워드 기반으로 관련 뉴스만 선별
-2. **AI 요약 & 분석**: 
-   - 뉴스 핵심 내용 요약 (3줄 요약 + 상세 분석)
-   - 섹터별 영향도 분석 (긍정/부정/중립)
-   - 시장 영향도 점수화 (0-100점)
-3. **시각화 대시보드**: 복잡한 데이터를 한눈에 파악 가능한 UI
-4. **자동 업데이트**: **GitHub Actions** 크론으로 **하루 6회** 파이프라인 실행(뉴스 수집 → 섹터 전략 → 브리핑 생성). 상세 시각은 `.github/workflows/cron.yml` 참고
+- **Dashboard** — 섹션별 Suspense·스켈레톤, 섹션 단위 에러 경계
+- **데이터** — TanStack Query, Redis 캐시, Supabase 저장소
+- **뉴스 목록** — 가상 스크롤(`react-virtuoso`)로 대량 리스트 대응
+- **관측·품질** — Sentry, Vercel Analytics / Speed Insights, GitHub Actions(감사·크론 등)
 
-**결과:**
-- 뉴스 읽기 시간: **수십 분 → 3분** (약 90% 단축)
-- 정보 정확도: AI가 객관적 기준으로 분석하여 편향 감소
-- 사용자 만족도: 매일 정기적으로 업데이트되는 신뢰할 수 있는 정보 소스
+## Disclaimer
 
----
+AI 생성 텍스트는 참고용이며, 투자 판단의 근거로 사용할 수 없습니다.
 
-## 이 프로젝트에서 집중한 문제
+## License
 
-- **정보 과부하**: 하루 수백 개의 경제 뉴스 중 무엇이 중요한지 판단하기 어려운 문제
-- **대량 데이터 렌더링**: 수백 개의 뉴스 아이템을 한 번에 렌더링하며 발생한 스크롤 끊김과 초기 로딩 지연
-- **에러 전파**: 한 섹션의 API 실패가 전체 페이지를 멈추게 만드는 취약한 에러 처리
-- **SSR/CSR 불일치**: 서버와 클라이언트 렌더링 결과가 달라 발생한 Hydration 에러
-
----
-
-## 핵심 개선 사항
-
-### 대량 리스트 가상화
-수백 개의 뉴스 아이템을 한 번에 렌더링하던 방식을 뷰포트에 보이는 항목만 DOM에 유지하는 가상화로 전환했습니다. 초기 렌더링 시간을 80% 단축하고 스크롤 성능을 60fps로 유지했습니다. 더미 데이터와 성능 측정 시스템을 구축해 실제 개선 효과를 정량적으로 검증했습니다.
-
-### 섹션 단위 에러 격리
-각 섹션이 독립적으로 API를 호출하도록 설계하고, React Query의 에러 바운더리를 활용해 한 섹션의 실패가 다른 섹션에 영향을 주지 않도록 했습니다. 사용자는 실패한 섹션만 재시도할 수 있고, 나머지 콘텐츠는 정상적으로 볼 수 있습니다.
-
-### Hydration 불일치 해결
-서버와 클라이언트에서 다른 초기 상태로 인한 Hydration 에러를 해결했습니다. 클라이언트 전용 상태는 `useIsMounted` 훅으로 일관되게 처리하고, 플레이스홀더를 실제 컴포넌트와 동일한 DOM 구조로 맞춰 서버 렌더링과 클라이언트 렌더링의 불일치를 제거했습니다.
-
----
-
-## 프론트엔드
-
-### 아키텍처
-
-**Next.js App Router 기반의 서버/클라이언트 컴포넌트 분리**
-- 서버 컴포넌트: 메타데이터 생성, 초기 데이터 페칭
-- 클라이언트 컴포넌트: 인터랙션, 상태 관리, 애니메이션
-
-**상태 관리 전략**
-- React Query: 서버 상태 (API 응답 캐싱, 자동 리프레시, 에러 핸들링)
-- Zustand: 클라이언트 상태 (검색 히스토리, 토스트, PWA 설치 상태)
-
-### 주요 구현
-
-#### 1. 가상화 리스트 성능 최적화
-
-**문제**: 뉴스 아카이브에서 1,000개 이상의 아이템을 렌더링할 때 초기 로딩이 2.5초 이상 소요되고 스크롤이 끊기는 현상 발생
-
-**해결**: `react-virtuoso`를 활용한 가상화 구현
-
-```typescript
-<Virtuoso
-  useWindowScroll
-  data={newsItems}
-  endReached={fetchNextPage}
-  itemContent={(index, item) => renderNewsCard(item, index)}
-/>
-```
-
-**성능 측정 시스템 구축**
-- `lib/utils/dummyNews.ts`: 1,000개의 더미 뉴스 데이터 생성
-- `hooks/usePerformanceMetrics.ts`: 초기 렌더링 시간 및 DOM 노드 수 측정
-- URL 파라미터 기반 테스트 모드 (`?dummy=true&virtualized=true/false`)
-
-**측정 결과**
-
-| 지표 | 가상화 미적용 | 가상화 적용 | 개선율 |
-|------|--------------|------------|--------|
-| 초기 렌더링 시간 | ~449.7ms | ~6.5ms | **98% 감소** |
-| DOM 노드 수 | ~30,086개 | ~7개 | **99.9% 감소** |
-
-**전후 비교 스크린샷**
-
-> 📸 **가상화 적용 전**: 모든 아이템이 한 번에 렌더링되어 초기 로딩 지연 및 스크롤 끊김
-> 
-> ![가상화 적용 전](public/images/virtualization-before.png)
-> 
-> 📸 **가상화 적용 후**: 뷰포트에 보이는 항목만 렌더링되어 부드러운 스크롤 및 빠른 초기 로딩
-> 
-> ![가상화 적용 후](public/images/virtualization-after.png)
-
-#### 2. 섹션 단위 에러 격리
-
-**구현**: `SectionWrapper` 컴포넌트로 각 섹션을 독립적인 에러 바운더리로 감싸기
-
-```typescript
-<SectionErrorBoundary sectionName={sectionName}>
-  <Suspense fallback={skeleton}>{children}</Suspense>
-</SectionErrorBoundary>
-```
-
-**효과**: 한 섹션의 API 실패가 다른 섹션에 영향을 주지 않음. 사용자는 실패한 섹션만 재시도 가능
-
-#### 3. Hydration 불일치 해결
-
-**문제**: `ThemeToggle`, `usePWAInstall` 등 클라이언트 전용 상태가 서버와 클라이언트에서 다른 초기값을 가져 Hydration 에러 발생
-
-**해결**:
-- `useIsMounted` 훅으로 클라이언트 마운트 후에만 실제 상태 표시
-- 플레이스홀더를 실제 컴포넌트와 동일한 DOM 구조로 구성
-- `suppressHydrationWarning`을 최소한으로만 사용
-
-#### 4. PWA Cache API를 활용한 오프라인 지원
-
-**문제**: 모바일 환경에서 네트워크가 불안정하거나 오프라인일 때 조회한 기사를 다시 볼 수 없는 문제
-
-**해결**: Service Worker의 Cache API를 활용해 API 응답을 로컬에 저장
-
-```typescript
-// public/sw.js
-// Stale-While-Revalidate 전략으로 API 응답 캐싱
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(RUNTIME_CACHE);
-  const cachedResponse = await caches.match(request);
-  
-  // 백그라운드에서 최신 데이터 가져오기
-  const fetchPromise = fetch(request).then((networkResponse) => {
-    if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
-    }
-    return networkResponse;
-  });
-  
-  // 캐시된 데이터가 있으면 즉시 반환, 없으면 네트워크 대기
-  return cachedResponse || fetchPromise;
-}
-```
-
-**캐싱 전략**:
-- `/api/main/*` 경로의 API 응답을 자동 캐싱
-- Stale-While-Revalidate: 캐시된 데이터를 즉시 반환하고 백그라운드에서 최신 데이터 갱신
-- 네트워크 실패 시 캐시된 데이터로 폴백하여 오프라인에서도 콘텐츠 조회 가능
-
-**효과**: 모바일 사용자가 한 번 조회한 기사는 오프라인 환경에서도 재조회 가능. 네트워크 불안정 상황에서도 부드러운 사용자 경험 제공
-
-#### 5. React Query 캐시 키 파라미터 분리
-
-**문제**: 뉴스 리스트 페이지에서 필터(sort, period, category)를 변경할 때 이전 필터의 캐시가 덮어씌워지거나, 다른 화면에서 같은 쿼리 키를 사용해 상태 충돌 발생
-
-**해결**: 필터 파라미터를 쿼리 키에 포함시켜 필터 조합별로 독립적인 캐시 유지
-
-```typescript
-// hooks/useMain.ts
-export const useInfiniteNewsList = ({
-  enabled = true,
-  ...filters  // sort, period, category
-}: UseInfiniteNewsListParams) =>
-  useInfiniteQuery({
-    queryKey: ['news-list', filters],  // 필터 객체 전체를 키에 포함
-    queryFn: ({ pageParam = 1 }) =>
-      fetchNewsList({
-        ...filters,
-        page: pageParam as number,
-        limit: 10,
-      }),
-    // ...
-  });
-```
-
-**효과**:
-- `['news-list', { sort: 'latest', period: 'all', category: 'all' }]`와 `['news-list', { sort: 'importance', period: 'week', category: 'tech' }]`는 별도의 캐시 엔트리로 관리
-- 필터 변경 시 이전 필터의 캐시는 유지되어 뒤로가기 시 즉시 표시
-- 다른 화면에서 같은 쿼리를 사용해도 파라미터가 다르면 충돌 없음
-
----
-
-## 백엔드
-
-### 아키텍처
-
-**Next.js API Routes 기반 풀스택 구조**
-- `/api/main/*`: 프론트엔드용 데이터 API (Redis 캐시 활용)
-- `/api/internal/*`: 크론 작업용 내부 API (인증 필요)
-- `/api/news/*`: 뉴스 관련 API
-
-**데이터 흐름**
-1. 크론이 **RSS 수집** (`/api/internal/collect-news`) — `lib/external/rssFeeds.ts`에 정의된 피드에서 수집 후 `THE_NEWS_SECTORS`(16개) 키워드로 섹터별 필터·저장
-2. **섹터 전략** (`/api/internal/generate-strategy`) — 최근 수집 뉴스 기반 Gemini 분석 → Redis `strategy:latest`
-3. **브리핑 생성** (`/api/internal/generate-briefing`) — 다단계 프롬프트로 요약·임팩트 등 생성 → Redis 시간대별 키
-4. (선택) `run-pipeline`이 위 단계를 순차 호출
-5. 프론트엔드가 `/api/main/*`로 캐시된 데이터 조회
-
-### 주요 구현
-
-#### 1. AI 분석 파이프라인
-
-**AI 모델**
-- Gemini: 뉴스 요약, 섹터 분석, 시장 영향도, 관찰 포인트, 인사이트 등 전체 분석
-
-**비용·규모**
-- 새 뉴스가 없으면 AI 단계 스킵(파이프라인에서 처리)
-- 브리핑·전략 단계는 최근 수집 구간의 뉴스만 사용(상한: `generate-briefing` 등 라우트의 `limit` 참고)
-- 뉴스 프롬프트용 텍스트 압축(제목·요약 길이 제한)
-
-#### 2. Redis 캐싱 전략
-
-**시간대별 캐시 키 관리**
-- `dashboard:morning`, `dashboard:afternoon`, `dashboard:evening`
-- 현재 시간대 데이터 우선, 없으면 `dashboard:latest` fallback
-
-**캐시 워밍업**
-- 브리핑 생성 후 관련 API 엔드포인트를 미리 호출해 캐시 적재
-- 사용자 요청 시 즉시 응답 가능
-
-#### 3. 스케줄 (GitHub Actions)
-
-| 워크플로 | 역할 | 비고 |
-|----------|------|------|
-| `cron.yml` | `POST`로 `run-pipeline`(또는 `CRON_ENDPOINT`에 설정한 URL) 호출 | 하루 **6회** (KST 기준 대략 4시간 간격, UTC는 파일 주석 참고) |
-| `push-notifications.yml` | `/api/internal/send-push-notifications` 호출 | 하루 **6회**, 파이프라인과 시차 두고 실행 |
-
-Vercel Cron만 사용하는 배포라면, 위와 **동일 빈도**로 엔드포인트를 맞춰야 합니다.
-
-#### 4. 에러 처리 및 모니터링
-
-**Sentry 통합**
-- 모든 API 에러를 자동 수집
-- 에러 컨텍스트 (URL, 상태 코드, 요청 옵션) 함께 기록
-- 프로덕션 에러 추적률 100%
-
-**Fallback 메커니즘**
-- AI 모델 실패 시 다른 모델로 자동 전환
-- 부분 JSON 파싱으로 중간에 끊긴 응답도 최대한 활용
-
+Private / All rights reserved — 팀·저작자 정책에 따릅니다.
