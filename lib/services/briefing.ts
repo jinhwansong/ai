@@ -11,6 +11,7 @@ import {
   ObservationResponse,
   InsightResponse,
 } from '@/types/services';
+import { macroStanceFromChangePercent } from '@/constants/macroStatus';
 import { MarketIndexData } from '@/lib/external/yahooFinance';
 
 export type AnalysisTask = 'sector' | 'news' | 'impact' | 'observation' | 'insight';
@@ -88,14 +89,7 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
           maximumFractionDigits: 2,
         }),
         change: `${idx.changePercent >= 0 ? '+' : ''}${idx.changePercent.toFixed(2)}%`,
-        status:
-          idx.changePercent > 0.5
-            ? 'positive'
-            : idx.changePercent < -0.5
-            ? 'negative'
-            : idx.changePercent < 0
-            ? 'cautious'
-            : 'neutral',
+        status: macroStanceFromChangePercent(idx.changePercent),
         aiAnalysis:
           idx.changePercent > 0
             ? '상승 흐름을 보이고 있습니다.'

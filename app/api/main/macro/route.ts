@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { fetchGlobalIndices, MarketIndexData } from '@/lib/external/yahooFinance';
+import { coerceMarketStance, macroStanceFromChangePercent } from '@/constants/macroStatus';
 import { MacroItem } from '@/types/services';
 import {
   REDIS_KEY_DASHBOARD_LATEST,
@@ -46,7 +47,9 @@ export async function GET() {
           maximumFractionDigits: 2,
         }),
         change: `${live.change >= 0 ? '+' : ''}${live.changePercent.toFixed(2)}%`,
-        status: live.change >= 0 ? 'positive' : 'negative',
+        status:
+          coerceMarketStance(prevAnalysis?.status) ??
+          macroStanceFromChangePercent(live.changePercent),
         aiAnalysis: prevAnalysis?.aiAnalysis || '최근 시장 데이터를 분석 중입니다.',
       };
     });

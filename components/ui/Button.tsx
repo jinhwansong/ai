@@ -1,5 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils/cn';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onBoarding' | 'dark' | 'link';
 
@@ -45,7 +45,7 @@ export default function Button({
   return (
     <button
       {...props}
-      className={clsx(
+      className={cn(
         base,
         sizes[size],
         variants[variant],

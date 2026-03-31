@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { Info } from 'lucide-react';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils/cn';
 
 type TooltipProps = {
   content: ReactNode;
@@ -24,7 +24,7 @@ export default function Tooltip({
 
   return (
     <div
-      className={clsx('relative inline-flex', className)}
+      className={cn('relative inline-flex', className)}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       onFocus={() => setOpen(true)}
@@ -37,14 +37,14 @@ export default function Tooltip({
 
       {open && (
         <div
-          className={clsx(
+          className={cn(
             'absolute z-50 w-64 rounded-xl border border-(--border) bg-(--background) p-3 text-[11px] leading-relaxed text-(--text-body) shadow-xl',
             position
           )}
         >
           {content}
           <div
-            className={clsx(
+            className={cn(
               'absolute h-2 w-2 rotate-45 bg-(--background) border border-(--border)',
               side === 'top'
                 ? 'top-full left-1/2 -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0'

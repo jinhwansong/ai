@@ -5,12 +5,18 @@ import { Globe } from 'lucide-react';
 import { MacroStatusGlyph } from '@/components/ui/MacroStatusGlyph';
 import { SectionIconBadge } from '@/components/ui/SectionIconBadge';
 import SectionHeader from '@/components/ui/SectionHeader';
+import GlobalMacroSkeleton from '@/components/loading/GlobalMacroSkeleton';
 import { getMacroStatusMeta } from '@/constants/macroStatus';
 import { useMainMacro } from '@/hooks/query';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 export default function GlobalMacro() {
   const { data } = useMainMacro();
   const items = data || [];
+  const mounted = useIsMounted();
+  if (!mounted) {
+    return <GlobalMacroSkeleton />;
+  }
 
   return (
     <section className="space-y-6">
@@ -47,18 +53,14 @@ export default function GlobalMacro() {
               </div>
 
               <div className="mb-2">
-                <h4 className="text-sm font-bold text-(--text-title) mb-1">
-                  {item.indexName}
-                </h4>
+                <h4 className="text-sm font-bold text-(--text-title) mb-1">{item.indexName}</h4>
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-black tracking-tight text-(--text-title)">
                     {item.value}
                   </span>
                   <span
                     className={`text-xs font-bold ${
-                      item.change.startsWith('+')
-                        ? 'text-rose-500'
-                        : 'text-blue-500'
+                      item.change.startsWith('+') ? 'text-rose-500' : 'text-blue-500'
                     }`}
                   >
                     {item.change}
@@ -77,4 +79,3 @@ export default function GlobalMacro() {
     </section>
   );
 }
-

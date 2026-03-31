@@ -3,7 +3,7 @@ import type { KnipConfig } from 'knip';
 const config: KnipConfig = {
   entry: ['next.config.ts', 'app/**/*.{ts,tsx}', 'sentry.*.config.ts'],
   project: ['**/*.{ts,tsx}'],
-  ignore: ['drizzle/**', 'e2e/**', 'playwright-report/**', 'test-results/**'],
+  ignore: ['e2e/**', 'playwright-report/**', 'test-results/**'],
 };
 
 export default config;

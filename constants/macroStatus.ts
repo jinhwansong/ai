@@ -1,5 +1,25 @@
 import type { MarketStance } from '@/types/main';
 
+const STANCES: readonly MarketStance[] = [
+  'positive',
+  'negative',
+  'neutral',
+  'cautious',
+];
+
+/** 파이프라인·API 공통: 등락률(%) → 스탠스 (briefing `macro`와 동일 규칙) */
+export function macroStanceFromChangePercent(changePercent: number): MarketStance {
+  if (changePercent > 0.5) return 'positive';
+  if (changePercent < -0.5) return 'negative';
+  if (changePercent < 0) return 'cautious';
+  return 'neutral';
+}
+
+export function coerceMarketStance(value: string | undefined): MarketStance | null {
+  if (!value) return null;
+  return STANCES.includes(value as MarketStance) ? (value as MarketStance) : null;
+}
+
 /** 글로벌 매크로 카드 — 상태 뱃지 라벨·색 (GlobalMacro 등) */
 export const MACRO_STATUS_META: Record<
   MarketStance,

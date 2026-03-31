@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils/cn';
 
 type SkeletonProps = {
   className?: string;
@@ -18,7 +18,7 @@ export default function Skeleton({
 }: SkeletonProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'relative overflow-hidden bg-slate-200 dark:bg-slate-900/90',
         circle ? 'rounded-full' : 'rounded-2xl',
         className,

@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils/cn';
 
 export type SectionIconTone = 'indigo' | 'rose' | 'emerald' | 'amber';
 
@@ -20,7 +20,7 @@ type SectionIconBadgeProps = {
 export function SectionIconBadge({ icon: Icon, tone, className }: SectionIconBadgeProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'flex h-8 w-8 items-center justify-center rounded-lg',
         TONE_CLASS[tone],
         className,
