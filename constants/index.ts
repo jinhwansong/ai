@@ -5,3 +5,4 @@ export {
   EXTRA_ANALYSIS_KEYWORDS,
   ANALYSIS_KEYWORDS,
 } from './analysis';
+export { MACRO_STATUS_META, getMacroStatusMeta } from './macroStatus';

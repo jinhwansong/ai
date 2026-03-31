@@ -1,32 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Globe, AlertCircle, CheckCircle2, HelpCircle, XCircle } from 'lucide-react';
+import { Globe } from 'lucide-react';
+import { MacroStatusGlyph } from '@/components/common/MacroStatusGlyph';
 import SectionHeader from '@/components/common/SectionHeader';
+import { getMacroStatusMeta } from '@/constants/macroStatus';
 import { useMainMacro } from '@/hooks/query';
-
-const statusConfig = {
-  positive: {
-    label: '호재',
-    color: 'bg-(--bg-rose) text-(--text-rose)',
-    icon: CheckCircle2,
-  },
-  neutral: {
-    label: '관망',
-    color: 'bg-(--secondary-bg) text-(--text-muted)',
-    icon: HelpCircle,
-  },
-  cautious: {
-    label: '유의',
-    color: 'bg-(--bg-amber) text-(--text-amber)',
-    icon: AlertCircle,
-  },
-  negative: {
-    label: '악재',
-    color: 'bg-(--bg-blue) text-(--text-blue)',
-    icon: XCircle,
-  },
-};
 
 export default function GlobalMacro() {
   const { data } = useMainMacro();
@@ -48,13 +27,12 @@ export default function GlobalMacro() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item, index) => {
-          const config = statusConfig[item.status];
-          const StatusIcon = config.icon;
+          const meta = getMacroStatusMeta(item.status);
 
           return (
             <motion.article
               key={item.indexName}
-              initial={{ opacity: 0, y: 10 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               className="kakao-card group flex flex-col p-5 hover:shadow-lg transition-shadow border "
@@ -64,10 +42,10 @@ export default function GlobalMacro() {
                   {item.region}
                 </span>
                 <div
-                  className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black ${config.color}`}
+                  className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black ${meta.color}`}
                 >
-                  <StatusIcon size={10} strokeWidth={3} />
-                  <span>{config.label}</span>
+                  <MacroStatusGlyph status={item.status} />
+                  <span>{meta.label}</span>
                 </div>
               </div>
 

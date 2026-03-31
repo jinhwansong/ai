@@ -83,7 +83,10 @@ export async function performAIAnalysis(inquiry: BriefingInquiry) {
       macro: marketData.globalIndices.map((idx) => ({
         region: idx.region,
         indexName: idx.name,
-        value: idx.price.toLocaleString(),
+        value: idx.price.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
         change: `${idx.changePercent >= 0 ? '+' : ''}${idx.changePercent.toFixed(2)}%`,
         status:
           idx.changePercent > 0.5

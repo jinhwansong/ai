@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       .select('*')
       .or(`name.ilike.%${query}%,symbol.ilike.%${query}%,tags.cs.{${query}},reason.ilike.%${query}%`)
       .order('created_at', { ascending: false })
-      .limit(10);
+      .limit(30);
 
     if (obsError) throw obsError;
 

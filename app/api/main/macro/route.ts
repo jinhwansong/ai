@@ -35,7 +35,10 @@ export async function GET() {
       return {
         region: live.region,
         indexName: live.name,
-        value: live.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        value: live.price.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
         change: `${live.change >= 0 ? '+' : ''}${live.changePercent.toFixed(2)}%`,
         status: live.change >= 0 ? 'positive' : 'negative',
         aiAnalysis: prevAnalysis?.aiAnalysis || '최근 시장 데이터를 분석 중입니다.',
