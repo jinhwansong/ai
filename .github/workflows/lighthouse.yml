@@ -9,6 +9,18 @@ on:
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
+    # build + next start(lhci) 모두 동일 env 필요 (instrumentation의 validateProductionEnv, Redis 등)
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,17 +35,6 @@ jobs:
 
       - name: Build app
         run: npm run build
-        env:
-          # Lighthouse CI might need these to build successfully if they are used in getStaticProps/getServerSideProps
-          # or if Next.js checks for them during build.
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-         
 
       - name: Run Lighthouse CI
         run: |
