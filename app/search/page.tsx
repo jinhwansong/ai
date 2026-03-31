@@ -11,7 +11,7 @@ import Modal from '@/components/ui/Modal';
 import ObservationDetail from '@/components/home/ObservationDetail';
 import { ObservationItem } from '@/types/main';
 import SearchSkeleton from '@/components/loading/SearchSkeleton';
-import { formatPublishedAt } from '@/lib/utils/times';
+import { formatPublishedAt } from '@/lib/utils/timeSlot';
 
 function SearchResults() {
   const searchParams = useSearchParams();

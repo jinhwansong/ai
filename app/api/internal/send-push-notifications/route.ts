@@ -3,6 +3,7 @@ import { apiError } from '@/lib/errors/apiResponse';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
 import { sendNotificationToAll } from '@/lib/push/webPush';
 import { redis } from '@/lib/core/redis';
+import { REDIS_KEY_DASHBOARD_LATEST } from '@/lib/constants/redisKeys';
 
 /**
  * 웹 푸시 알림 전송 API
@@ -20,7 +21,7 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     }
 
     // Redis에서 최신 브리핑 데이터 가져오기 (없으면 기본 메시지)
-    const latestBriefing = await redis.get('dashboard:latest');
+    const latestBriefing = await redis.get(REDIS_KEY_DASHBOARD_LATEST);
     let notificationPayload: {
       title: string;
       body: string;

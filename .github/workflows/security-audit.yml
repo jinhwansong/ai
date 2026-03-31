@@ -1,0 +1,33 @@
+name: Security audit
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 매주 월요일 00:00 UTC
+  push:
+    branches: [main, master]
+    paths:
+      - package.json
+      - package-lock.json
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # high는 transitive로 자주 남음 → critical만 실패. high 점검은 로컬에서 npm run audit:strict
+      - name: npm audit (critical and above)
+        run: npm audit --audit-level=critical

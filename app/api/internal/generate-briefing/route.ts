@@ -7,6 +7,13 @@ import { ObservationItem, SectorItem } from '@/types/services';
 import { ANALYSIS_KEYWORDS } from '@/constants';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
+import {
+  REDIS_KEY_DASHBOARD_LATEST,
+  redisKeyBriefingProgress,
+  REDIS_TTL_BRIEFING_ERROR_SEC,
+  REDIS_TTL_BRIEFING_PROGRESS_SEC,
+  REDIS_TTL_DASHBOARD_SEC,
+} from '@/lib/constants/redisKeys';
 import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
 import { reportError } from '@/lib/core/sentry';
 
@@ -75,12 +82,17 @@ export const GET = verifyCronAuth(async () => {
     const marketData = { globalIndices };
 
     // 분석 진행 상태를 Redis에 저장 (중간 결과 추적 및 타임아웃 복구용)
-    progressKey = `briefing:progress:${Date.now()}`;
-    await redis.set(progressKey, JSON.stringify({
-      status: 'started',
-      timestamp: new Date().toISOString(),
-      newsCount: rawNews?.length || 0,
-    }), 'EX', 3600); // 1시간 유지
+    progressKey = redisKeyBriefingProgress(Date.now());
+    await redis.set(
+      progressKey,
+      JSON.stringify({
+        status: 'started',
+        timestamp: new Date().toISOString(),
+        newsCount: rawNews?.length || 0,
+      }),
+      'EX',
+      REDIS_TTL_BRIEFING_PROGRESS_SEC
+    );
 
     // 뉴스 데이터 압축 (비용 절감)
     const compactNews = compactNewsForPrompt(rawNews as Array<Record<string, unknown>>);
@@ -100,7 +112,7 @@ export const GET = verifyCronAuth(async () => {
         sections: ['sector', 'news', 'impact', 'observation', 'insight'],
       }),
       'EX',
-      3600
+      REDIS_TTL_BRIEFING_PROGRESS_SEC
     );
 
     console.log('✅ [Generate Briefing] Analysis completed successfully');
@@ -147,8 +159,18 @@ export const GET = verifyCronAuth(async () => {
     const timeSlot = detectTimeSlotFromCron();
     const timeSlotKey = getTimeSlotRedisKey(timeSlot);
     
-    await redis.set(timeSlotKey, JSON.stringify(finalData.main), 'EX', 86400);
-    await redis.set('dashboard:latest', JSON.stringify(finalData.main), 'EX', 86400);
+      await redis.set(
+        timeSlotKey,
+        JSON.stringify(finalData.main),
+        'EX',
+        REDIS_TTL_DASHBOARD_SEC
+      );
+      await redis.set(
+        REDIS_KEY_DASHBOARD_LATEST,
+        JSON.stringify(finalData.main),
+        'EX',
+        REDIS_TTL_DASHBOARD_SEC
+      );
     
     // 5. 나머지 정보 Supabase 개별 테이블 저장
     const sectors = finalData.main.sectorSummary || [];
@@ -209,7 +231,7 @@ export const GET = verifyCronAuth(async () => {
           finishReason,
           task,
         };
-        await redis.set(progressKey, JSON.stringify(errorInfo), 'EX', 7200); // 실패 정보는 2시간 유지
+        await redis.set(progressKey, JSON.stringify(errorInfo), 'EX', REDIS_TTL_BRIEFING_ERROR_SEC);
       } catch (redisError) {
         console.error('Failed to save error state to Redis:', redisError);
       }

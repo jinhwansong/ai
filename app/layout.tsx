@@ -8,6 +8,9 @@ import NetworkBanner from '@/components/ui/NetworkBanner';
 import { SentryWebVitals } from '@/components/ui/SentryWebVitals';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { featureFlags } from '@/lib/featureFlags';
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
@@ -63,7 +66,12 @@ export default function RootLayout({
 }>) {
   
   return (
-    <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
+    <html
+      lang="ko"
+      suppressHydrationWarning
+      className={pretendard.variable}
+      data-feature-experimental-ui={featureFlags.experimentalUi ? 'true' : 'false'}
+    >
       <body className={`${pretendard.className} bg-(--background) text-(--foreground)`}>
         <Providers>
           <MicrosoftClarity />
@@ -73,6 +81,8 @@ export default function RootLayout({
           {children}
           <GlobalToast />
           <Footer />
+          <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>

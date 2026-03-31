@@ -4,7 +4,21 @@ import { defaultRetryPolicy } from './retry';
 
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-const baseUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? '';
+const DEFAULT_SITE_FALLBACK = 'https://ai-red-mu.vercel.app';
+
+function getBaseUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, '');
+  if (explicit) return explicit;
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://127.0.0.1:3000';
+  }
+  return DEFAULT_SITE_FALLBACK;
+}
+
+const baseUrl = () => getBaseUrl();
 const TIMEOUT_MS = 15_000;
 
 /** 쿼리 파라미터 객체를 URL search string으로 변환 (undefined/null 제외) */

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Tags from '@/components/ui/Tags';
 import { MainSignal } from '@/types/main';
-import { getDailyBriefingMeta } from '@/lib/utils/times';
+import { getDailyBriefingMeta } from '@/lib/utils/timeSlot';
 import { useMainSignal } from '@/hooks/query';
 
 export default function SignalHighlight() {

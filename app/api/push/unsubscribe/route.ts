@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { pushUnsubscribeBodySchema } from '@/lib/validation/schemas';
+import { jsonValidationError } from '@/lib/validation/zodRoute';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as { endpoint: string };
-
-    if (!body.endpoint) {
-      return NextResponse.json(
-        { error: 'endpoint is required' },
-        { status: 400 }
-      );
+    const parsed = pushUnsubscribeBodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return jsonValidationError(parsed.error);
     }
+    const body = parsed.data;
 
     const { error } = await supabase
       .from('push_subscriptions')

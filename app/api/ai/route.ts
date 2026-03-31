@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { performAIAnalysis, BriefingInquiry } from '@/lib/services/briefing';
 import { supabase } from '@/lib/supabase';
+import { briefingInquiryBodySchema } from '@/lib/validation/schemas';
+import { jsonValidationError } from '@/lib/validation/zodRoute';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const body: BriefingInquiry = await req.json();
+    const parsed = briefingInquiryBodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return jsonValidationError(parsed.error);
+    }
+    const body = parsed.data as BriefingInquiry;
 
     // 비어있다면, 백엔드 DB에서 최신 뉴스를 직접 가져옴
     if (!body.newsList || body.newsList.length === 0) {

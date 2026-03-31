@@ -1,8 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/core/redis';
 import { detectTimeSlotFromCron, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
-
-const REDIS_TTL_SECONDS = 86400; // 24h, generate-briefing과 동일
+import {
+  REDIS_KEY_DASHBOARD_LATEST,
+  REDIS_TTL_DASHBOARD_SEC,
+} from '@/lib/constants/redisKeys';
 
 /**
  * briefing_history에서 최신 브리핑을 가져와 Redis에 채움.
@@ -32,8 +34,8 @@ export async function warmCacheFromLatestBriefing(): Promise<boolean> {
     const timeSlotKey = getTimeSlotRedisKey(timeSlot);
     const payload = JSON.stringify(main);
 
-    await redis.set(timeSlotKey, payload, 'EX', REDIS_TTL_SECONDS);
-    await redis.set('dashboard:latest', payload, 'EX', REDIS_TTL_SECONDS);
+    await redis.set(timeSlotKey, payload, 'EX', REDIS_TTL_DASHBOARD_SEC);
+    await redis.set(REDIS_KEY_DASHBOARD_LATEST, payload, 'EX', REDIS_TTL_DASHBOARD_SEC);
 
     console.log(`[WarmCache] Redis warmed with latest briefing (slot: ${timeSlot}).`);
     return true;

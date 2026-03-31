@@ -13,7 +13,7 @@ import {
   Search,
 } from 'lucide-react';
 import Tags from '@/components/ui/Tags';
-import { getDailyBriefingMeta } from '@/lib/utils/times';
+import { getDailyBriefingMeta } from '@/lib/utils/timeSlot';
 import AnalysisSkeleton from '@/components/loading/AnalysisSkeleton';
 import { useSuspenseSignalDetail } from '@/hooks/query';
 import SectionWrapper from '@/components/boundaries/SectionWrapper';

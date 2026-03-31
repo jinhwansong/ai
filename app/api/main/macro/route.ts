@@ -3,16 +3,17 @@ import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { fetchGlobalIndices, MarketIndexData } from '@/lib/external/yahooFinance';
 import { MacroItem } from '@/types/services';
-
-// 5분 캐시 (300초) - Yahoo Finance API 호출 최소화
-const INDICES_CACHE_TTL = 300;
-const INDICES_CACHE_KEY = 'market:indices:live';
+import {
+  REDIS_KEY_DASHBOARD_LATEST,
+  REDIS_KEY_MARKET_INDICES_LIVE,
+  REDIS_TTL_MARKET_INDICES_SEC,
+} from '@/lib/constants/redisKeys';
 
 export async function GET() {
   try {
     // 1. Redis에서 캐시된 실시간 지수 데이터 확인
     let liveIndices;
-    const cachedIndices = await redis.get(INDICES_CACHE_KEY);
+    const cachedIndices = await redis.get(REDIS_KEY_MARKET_INDICES_LIVE);
     
     if (cachedIndices) {
       // 캐시가 있으면 사용 (네트워크 절약)
@@ -20,11 +21,16 @@ export async function GET() {
     } else {
       // 캐시가 없으면 Yahoo Finance에서 가져와서 캐시에 저장
       liveIndices = await fetchGlobalIndices();
-      await redis.set(INDICES_CACHE_KEY, JSON.stringify(liveIndices), 'EX', INDICES_CACHE_TTL);
+      await redis.set(
+        REDIS_KEY_MARKET_INDICES_LIVE,
+        JSON.stringify(liveIndices),
+        'EX',
+        REDIS_TTL_MARKET_INDICES_SEC
+      );
     }
 
     // 2. Redis에서 가장 최근에 분석된 AI 코멘트 데이터 가져오기
-    const cachedData = await redis.get('dashboard:latest');
+    const cachedData = await redis.get(REDIS_KEY_DASHBOARD_LATEST);
     const dashboard = cachedData ? (typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData) : null;
     const cachedMacro = dashboard?.macro || [];
 

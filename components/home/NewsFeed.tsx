@@ -1,6 +1,6 @@
 'use client';
 
-import { getDailyBriefingMeta } from '@/lib/utils/times';
+import { getDailyBriefingMeta } from '@/lib/utils/timeSlot';
 import { motion } from 'framer-motion';
 import { Clock, Newspaper } from 'lucide-react';
 import { impactLevelDotClass } from '@/components/ui/cardUiStyles';

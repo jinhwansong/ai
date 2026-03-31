@@ -1,9 +1,10 @@
 /**
- * 시간대별 브리핑 관리 유틸리티
- * 한국 시간(KST) 기준으로 3개 시간대 구분
+ * KST(Asia/Seoul) 기준 시간 유틸 — 브리핑 슬롯·Redis 키·UI 메타·상대 시각
  */
 
+import { formatDistanceToNow } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
+import { ko } from 'date-fns/locale';
 
 export type TimeSlot = 'morning' | 'afternoon' | 'evening';
 
@@ -21,11 +22,11 @@ export function getCurrentTimeSlot(): TimeSlot {
 
   if (kstHour >= 8 && kstHour < 12) {
     return 'morning';
-  } else if (kstHour >= 12 && kstHour < 18) {
-    return 'afternoon';
-  } else {
-    return 'evening';
   }
+  if (kstHour >= 12 && kstHour < 18) {
+    return 'afternoon';
+  }
+  return 'evening';
 }
 
 /**
@@ -37,16 +38,12 @@ export function detectTimeSlotFromCron(): TimeSlot {
   return getCurrentTimeSlot();
 }
 
-/**
- * Redis 키 생성 (시간대별)
- */
+/** Redis 키 생성 (시간대별) */
 export function getTimeSlotRedisKey(slot: TimeSlot): string {
   return `dashboard:${slot}`;
 }
 
-/**
- * 시간대 한글 표시
- */
+/** 시간대 한글 표시 */
 export function getTimeSlotLabel(slot: TimeSlot): string {
   switch (slot) {
     case 'morning':
@@ -56,4 +53,28 @@ export function getTimeSlotLabel(slot: TimeSlot): string {
     case 'evening':
       return '저녁 브리핑 (18:00)';
   }
+}
+
+/** 카드·헤더용 “오늘 브리핑” 날짜·다음 발행 시각 라벨 (KST) */
+export function getDailyBriefingMeta() {
+  const now = new Date();
+  const date = formatInTimeZone(now, KOREA_TIMEZONE, 'yyyy-MM-dd');
+  const hour = parseInt(formatInTimeZone(now, KOREA_TIMEZONE, 'HH'), 10);
+  let publishTime: '08:30 AM' | '14:00 PM' | '18:00 PM';
+  if (hour >= 18) {
+    publishTime = '18:00 PM';
+  } else if (hour >= 14) {
+    publishTime = '14:00 PM';
+  } else {
+    publishTime = '08:30 AM';
+  }
+  return { date, publishTime };
+}
+
+/** 목록·검색 등에서 사용하는 상대 시각 (한국어) */
+export function formatPublishedAt(publishedAt: string) {
+  return formatDistanceToNow(new Date(publishedAt), {
+    addSuffix: true,
+    locale: ko,
+  });
 }

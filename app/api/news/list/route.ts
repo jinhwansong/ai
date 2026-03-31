@@ -3,15 +3,15 @@ import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
 import { subDays, subMonths, startOfDay } from 'date-fns';
 import { NEWS_SECTOR_ALIASES } from '@/constants';
+import { parseNewsListSearchParams, queryValidationError } from '@/lib/validation/zodRoute';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  
-  const sort = searchParams.get('sort') || 'latest';
-  const category = searchParams.get('category') || 'all';
-  const period = searchParams.get('period') || 'all'; 
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '20');
+  const parsed = parseNewsListSearchParams(searchParams);
+  if (!parsed.success) {
+    return queryValidationError(parsed.error);
+  }
+  const { sort, category, period, page, limit } = parsed.data;
 
   const offset = (page - 1) * limit;
 

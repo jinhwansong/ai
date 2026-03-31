@@ -5,6 +5,7 @@ import { redis } from '@/lib/core/redis';
 import { apiError } from '@/lib/errors/apiResponse';
 import { ANALYSIS_KEYWORDS } from '@/constants';
 import { verifyCronAuth } from '@/lib/utils/verifyCronAuth';
+import { REDIS_KEY_STRATEGY_LATEST } from '@/lib/constants/redisKeys';
 import { fetchGlobalIndices } from '@/lib/external/yahooFinance';
 import { reportError } from '@/lib/core/sentry';
 import { supabase } from '@/lib/supabase';
@@ -74,7 +75,7 @@ export const GET = verifyCronAuth(async () => {
 
     const sectorRes = await runGeminiJSON<SectorResponse>(prompt);
 
-    await redis.set('strategy:latest', JSON.stringify(sectorRes.sectors));
+    await redis.set(REDIS_KEY_STRATEGY_LATEST, JSON.stringify(sectorRes.sectors));
 
     return NextResponse.json({
       success: true,

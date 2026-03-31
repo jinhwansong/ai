@@ -1,26 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-
-export interface PushSubscriptionPayload {
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-  userAgent?: string;
-  userId?: string;
-}
+import { pushSubscriptionBodySchema } from '@/lib/validation/schemas';
+import { jsonValidationError } from '@/lib/validation/zodRoute';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as PushSubscriptionPayload;
-
-    if (!body.endpoint || !body.keys?.p256dh || !body.keys?.auth) {
-      return NextResponse.json(
-        { error: 'Invalid subscription data. endpoint, keys.p256dh, and keys.auth are required.' },
-        { status: 400 }
-      );
+    const parsed = pushSubscriptionBodySchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return jsonValidationError(parsed.error);
     }
+    const body = parsed.data;
 
     // 중복 체크: endpoint 기준으로 upsert
     const subscriptionData = {

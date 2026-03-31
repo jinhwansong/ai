@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Clock } from 'lucide-react';
 import { impactLevelDotClass } from '@/components/ui/cardUiStyles';
 import Tags from '@/components/ui/Tags';
-import { formatPublishedAt } from '@/lib/utils/times';
+import { formatPublishedAt } from '@/lib/utils/timeSlot';
 import type { NewsItem } from '@/types/main';
 
 interface NewsCardProps {

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/errors/apiResponse';
 import { redis } from '@/lib/core/redis';
 import { getCurrentTimeSlot, getTimeSlotRedisKey } from '@/lib/utils/timeSlot';
+import { REDIS_KEY_DASHBOARD_LATEST } from '@/lib/constants/redisKeys';
 
 export async function GET() {
   try {
@@ -12,7 +13,7 @@ export async function GET() {
     // 시간대별 데이터 우선, 없으면 fallback
     let cachedData = await redis.get(primaryKey);
     if (!cachedData) {
-      cachedData = await redis.get('dashboard:latest');
+      cachedData = await redis.get(REDIS_KEY_DASHBOARD_LATEST);
     }
 
     if (!cachedData) {
