@@ -2,7 +2,7 @@ import { THE_NEWS_SECTORS } from './sectors';
 
 /**
  * 분석 키워드(태그) 체계
- * - 수집 섹터(12개)를 분석의 "기본 축"으로 강제 포함시켜 수집-분석 일관성을 보장합니다.
+ * - 수집 섹터(THE_NEWS_SECTORS)를 분석의 "기본 축"으로 강제 포함시켜 수집-분석 일관성을 보장합니다.
  * - 아래 확장 키워드는 프롬프트 품질을 올리기 위한 "분석용 세분화"로만 사용합니다.
  */
 export const BASE_ANALYSIS_KEYWORDS = THE_NEWS_SECTORS.map((s) => s.name);
@@ -23,6 +23,9 @@ export const EXTRA_ANALYSIS_KEYWORDS = [
   '부동산/REIT',
   '사치품',
   '원자재',
+  '정치/입법',
+  '규제/반독점',
+  '기후/ESG',
 ] as const;
 
 export const ANALYSIS_KEYWORDS = Array.from(

@@ -1,7 +1,6 @@
 /**
- * The News API 수집용 섹터 매핑 (KST 하루 3회, 섹터당 limit=3)
- * - NOTE: 요구사항은 "12개 섹터 (총 36개)"이므로, 아래 12개로 고정합니다.
- * - 언어: en / 정렬: published_at (최신 우선) / 검색어는 중복 사용 가능
+ * RSS 수집용 섹터 매핑 (Cron 빈도·섹터당 상한은 collect-news 참고)
+ * - 언어: en 위주 / 검색어 중복 허용 (필터링용 OR 체인)
  */
 
 function normalizeSearchQuery(query: string): string {
@@ -101,6 +100,34 @@ export const THE_NEWS_SECTORS: Array<{
     name: '소비재/사치품',
     search: normalizeSearchQuery(
       'luxury | luxury goods | LVMH | Hermes | Gucci | Prada | consumer spending'
+    ),
+  },
+  {
+    id: 'politics_policy',
+    name: '정치/입법',
+    search: normalizeSearchQuery(
+      'Congress | Senate | House | White House | election | ballot | Supreme Court | legislation | parliament | policy bill | EU commission'
+    ),
+  },
+  {
+    id: 'regulatory',
+    name: '규제/반독점',
+    search: normalizeSearchQuery(
+      'SEC | FTC | DOJ antitrust | merger approval | CFPB | regulation | compliance fine | slot rule | market manipulation'
+    ),
+  },
+  {
+    id: 'commodities',
+    name: '원자재/상품',
+    search: normalizeSearchQuery(
+      'crude oil | WTI | Brent | OPEC | copper | gold price | silver | iron ore | LNG spot | farming commodity'
+    ),
+  },
+  {
+    id: 'climate_esg',
+    name: '기후/ESG',
+    search: normalizeSearchQuery(
+      'net zero | carbon credit | climate summit | COP | renewable capacity | ESG disclosure | methane rule | sustainability bond'
     ),
   },
 ];

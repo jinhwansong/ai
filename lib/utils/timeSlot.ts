@@ -29,32 +29,11 @@ export function getCurrentTimeSlot(): TimeSlot {
 }
 
 /**
- * Cron 실행 시점의 시간대 감지 (UTC 기반, GitHub Actions/Vercel Cron 등)
- * 현재 repo 스케줄(.github/workflows/cron.yml):
- * - UTC 23:30 → morning (KST 08:30)
- * - UTC 05:00 → afternoon (KST 14:00)
- * - UTC 09:00 → evening (KST 18:00)
+ * Cron·수동 실행 시 Redis에 쓸 시간대 슬롯
+ * - GitHub Actions 스케줄이 하루 여러 번이어도, 실행 시점의 KST 시각으로
+ *   오전/오후/저녁 버킷을 정하면 사용자-facing API(getCurrentTimeSlot)와 일치합니다.
  */
 export function detectTimeSlotFromCron(): TimeSlot {
-  const now = new Date();
-  const utcHour = now.getUTCHours();
-  const utcMinute = now.getUTCMinutes();
-
-  // Cron 실행 시간 기준 (±20분 허용)
-  // - 23:30 (UTC): 23:10 ~ 23:50
-  if (utcHour === 23 && utcMinute >= 10 && utcMinute <= 50) {
-    return 'morning'; // KST 08:30
-  }
-  // - 05:00 (UTC): 04:40 ~ 05:20
-  if ((utcHour === 4 && utcMinute >= 40) || (utcHour === 5 && utcMinute <= 20)) {
-    return 'afternoon'; // KST 14:00
-  }
-  // - 09:00 (UTC): 08:40 ~ 09:20
-  if ((utcHour === 8 && utcMinute >= 40) || (utcHour === 9 && utcMinute <= 20)) {
-    return 'evening'; // KST 18:00
-  }
-
-  // Fallback: 현재 한국 시간 기준으로 판단
   return getCurrentTimeSlot();
 }
 

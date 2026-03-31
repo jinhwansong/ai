@@ -69,6 +69,51 @@ export const RSS_FEED_SOURCES: RSSFeedSource[] = [
     url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html',
     category: 'business',
   },
+  {
+    name: 'BBC Business',
+    url: 'https://feeds.bbci.co.uk/news/business/rss.xml',
+    category: 'business',
+  },
+  {
+    name: 'BBC World',
+    url: 'https://feeds.bbci.co.uk/news/world/rss.xml',
+    category: 'world',
+  },
+  {
+    name: 'AP Top News (Google News)',
+    url: 'https://news.google.com/rss/search?q=site:apnews.com&hl=en-US&gl=US&ceid=US:en',
+    category: 'world',
+  },
+  {
+    name: 'Politico (Google News)',
+    url: 'https://news.google.com/rss/search?q=site:politico.com&hl=en-US&gl=US&ceid=US:en',
+    category: 'politics',
+  },
+  {
+    name: 'The Economist (Google News)',
+    url: 'https://news.google.com/rss/search?q=site:economist.com&hl=en-US&gl=US&ceid=US:en',
+    category: 'economy',
+  },
+  {
+    name: 'Reuters World (Google News)',
+    url: 'https://news.google.com/rss/search?q=site:reuters.com+world&hl=en-US&gl=US&ceid=US:en',
+    category: 'world',
+  },
+  {
+    name: 'Bloomberg Politics (Google News)',
+    url: 'https://news.google.com/rss/search?q=site:bloomberg.com+politics&hl=en-US&gl=US&ceid=US:en',
+    category: 'politics',
+  },
+  {
+    name: 'MarketWatch Top Stories',
+    url: 'https://feeds.marketwatch.com/marketwatch/topstories/',
+    category: 'markets',
+  },
+  {
+    name: 'NPR News',
+    url: 'https://feeds.npr.org/1001/rss.xml',
+    category: 'world',
+  },
 ];
 
 const parser = new Parser({

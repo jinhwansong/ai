@@ -17,10 +17,10 @@
 
 **"매일 아침, AI가 전 세계 경제 뉴스를 분석해 3분 안에 읽을 수 있는 시장 브리핑을 자동으로 만들어주는 서비스"**
 
-- 📰 **실시간 뉴스 수집**: The News API로 글로벌 경제 뉴스 자동 수집
+- 📰 **실시간 뉴스 수집**: Bloomberg·Reuters·BBC·Google News 등 **다중 RSS**로 글로벌 뉴스를 모은 뒤, **섹터별 키워드**(경제·정치·규제·원자재 등 **16개 축**)로 필터링
 - 🤖 **AI 분석**: Gemini로 뉴스 요약, 섹터 분석, 시장 영향도 평가
 - 📊 **시각화**: 지수 차트, 섹터 전략, 관찰 포인트를 한눈에
-- 🔔 **푸시 알림**: 매일 9시, 12시, 18시 브리핑 업데이트 알림
+- 🔔 **푸시 알림**: **GitHub Actions**로 하루 **6회** (`.github/workflows/push-notifications.yml` — 파이프라인보다 약 30~40분 늦게 실행해 갱신 반영 후 알림)
 
 ---
 
@@ -44,7 +44,7 @@
    - 섹터별 영향도 분석 (긍정/부정/중립)
    - 시장 영향도 점수화 (0-100점)
 3. **시각화 대시보드**: 복잡한 데이터를 한눈에 파악 가능한 UI
-4. **자동 업데이트**: 크론 작업으로 매일 3회 자동 브리핑 생성
+4. **자동 업데이트**: **GitHub Actions** 크론으로 **하루 6회** 파이프라인 실행(뉴스 수집 → 섹터 전략 → 브리핑 생성). 상세 시각은 `.github/workflows/cron.yml` 참고
 
 **결과:**
 - 뉴스 읽기 시간: **수십 분 → 3분** (약 90% 단축)
@@ -221,10 +221,11 @@ export const useInfiniteNewsList = ({
 - `/api/news/*`: 뉴스 관련 API
 
 **데이터 흐름**
-1. 크론 작업이 뉴스 수집 (`/api/internal/collect-news`)
-2. AI 분석 수행 (`/api/internal/generate-briefing`)
-3. 결과를 Redis에 캐싱 (시간대별 키 관리)
-4. 프론트엔드가 `/api/main/*`로 캐시된 데이터 조회
+1. 크론이 **RSS 수집** (`/api/internal/collect-news`) — `lib/external/rssFeeds.ts`에 정의된 피드에서 수집 후 `THE_NEWS_SECTORS`(16개) 키워드로 섹터별 필터·저장
+2. **섹터 전략** (`/api/internal/generate-strategy`) — 최근 수집 뉴스 기반 Gemini 분석 → Redis `strategy:latest`
+3. **브리핑 생성** (`/api/internal/generate-briefing`) — 다단계 프롬프트로 요약·임팩트 등 생성 → Redis 시간대별 키
+4. (선택) `run-pipeline`이 위 단계를 순차 호출
+5. 프론트엔드가 `/api/main/*`로 캐시된 데이터 조회
 
 ### 주요 구현
 
@@ -233,10 +234,10 @@ export const useInfiniteNewsList = ({
 **AI 모델**
 - Gemini: 뉴스 요약, 섹터 분석, 시장 영향도, 관찰 포인트, 인사이트 등 전체 분석
 
-**비용 최적화**
-- 최근 2시간 이내 새 뉴스만 분석
-- 뉴스 데이터 압축 (제목 150자, 본문 200자로 제한)
-- 작업별 토큰 제한 차등 적용
+**비용·규모**
+- 새 뉴스가 없으면 AI 단계 스킵(파이프라인에서 처리)
+- 브리핑·전략 단계는 최근 수집 구간의 뉴스만 사용(상한: `generate-briefing` 등 라우트의 `limit` 참고)
+- 뉴스 프롬프트용 텍스트 압축(제목·요약 길이 제한)
 
 #### 2. Redis 캐싱 전략
 
@@ -248,7 +249,16 @@ export const useInfiniteNewsList = ({
 - 브리핑 생성 후 관련 API 엔드포인트를 미리 호출해 캐시 적재
 - 사용자 요청 시 즉시 응답 가능
 
-#### 3. 에러 처리 및 모니터링
+#### 3. 스케줄 (GitHub Actions)
+
+| 워크플로 | 역할 | 비고 |
+|----------|------|------|
+| `cron.yml` | `POST`로 `run-pipeline`(또는 `CRON_ENDPOINT`에 설정한 URL) 호출 | 하루 **6회** (KST 기준 대략 4시간 간격, UTC는 파일 주석 참고) |
+| `push-notifications.yml` | `/api/internal/send-push-notifications` 호출 | 하루 **6회**, 파이프라인과 시차 두고 실행 |
+
+Vercel Cron만 사용하는 배포라면, 위와 **동일 빈도**로 엔드포인트를 맞춰야 합니다.
+
+#### 4. 에러 처리 및 모니터링
 
 **Sentry 통합**
 - 모든 API 에러를 자동 수집

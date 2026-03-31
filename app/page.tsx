@@ -78,7 +78,10 @@ export default function Home() {
           <li>AI는 시장 판단을 대신하지 않습니다.</li>
           <li>지수·뉴스는 사실 기반, 코멘트는 AI 요약입니다.</li>
           <li>투자 결정 전 반드시 원문·데이터를 확인하세요.</li>
-          <li>매일 9시, 12시, 18시에 데이터가 업데이트됩니다.</li>
+          <li>
+            집계 파이프라인은 KST 기준 하루 6회(약 4시간 간격) 실행됩니다. 자세한 시각은
+            저장소의 GitHub Actions 스케줄을 참고하세요.
+          </li>
         </ul>
       </NoticeModal>
     </div>

@@ -15,7 +15,7 @@ const PERIOD_OPTIONS = [
   { label: '전체', value: 'all' },
 ];
 
-// 수집(12개 섹터) ↔ 분석(related_sectors) 일관성을 위해 단일 소스 사용
+// 수집 섹터(THE_NEWS_SECTORS) ↔ 분석(related_sectors) 일관성을 위해 단일 소스 사용
 const CATEGORIES = ['전체', ...THE_NEWS_SECTORS.map((s) => s.name)];
 
 interface NewsFiltersProps {

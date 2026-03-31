@@ -48,7 +48,7 @@ export const GET = verifyCronAuth(async () => {
       .select('*')
       .gte('created_at', twoHoursAgo) // 최근 2시간 이내 추가된 뉴스만
       .order('published_at', { ascending: false })
-      .limit(24); // 36 → 24 (비용 절감)
+      .limit(36); // 섹터 증가·수집량 대응
 
     if (newsError) throw newsError;
 

@@ -1,4 +1,5 @@
 import { runGeminiJSON } from '@/lib/ai/gemini';
+import type { SectorResponse } from '@/types/services';
 import { buildSectorPrompt } from '@/lib/ai/prompts/sectorBuilder';
 import { redis } from '@/lib/core/redis';
 import { apiError } from '@/lib/errors/apiResponse';
@@ -48,7 +49,7 @@ export const GET = verifyCronAuth(async () => {
       .select('uuid,title,description,content,source,url,published_at')
       .gte('created_at', twoHoursAgo) // 최근 2시간 이내 추가된 뉴스만
       .order('published_at', { ascending: false })
-      .limit(20); // 30 → 20 (비용 절감)
+      .limit(28);
 
     // 새 뉴스가 없으면 스킵
     if (!rawNews || rawNews.length === 0) {
@@ -71,7 +72,7 @@ export const GET = verifyCronAuth(async () => {
       compactNewsForPrompt((rawNews || []) as RawNewsRow[])
     );
 
-    const sectorRes = await runGeminiJSON(prompt);
+    const sectorRes = await runGeminiJSON<SectorResponse>(prompt);
 
     await redis.set('strategy:latest', JSON.stringify(sectorRes.sectors));
 

@@ -29,7 +29,7 @@ export const GET = verifyCronAuth(async () => {
     console.log('📡 [Collect News] Starting RSS feed collection...');
     let rssItems: RSSFeedItem[] = [];
     try {
-      rssItems = await fetchAllRSSFeeds(20); // 피드당 최대 20개
+      rssItems = await fetchAllRSSFeeds(25); // 피드당 최대 25개
       console.log(`✅ [Collect News] RSS: Collected ${rssItems.length} items`);
     } catch (error) {
       console.error('❌ [Collect News] RSS collection failed:', error);
@@ -55,7 +55,7 @@ export const GET = verifyCronAuth(async () => {
             const published = new Date(item.published_at);
             return published >= threeDaysAgo;
           })
-          .slice(0, 3); // 섹터당 최대 3개
+          .slice(0, 4); // 섹터당 최대 4개
 
         // RSS에서 충분한 뉴스가 없으면 The News API 사용
         // if (filteredRSS.length < 3) {
