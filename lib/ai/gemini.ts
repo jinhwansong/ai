@@ -37,7 +37,7 @@ async function generateContentWithRetry(prompt: string) {
         const delay = BASE_DELAY_MS * 2 ** (attempt - 1);
         console.warn(
           `[Gemini] generateContent 실패 (${attempt}/${MAX_GENERATE_ATTEMPTS}), ${delay}ms 후 재시도:`,
-          err instanceof Error ? err.message : err,
+          err instanceof Error ? err.message : err
         );
         await sleep(delay);
         continue;
@@ -53,13 +53,13 @@ export async function runGeminiJSON<T = unknown>(prompt: string): Promise<T> {
 
   const text = response.text;
   if (!text) {
-    throw new Error(
-      'Gemini JSON 파싱: 응답 본문이 비어 있습니다. (API는 성공했으나 텍스트 없음)',
-    );
+    throw new Error('Gemini JSON 파싱: 응답 본문이 비어 있습니다. (API는 성공했으나 텍스트 없음)');
   }
 
   try {
-    const match = text.match(/\{[\s\S]*\}/);
+    const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    const cleaned = codeBlock ? codeBlock[1].trim() : text;
+    const match = cleaned.match(/\{[\s\S]*\}/);
     if (!match) {
       throw new Error('본문에서 { ... } JSON을 찾지 못했습니다.');
     }

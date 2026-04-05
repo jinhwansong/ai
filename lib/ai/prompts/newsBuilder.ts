@@ -2,11 +2,8 @@ import { THE_NEWS_SECTORS } from '@/constants';
 
 export const buildNewsPrompt = (keywords: string[], newsList: unknown[]) => {
   const allowedSectors = THE_NEWS_SECTORS.map((s) => s.name);
-  const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
+  const threeDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  // 최적화: 불필요한 설명 제거, 핵심만 유지
   return `뉴스 분석. ${threeDaysAgo} 이후.
 
 {
@@ -24,8 +21,10 @@ export const buildNewsPrompt = (keywords: string[], newsList: unknown[]) => {
   }]
 }
 
-규칙: ${threeDaysAgo} 이후, 한국어 번역, relatedSectors는 ${allowedSectors.join(',')} 중에서만, tags는 ${keywords.join(',')} 중에서만 선택, JSON만.
+규칙: ${threeDaysAgo} 이후, 한국어 번역, relatedSectors는 ${allowedSectors.join(',')} 중에서만, tags는 ${keywords.join(',')} 중에서만 선택.
 
 키워드: ${keywords.join(', ')}
-뉴스: ${JSON.stringify(newsList)}`;
+뉴스: ${JSON.stringify(newsList)}
+
+IMPORTANT: Return ONLY the raw JSON object above. No markdown, no code blocks, no explanation. Start directly with {`;
 };

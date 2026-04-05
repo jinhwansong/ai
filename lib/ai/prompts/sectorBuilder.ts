@@ -1,4 +1,8 @@
-export const buildSectorPrompt = (keywords: string[], marketData: Record<string, unknown>, newsList: unknown[]) => {
+export const buildSectorPrompt = (
+  keywords: string[],
+  marketData: Record<string, unknown>,
+  newsList: unknown[]
+) => {
   return `섹터 분석.
 
 {
@@ -15,5 +19,7 @@ export const buildSectorPrompt = (keywords: string[], marketData: Record<string,
 
 키워드: ${keywords.join(', ')}
 시장: ${JSON.stringify(marketData)}
-뉴스: ${JSON.stringify(newsList)}`;
+뉴스: ${JSON.stringify(newsList)}
+
+IMPORTANT: Return ONLY the raw JSON object above. No markdown, no code blocks, no explanation. Start directly with {`;
 };

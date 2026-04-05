@@ -1,4 +1,7 @@
-export const buildObservationPrompt = (marketData: Record<string, unknown>, newsList: unknown[]) => {
+export const buildObservationPrompt = (
+  marketData: Record<string, unknown>,
+  newsList: unknown[]
+) => {
   return `관찰 대상. 반드시 총 6개: 한국 상장 주식 2개, 미국 상장 주식 2개, ETF 2개.
 
 {
@@ -18,5 +21,7 @@ export const buildObservationPrompt = (marketData: Record<string, unknown>, news
 규칙: 위 배열에 정확히 6개 객체. 각 항목은 아래 뉴스·시장 맥락과 연결될 것. 중복 티커 금지.
 
 시장: ${JSON.stringify(marketData)}
-뉴스: ${JSON.stringify(newsList)}`;
+뉴스: ${JSON.stringify(newsList)}
+
+IMPORTANT: Return ONLY the raw JSON object above. No markdown, no code blocks, no explanation. Start directly with {`;
 };

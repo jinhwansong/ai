@@ -1,4 +1,7 @@
-export const buildMarketImpactPrompt = (marketData: Record<string, unknown>, newsList: unknown[]) => {
+export const buildMarketImpactPrompt = (
+  marketData: Record<string, unknown>,
+  newsList: unknown[]
+) => {
   return `시장 영향. 3개 영역.
 
 {
@@ -13,6 +16,7 @@ export const buildMarketImpactPrompt = (marketData: Record<string, unknown>, new
 규칙: zones 3개, 팩트 기반.
 
 시장: ${JSON.stringify(marketData)}
-뉴스: ${JSON.stringify(newsList)}`;
-};
+뉴스: ${JSON.stringify(newsList)}
 
+IMPORTANT: Return ONLY the raw JSON object above. No markdown, no code blocks, no explanation. Start directly with {`;
+};

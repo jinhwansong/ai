@@ -7,11 +7,10 @@ on:
   # 하루 6회 (KST 기준 대략 4시간 간격)
   schedule:
     - cron: '30 21 * * *' # KST 06:30 (UTC 21:30)
-    - cron: '0 1 * * *'   # KST 10:00 (UTC 01:00)
-    - cron: '0 4 * * *'   # KST 13:00 (UTC 04:00)
-    - cron: '0 7 * * *'   # KST 16:00 (UTC 07:00)
-    - cron: '0 10 * * *'  # KST 19:00 (UTC 10:00)
-    - cron: '0 13 * * *'  # KST 22:00 (UTC 13:00)
+    - cron: '0 1 * * *' # KST 10:00 (UTC 01:00)
+    - cron: '0 4 * * *' # KST 13:00 (UTC 04:00)
+    - cron: '0 7 * * *' # KST 16:00 (UTC 07:00)
+    - cron: '0 13 * * *' # KST 22:00 (UTC 13:00)
 
 jobs:
   run-pipeline:
