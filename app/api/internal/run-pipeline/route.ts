@@ -36,7 +36,11 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
     });
 
     const callStep = async <T extends { success?: boolean }>(
-      step: 'collectNews' | 'generateStrategy' | 'generateBriefing',
+      step:
+        | 'pruneSupabase'
+        | 'collectNews'
+        | 'generateStrategy'
+        | 'generateBriefing',
       path: string
     ): Promise<T> => {
       addBreadcrumb(`Step started: ${step}`, 'pipeline', { path });
@@ -70,6 +74,19 @@ export const POST = verifyCronAuth(async (req: NextRequest) => {
       });
       return data;
     };
+
+    // 0. 오래된 Supabase 행 정리 (스토리지·백업 부담 완화)
+    console.log('--- Step 0: Pruning old Supabase rows ---');
+    const pruneData = await callStep<{
+      success: boolean;
+      cutoff?: string;
+      deleted?: {
+        raw_news: number;
+        briefing_history: number;
+        news_articles: number;
+      };
+    }>('pruneSupabase', '/api/internal/prune-supabase');
+    results.pruneSupabase = pruneData;
 
     // 1. 뉴스 수집
     console.log('--- Step 1: Collecting News ---');

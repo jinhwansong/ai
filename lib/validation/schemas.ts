@@ -17,7 +17,10 @@ export const pushUnsubscribeBodySchema = z.object({
 export const newsListQuerySchema = z.object({
   sort: z.enum(['latest', 'oldest', 'importance']).default('latest'),
   category: z.string().default('all'),
-  period: z.enum(['all', 'today', 'week', 'month']).default('all'),
+  period: z.preprocess(
+    (v) => (v === 'month' ? 'week' : v),
+    z.enum(['all', 'today', 'week']).default('all'),
+  ),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });

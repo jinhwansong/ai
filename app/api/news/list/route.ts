@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { apiError } from '@/lib/errors/apiResponse';
 import { supabase } from '@/lib/supabase';
-import { subDays, subMonths, startOfDay } from 'date-fns';
+import { subDays, startOfDay } from 'date-fns';
 import { NEWS_SECTOR_ALIASES } from '@/constants';
 import { parseNewsListSearchParams, queryValidationError } from '@/lib/validation/zodRoute';
 
@@ -27,8 +27,6 @@ export async function GET(request: Request) {
       query = query.gte('published_at', startOfDay(now).toISOString());
     } else if (period === 'week') {
       query = query.gte('published_at', subDays(now, 7).toISOString());
-    } else if (period === 'month') {
-      query = query.gte('published_at', subMonths(now, 1).toISOString());
     }
 
     // 2. 카테고리 필터 (Category)

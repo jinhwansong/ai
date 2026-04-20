@@ -11,7 +11,6 @@ const SORT_OPTIONS = [
 const PERIOD_OPTIONS = [
   { label: '오늘', value: 'today' },
   { label: '1주일', value: 'week' },
-  { label: '1개월', value: 'month' },
   { label: '전체', value: 'all' },
 ];
 
