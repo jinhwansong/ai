@@ -1,17 +1,8 @@
 name: Send Push Notifications
 
+# Cron 일시 중지됨 — 재개 시 schedule 블록 복구 (git 히스토리 참고)
 on:
-  # 수동 실행 가능
   workflow_dispatch:
-
-  # 파이프라인 완료 여유를 두고 KST 기준 하루 6회 (본 워크플로보다 ~35분 늦게)
-  schedule:
-    - cron: '5 22 * * *'   # ~KST 07:05
-    - cron: '35 1 * * *'   # ~KST 10:35
-    - cron: '35 4 * * *'   # ~KST 13:35
-    - cron: '35 7 * * *'   # ~KST 16:35
-    - cron: '35 10 * * *'  # ~KST 19:35
-    - cron: '35 13 * * *'  # ~KST 22:35
 
 jobs:
   send-push:

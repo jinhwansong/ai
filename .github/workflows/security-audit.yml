@@ -1,8 +1,7 @@
 name: Security audit
 
+# 주간 schedule 일시 중지됨 — 재개 시 schedule 블록 복구 (git 히스토리 참고)
 on:
-  schedule:
-    - cron: "0 0 * * 1" # 매주 월요일 00:00 UTC
   push:
     branches: [main, master]
     paths:
